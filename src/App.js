@@ -1,17 +1,13 @@
 import React from 'react';
-import Face from './Face.js'
+import Domino from './Domino.js'
 import './App.css';
 
 function App() {
-  var faces = [];
-  var i;
-  for (i = 0; i <= 6; i++){
-    faces.push(<Face num={i} />)
-  }
   return (
     <div className="App">
       <p>Dominos!</p>
-      {faces}
+      <Domino face1={3} face2={2} reversed={true} />
+      <Domino face1={3} face2={2} reversed={false} />
     </div>
   );
 }
