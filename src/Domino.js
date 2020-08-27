@@ -8,9 +8,11 @@ class Domino extends React.Component {
 
   render(){
     if (this.props.reversed){
-      return [<Face num={this.props.face1} style={this.props.loc1} />, <Face num={this.props.face2} style={this.props.loc2} />]
+      return [<Face num={this.props.face1} style={this.props.loc1} key="1" />, 
+              <Face num={this.props.face2} style={this.props.loc2} key="2" />]
     } else {
-      return [<Face num={this.props.face2} style={this.props.loc2} />, <Face num={this.props.face1} style={this.props.loc1} />]
+      return [<Face num={this.props.face2} style={this.props.loc2} key="1" />, 
+              <Face num={this.props.face1} style={this.props.loc1} key="2" />]
     }
   }
 }
