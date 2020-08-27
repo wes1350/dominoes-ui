@@ -7,15 +7,15 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-                   started: false,
-                   socket: socketIOClient(`http://localhost:5000/`)
+      started: false
     }; 
     this.boardRef = React.createRef();
     this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
   }
 
   componentDidMount() {
-    console.log("App mounted") ;
+    console.log("App mounted");
+    this.setState({socket: socketIOClient("http://localhost:5000/")})
   }
 
   handleStartButtonClick() {
