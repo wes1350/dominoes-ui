@@ -1,6 +1,7 @@
 import React from 'react';
 import Board from './Board.js'
 import TextInfo from './TextInfo.js'
+import ScoreInfo from './ScoreInfo.js'
 import MoveInput from './MoveInput.js'
 import './App.css';
 const socketIOClient = require("socket.io-client")
@@ -34,6 +35,7 @@ class App extends React.Component {
             <p>Dominos!</p>
             <Board ref={this.boardRef} socket={this.state.socket} />
             <TextInfo socket={this.state.socket} />
+            <ScoreInfo socket={this.state.socket} />
             <MoveInput socket={this.state.socket} />
           </>
         );

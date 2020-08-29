@@ -14,6 +14,7 @@ class MoveInput extends React.Component {
   }
   handleSubmit(event) {
     this.props.socket.emit("response", this.state.value);
+    this.setState({value: ""});
     event.preventDefault();
   }
 
