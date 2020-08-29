@@ -3,6 +3,7 @@ import Board from './Board.js'
 import TextInfo from './TextInfo.js'
 import ScoreInfo from './ScoreInfo.js'
 import MoveInput from './MoveInput.js'
+import Hand from './Hand.js'
 import './App.css';
 const socketIOClient = require("socket.io-client")
 
@@ -12,7 +13,6 @@ class App extends React.Component {
     this.state = {
       started: false
     }; 
-    this.boardRef = React.createRef();
     this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
   }
 
@@ -33,9 +33,14 @@ class App extends React.Component {
         content = (
           <>
             <p>Dominos!</p>
-            <Board ref={this.boardRef} socket={this.state.socket} />
+            <hr />
+            <Board socket={this.state.socket} />
+            <hr />
+            <Hand socket={this.state.socket} />
+            <hr />
             <TextInfo socket={this.state.socket} />
             <ScoreInfo socket={this.state.socket} />
+            <hr />
             <MoveInput socket={this.state.socket} />
           </>
         );
