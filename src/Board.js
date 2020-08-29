@@ -10,20 +10,11 @@ class Board extends React.Component {
   }
 
   componentDidMount(){
-    console.log("mounting")
-/*
-    this.state.socket.on('message', (desc) => {
-      console.log("GOT A MESSAGE!");
-      console.log(desc);  
-    })
-*/
-
     this.props.socket.on('add_domino', (desc) => {
       console.log('domino:', desc);
       this.add_domino(JSON.parse(desc));
     })
   }
-
 
   add_domino(desc){
     let dominos = this.state.dominos;

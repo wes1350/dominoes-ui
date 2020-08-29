@@ -1,5 +1,7 @@
 import React from 'react';
 import Board from './Board.js'
+import TextInfo from './TextInfo.js'
+import MoveInput from './MoveInput.js'
 import './App.css';
 const socketIOClient = require("socket.io-client")
 
@@ -14,7 +16,6 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log("App mounted");
     this.setState({socket: socketIOClient("http://localhost:5000/")})
   }
 
@@ -32,6 +33,8 @@ class App extends React.Component {
           <>
             <p>Dominos!</p>
             <Board ref={this.boardRef} socket={this.state.socket} />
+            <TextInfo socket={this.state.socket} />
+            <MoveInput socket={this.state.socket} />
           </>
         );
     } else {
@@ -43,23 +46,6 @@ class App extends React.Component {
         );
     }
     return <div className="App">{content}</div>
-    
-    /*
-      return (
-        <div className="App">
-          <p>Dominos!</p>
-          <Board ref={this.boardRef} socket={this.state.socket} />
-        </div>
-      );
-    } else {
-      return (
-        <div className="App">
-          <p>Dominos!</p>
-          <button onClick={this.handleStartButtonClick}>Start Game</button>
-        </div>
-      );
-    }
-    */
   }
 }
 
