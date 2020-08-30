@@ -13,7 +13,6 @@ class Domino extends React.Component {
     let style2 = {...size, gridColumn: this.props.x2 + "/" + (this.props.x2 + this.props.span),
                            gridRow: this.props.y2 + "/" + (this.props.y2 + this.props.span)};
 
-    console.log(style1)
     if (this.props.reversed){
       return [<Face num={this.props.face1} style={style1} key="1" />, 
               <Face num={this.props.face2} style={style2} key="2" />]

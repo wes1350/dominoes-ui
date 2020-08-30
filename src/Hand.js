@@ -10,7 +10,6 @@ class Hand extends React.Component {
 
   componentDidMount(){
     this.props.socket.on('hand', (desc) => {
-      console.log('hand:', desc);
       this.update_hand(desc);
       // this.update_hand(JSON.parse(desc));
     })
