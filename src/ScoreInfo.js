@@ -19,7 +19,7 @@ class TextInfo extends React.Component {
     let score_displays = [];
     for (i = 0; i < Object.keys(this.state.scores).length; i++){
       score_displays.push(
-        <p key={i}>Player {i} score:{scores["" + i]}</p>
+        <p key={i}>Player {i} score: {scores["" + i]}</p>
       );
     }
     return (

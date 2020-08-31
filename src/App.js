@@ -17,11 +17,14 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({socket: socketIOClient("http://localhost:5000/")})
+    const socket = socketIOClient("http://localhost:5000/");
+    socket.on('game_start', (desc) => {
+      this.setState({started: true});
+    });
+    this.setState({socket: socket});
   }
 
   handleStartButtonClick() {
-    this.setState({started: true});
     this.state.socket.emit("start_game");
   }
 
