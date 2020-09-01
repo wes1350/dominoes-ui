@@ -117,16 +117,15 @@ class Board extends React.Component {
     }
     let board_width = this.state.east_limit - this.state.west_limit;
     let square_size = Math.round(this.state.n_pixels/board_width);
-    console.log("Board style: " + board_width + ", " + square_size)
     return <div className="domino-board" 
                 style={{ gridTemplateColumns: "repeat(" + board_width + ", " + square_size + "px)", gridAutoRows: square_size + "px"}}>
   
       {domino_info.map((d, index) => {
-              return (<Domino 
-              face1={d["faces"][0]} face2={d["faces"][1]} 
-              x1={d["locations"][0][0]} 
+              return (<Domino
+              face1={d["faces"][0]} face2={d["faces"][1]}
+              x1={d["locations"][0][0]}
               y1={d["locations"][0][1]}
-              x2={d["locations"][1][0]} 
+              x2={d["locations"][1][0]}
               y2={d["locations"][1][1]}
               span={this.state.span}
               size={this.state.domino_size}

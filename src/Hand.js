@@ -5,38 +5,42 @@ import Domino from './Domino.js'
 class Hand extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {dominos: []};
+    this.state = {domino_faces: [], playable_dominos: []};
   }
 
   componentDidMount(){
     this.props.socket.on('hand', (desc) => {
       this.update_hand(desc);
-      // this.update_hand(JSON.parse(desc));
+    })
+    this.props.socket.on('playable_dominos', (desc) => {
+      this.setState({playable_dominos: JSON.parse(desc)});
+      console.log(desc);
     })
   }
   
   update_hand(desc){
-    let dominos = [];
+    let faces = [];
     let i;
     for (i = 0; i < desc.length; i++){
-      dominos.push(
-        <Domino face1={desc[i][0]} face2={desc[i][1]} 
-                // loc1={{gridRow: "1/3", gridColumn: (1 + 2*i) + "/" + (3 + 2*i), height: "50px", width: "50px"}} 
-                // loc2={{gridRow: "3/5", gridColumn: (1 + 2*i) + "/" + (3 + 2*i), height: "50px", width: "50px"}}
-                x1={1 + i} y1={1}
-                x2={1 + i} y2={2}
-                span={1}
-                size={50}
-                key={i} />
-      );
+      faces.push([desc[i][0], desc[i][1]]);
     }
-    this.setState({dominos: dominos});
+    this.setState({domino_faces: faces});
   }
 
   render() {
     return <div className="player-hand">
       <>
-        {this.state.dominos}
+        {/* {this.state.dominos} */}
+        {this.state.domino_faces.map((dom, i) => {
+          return (
+            <Domino face1={dom[0]} face2={dom[1]}
+            x1={1 + i} y1={1}
+            x2={1 + i} y2={2}
+            span={1}
+            size={50}
+            opacity = {this.state.playable_dominos.includes(i) ? 1 : 0.5}
+            key={i} />
+        )})}
       </>
     </div>
   } 

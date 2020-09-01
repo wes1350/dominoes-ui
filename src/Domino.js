@@ -9,9 +9,13 @@ class Domino extends React.Component {
   render(){
     let size = {width: this.props.size + "px", height: this.props.size + "px"};
     let style1 = {...size, gridColumn: this.props.x1 + "/" + (this.props.x1 + this.props.span),
-                           gridRow: this.props.y1 + "/" + (this.props.y1 + this.props.span)};
+                           gridRow: this.props.y1 + "/" + (this.props.y1 + this.props.span),
+                           opacity: this.props.opacity};/*,
+                           border: "3px solid #66CC33"};*/
     let style2 = {...size, gridColumn: this.props.x2 + "/" + (this.props.x2 + this.props.span),
-                           gridRow: this.props.y2 + "/" + (this.props.y2 + this.props.span)};
+                           gridRow: this.props.y2 + "/" + (this.props.y2 + this.props.span),
+                           opacity: this.props.opacity};/*,
+                           border: "3px solid #66CC33"};*/
 
     if (this.props.reversed){
       return [<Face num={this.props.face1} style={style1} key="1" />, 
