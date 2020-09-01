@@ -10,11 +10,13 @@ class Domino extends React.Component {
     let size = {width: this.props.size + "px", height: this.props.size + "px"};
     let style1 = {...size, gridColumn: this.props.x1 + "/" + (this.props.x1 + this.props.span),
                            gridRow: this.props.y1 + "/" + (this.props.y1 + this.props.span),
-                           opacity: this.props.opacity};/*,
+                           opacity: this.props.opacity,
+                           transform: "rotate(" + (this.props.rotate ? 9 : "") + "0deg)"};/*,
                            border: "3px solid #66CC33"};*/
     let style2 = {...size, gridColumn: this.props.x2 + "/" + (this.props.x2 + this.props.span),
                            gridRow: this.props.y2 + "/" + (this.props.y2 + this.props.span),
-                           opacity: this.props.opacity};/*,
+                           opacity: this.props.opacity,
+                           transform: "rotate(" + (this.props.rotate ? 9 : "") + "0deg)"};/*,
                            border: "3px solid #66CC33"};*/
 
     if (this.props.reversed){

@@ -121,12 +121,15 @@ class Board extends React.Component {
                 style={{ gridTemplateColumns: "repeat(" + board_width + ", " + square_size + "px)", gridAutoRows: square_size + "px"}}>
   
       {domino_info.map((d, index) => {
+              let y1 = d["locations"][0][1];
+              let y2 = d["locations"][1][1];
               return (<Domino
               face1={d["faces"][0]} face2={d["faces"][1]}
               x1={d["locations"][0][0]}
-              y1={d["locations"][0][1]}
+              y1={y1}
               x2={d["locations"][1][0]}
-              y2={d["locations"][1][1]}
+              y2={y2}
+              rotate={y1 === y2}
               span={this.state.span}
               size={this.state.domino_size}
               key={index} />
