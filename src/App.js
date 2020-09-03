@@ -11,7 +11,8 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      started: false
+      started: false,
+      gameOver: false
     }; 
     this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
   }
@@ -20,6 +21,9 @@ class App extends React.Component {
     const socket = socketIOClient("http://localhost:5000/");
     socket.on('game_start', (desc) => {
       this.setState({started: true});
+    });
+    socket.on('game_over', (desc) => {
+      this.setState({gameOver: true});
     });
     this.setState({socket: socket});
   }
@@ -30,30 +34,38 @@ class App extends React.Component {
 
   render(){
     const started = this.state.started;
+    const gameOver = this.state.gameOver;
     let content;
   
     if (started) {
-        content = (
-          <>
-            <p>Dominos!</p>
+      content = (
+        <>
+          <h1>Dominos!</h1> 
+          { gameOver && <h3>Game over!</h3>}
+          { !gameOver &&
+            <div>
             <hr />
             <Board socket={this.state.socket} />
             <hr />
             <Hand socket={this.state.socket} />
             <hr />
             <TextInfo socket={this.state.socket} />
-            <ScoreInfo socket={this.state.socket} />
-            <hr />
-            <MoveInput socket={this.state.socket} />
-          </>
-        );
+            </div>
+          }
+          <ScoreInfo socket={this.state.socket} />
+          <hr />
+          { !gameOver &&
+          <MoveInput socket={this.state.socket} />
+          }
+        </>
+      );
     } else {
-        content = (
-          <>
-          <p>Dominos!</p>
-          <button onClick={this.handleStartButtonClick}>Start Game</button>
-          </>
-        );
+      content = (
+        <>
+        <p>Dominos!</p>
+        <button onClick={this.handleStartButtonClick}>Start Game</button>
+        </>
+      );
     }
     return <div className="App">{content}</div>
   }
