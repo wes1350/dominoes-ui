@@ -8,6 +8,10 @@ class Board extends React.Component {
     this.state = {
       domino_faces: [],
       domino_locations: [],
+      east_edge: 0,
+      west_edge: 0,
+      north_edge: 0, 
+      east_offset: 0, 
       east_limit: 20,
       west_limit: -20,
       north_limit: 20,
@@ -27,7 +31,11 @@ class Board extends React.Component {
       this.setState({domino_faces: [], domino_locations: [],
                      east_limit: this.state.original_limit,
                      west_limit: -1 * this.state.original_limit,
-                     north_limit: this.state.original_limit
+                     north_limit: this.state.original_limit,
+                     east_edge: 0,
+                     west_edge: 0,
+                     north_edge: 0, 
+                     east_offset: 0, 
       });
       this.setState((state, props) => ({
         domino_size: this.calculate_domino_size(state)
@@ -39,10 +47,19 @@ class Board extends React.Component {
   add_domino(desc){
     this.check_board_size(desc["face1loc"], desc["face2loc"]);
 
+    let original_x1 = desc["face1loc"][0];
+    let original_y1 = desc["face1loc"][1];
+    let original_x2 = desc["face2loc"][0];
+    let original_y2 = desc["face2loc"][1];
+
+    this.setState((state, props) => ({
+      east_edge: Math.max(state.east_edge, original_x1 + 2, original_x2 + 2),
+      west_edge: Math.min(state.west_edge, original_x1, original_x2),
+      north_edge: Math.max(state.north_edge, original_y1, original_y2)
+    }));
+
     let loc1=this.convert_position(desc["face1loc"]);
     let loc2=this.convert_position(desc["face2loc"]);
-    console.log(loc1)
-    console.log(loc2)
 
     let locations = [[loc1[0], loc1[1]], [loc2[0], loc2[1]]];
     this.setState((state, props) => ({
@@ -55,9 +72,10 @@ class Board extends React.Component {
   convert_position(coords){
     let west = this.state.west_limit;
     let north = this.state.north_limit;
+    let east_offset = this.state.east_offset;
 
-    let x_start = coords[0] - west  + 1
-    let y_start = north - coords[1] + 1
+    let x_start = coords[0] - west + 1 + east_offset;
+    let y_start = north - coords[1] + 1;
     let result = [x_start, y_start];
     console.log("Converted ", coords, " to ", result);
     return result;
@@ -73,27 +91,56 @@ class Board extends React.Component {
     const shift_unit = 12;
     let north = this.state.north_limit;
     let east = this.state.east_limit;
+    let east_edge = this.state.east_edge;
     let west = this.state.west_limit;
-    if (coords1[0] < west || coords2[0] < west){
-      this.setState((state, props) => ({
-        west_limit: state.west_limit - shift_unit,
-        domino_locations: state.domino_locations.map(x => {
-          return [[x[0][0] + shift_unit, x[0][1]], 
-                  [x[1][0] + shift_unit, x[1][1]]];
-        })
-      }));
-      this.setState((state, props) => ({
-        domino_size: this.calculate_domino_size(state)
-      }));
-      console.log("Updated domino board dimensions");
-      console.log("New west: ", this.state.west_limit);
-    } else if (coords1[0] > east || coords2[0] > east){
-      this.setState((state, props) => ({
-        east_limit: state.east_limit + shift_unit
-      }));
-      this.setState((state, props) => ({
-        domino_size: this.calculate_domino_size(state)
-      }));
+    let west_edge = this.state.west_edge;
+    let east_offset = this.state.east_offset;
+
+    if (coords1[0] + east_offset < west || coords2[0] + east_offset < west){
+      console.log(east - east_edge);
+      if (east - east_edge >= 8) {
+        console.log("Enough")
+        let offset = Math.floor((east - east_edge) / 4) * 2;
+        this.setState((state, props) => ({
+          east_edge: state.east_edge + offset,
+          east_offset: state.east_offset + offset,
+          domino_locations: state.domino_locations.map(x => {
+            return [[x[0][0] + offset, x[0][1]], 
+                    [x[1][0] + offset, x[1][1]]];
+          })
+        }));
+      } else {
+        console.log("Not enough")
+        this.setState((state, props) => ({
+          west_limit: state.west_limit - shift_unit,
+          domino_locations: state.domino_locations.map(x => {
+            return [[x[0][0] + shift_unit, x[0][1]], 
+                    [x[1][0] + shift_unit, x[1][1]]];
+          })
+        }));
+        this.setState((state, props) => ({
+          domino_size: this.calculate_domino_size(state)
+        }))
+      }
+    } else if (coords1[0] + east_offset > east || coords2[0] + east_offset > east){
+      if (west - west_edge <= -8) {
+        let offset = Math.floor((west - west_edge) / 4) * 2;
+        this.setState((state, props) => ({
+          west_edge: state.west_edge + offset,
+          east_offset: state.east_offset + offset,
+          domino_locations: state.domino_locations.map(x => {
+            return [[x[0][0] + offset, x[0][1]], 
+                    [x[1][0] + offset, x[1][1]]];
+          })
+        }));
+      } else {
+        this.setState((state, props) => ({
+          east_limit: state.east_limit + shift_unit
+        }));
+        this.setState((state, props) => ({
+          domino_size: this.calculate_domino_size(state)
+        }));
+      }
     } else if (coords1[1] > north || coords2[1] > north){
       this.setState((state, props) => ({
         north_limit: state.north_limit + shift_unit,
@@ -102,8 +149,6 @@ class Board extends React.Component {
                   [x[1][0], x[1][1] + shift_unit]];
         })
       }));
-      console.log("Updated domino board dimensions");
-      console.log("New north: ", this.state.north_limit);
     }
   }
 
