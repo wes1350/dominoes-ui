@@ -28,8 +28,8 @@ class Hand extends React.Component {
   }
 
   render() {
-    return <div className="player-hand">
-      <>
+    return <div style={this.props.style}>
+      <div className="player-hand">
         {/* {this.state.dominos} */}
         {this.state.domino_faces.map((dom, i) => {
           return (
@@ -41,7 +41,7 @@ class Hand extends React.Component {
             opacity = {this.state.playable_dominos.includes(i) ? 1 : 0.5}
             key={i} />
         )})}
-      </>
+      </div>
     </div>
   } 
 }

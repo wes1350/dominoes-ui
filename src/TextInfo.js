@@ -18,10 +18,10 @@ class TextInfo extends React.Component {
 
   render() {
     return (
-      <>
+      <div style={this.props.style}>
         <p>{this.state.promptMsg}</p>
         <p style={{color: "red"}}>{this.state.errorMsg}</p>
-      </>
+      </div>
     );
   } 
 }

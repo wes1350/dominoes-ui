@@ -23,9 +23,9 @@ class TextInfo extends React.Component {
       );
     }
     return (
-      <>
+      <div style={this.props.style}>
         {score_displays}
-      </>
+      </div>
     );
   } 
 }

@@ -1,4 +1,12 @@
-.App {
+.gameover-page {
+
+}
+
+.gameplay-page {
+  display: grid;
+  grid-template-columns: 1fr 720px 1px;
+  grid-template-rows: repeat(6, 120px);
+  grid-auto-rows: 120px;
   text-align: center;
 }
 

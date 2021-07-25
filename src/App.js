@@ -36,34 +36,34 @@ class App extends React.Component {
     const started = this.state.started;
     const gameOver = this.state.gameOver;
     let content;
+    let scoreInfo = <ScoreInfo style={{gridColumn: "1", gridRow: "1"}} socket={this.state.socket} />;
+    let gameBoard = <Board style={{gridColumn: "2", gridRow: "1 / 7"}} socket={this.state.socket} />;
   
     if (started) {
+      if (gameOver){
+        content = (
+          <div className="gameover-page">
+            <h3>Game over!</h3>
+            {scoreInfo}
+            {gameBoard}
+          </div>
+        );
+      } else {
       content = (
-        <>
-          <h1>Dominos!</h1> 
-          { gameOver && <h3>Game over!</h3>}
-          { !gameOver &&
-            <div>
-            <hr />
-            <Board socket={this.state.socket} />
-            <hr />
-            <Hand socket={this.state.socket} />
-            <hr />
-            <TextInfo socket={this.state.socket} />
-            </div>
-          }
-          <ScoreInfo socket={this.state.socket} />
-          <hr />
-          { !gameOver &&
-          <MoveInput socket={this.state.socket} />
-          }
-        </>
-      );
+          <div className="gameplay-page">
+            {scoreInfo}
+            <TextInfo style={{gridColumn: "1", gridRow: "2 / 4"}} socket={this.state.socket} />
+            <Hand style={{gridColumn: "1", gridRow: "4"}} socket={this.state.socket} />
+            <MoveInput style={{gridColumn: "1", gridRow: "5"}} socket={this.state.socket} />
+            {gameBoard}
+          </div>
+        );
+      }
     } else {
       content = (
         <>
-        <p>Dominos!</p>
-        <button onClick={this.handleStartButtonClick}>Start Game</button>
+          <p>Dominos!</p>
+          <button onClick={this.handleStartButtonClick}>Start Game</button>
         </>
       );
     }

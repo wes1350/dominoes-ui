@@ -133,9 +133,9 @@ class Board extends React.Component {
           domino_size: this.calculate_domino_size(state)
         }))
       }
-    } else if (coords1[0] + east_offset > east || coords2[0] + east_offset > east){
+    } else if (coords1[0] + east_offset + 2 > east || coords2[0] + east_offset + 2 > east){
       if (west - west_edge <= -8) {
-        let offset = Math.floor((west - west_edge) / 4) * 2;
+        let offset = Math.ceil((west - west_edge) / 4) * 2;
         this.setState((state, props) => ({
           west_edge: state.west_edge + offset,
           east_edge: state.east_edge + offset,
@@ -177,7 +177,7 @@ class Board extends React.Component {
           domino_size: this.calculate_domino_size(state)
         }))
       }
-    } else if (coords1[1] + north_offset < south || coords2[1] + north_offset < south){
+    } else if (coords1[1] + north_offset - 2 < south || coords2[1] + north_offset - 2 < south){
       if (north - north_edge >= 8) {
         let offset = Math.floor((north - north_edge) / 4) * 2;
         this.setState((state, props) => ({
@@ -213,7 +213,8 @@ class Board extends React.Component {
     let max_dimension = Math.max(board_width, board_height);
     let square_size = Math.round(this.state.n_pixels/max_dimension);
     return <div className="domino-board" 
-                style={{ gridTemplateColumns: "repeat(" + max_dimension + ", " + square_size + "px)", 
+                style={{ ...this.props.style, 
+                         gridTemplateColumns: "repeat(" + max_dimension + ", " + square_size + "px)", 
                          gridTemplateRows: "repeat(" + max_dimension + ", " + square_size + "px)"}}>
   
       {domino_info.map((d, index) => {
