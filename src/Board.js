@@ -26,11 +26,11 @@ class Board extends React.Component {
   }
 
   componentDidMount(){
-    this.props.socket.on('add_domino', (desc) => {
+    this.props.socket.on('ADD_DOMINO', (desc) => {
       console.log('domino:', desc);
       this.add_domino(JSON.parse(desc));
     })
-    this.props.socket.on('clear_board', (desc) => {
+    this.props.socket.on('CLEAR_BOARD', (desc) => {
       this.setState({domino_faces: [], domino_locations: [],
                      east_limit: this.state.original_limit,
                      west_limit: -1 * this.state.original_limit,

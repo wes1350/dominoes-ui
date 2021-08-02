@@ -8,7 +8,7 @@ class TextInfo extends React.Component {
   }
 
   componentDidMount(){
-    this.props.socket.on('scores', (desc) => {
+    this.props.socket.on('SCORES', (desc) => {
       this.setState({scores: desc});
     })
   }

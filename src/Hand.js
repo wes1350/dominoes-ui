@@ -9,10 +9,10 @@ class Hand extends React.Component {
   }
 
   componentDidMount(){
-    this.props.socket.on('hand', (desc) => {
+    this.props.socket.on('HAND', (desc) => {
       this.update_hand(desc);
     })
-    this.props.socket.on('playable_dominos', (desc) => {
+    this.props.socket.on('PLAYABLE_DOMINOS', (desc) => {
       this.setState({playable_dominos: JSON.parse(desc)});
       console.log(desc);
     })

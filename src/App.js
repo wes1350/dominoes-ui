@@ -5,31 +5,50 @@ import ScoreInfo from './ScoreInfo.js'
 import MoveInput from './MoveInput.js'
 import Hand from './Hand.js'
 import './App.css';
-const socketIOClient = require("socket.io-client")
+const io = require("socket.io-client")
+
+// export enum QueryType {
+//     DOMINO = "DOMINO",
+//     DIRECTION = "DIRECTION",
+//     PULL = "PULL"
+// }
+
+// export enum MessageType {
+//     ADD_DOMINO = "ADD_DOMINO",
+//     PLAYABLE_DOMINOS = "PLAYABLE_DOMINOS",
+//     HAND = "HAND",
+//     GAME_OVER = "GAME_OVER",
+//     PACK_EMPTY = "PACK_EMPTY",
+//     SCORES = "SCORES",
+//     ERROR = "ERROR"
+// }
 
 class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+        socket: null,
       started: false,
-      gameOver: false
+      gameOver: false,
+      responseType: null
     }; 
     this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
   }
 
   componentDidMount() {
-    const socket = socketIOClient("http://localhost:5000/");
-    socket.on('game_start', (desc) => {
+    const socket = io("http://localhost:3001");
+    socket.on('GAME_START', (desc) => {
       this.setState({started: true});
     });
-    socket.on('game_over', (desc) => {
+    socket.on('GAME_OVER', (desc) => {
       this.setState({gameOver: true});
     });
     this.setState({socket: socket});
   }
 
   handleStartButtonClick() {
-    this.state.socket.emit("start_game");
+        console.log("starting game")
+    this.state.socket.emit("GAME_START");
   }
 
   render(){
@@ -52,9 +71,11 @@ class App extends React.Component {
       content = (
           <div className="gameplay-page">
             {scoreInfo}
-            <TextInfo style={{gridColumn: "1", gridRow: "2 / 4"}} socket={this.state.socket} />
+            <TextInfo style={{gridColumn: "1", gridRow: "2 / 4"}} socket={this.state.socket} setResponseType={(type) =>{
+                this.setState({responseType: type})
+            }} />
             <Hand style={{gridColumn: "1", gridRow: "4"}} socket={this.state.socket} />
-            <MoveInput style={{gridColumn: "1", gridRow: "5"}} socket={this.state.socket} />
+            <MoveInput style={{gridColumn: "1", gridRow: "5"}} socket={this.state.socket} responseType={this.state.responseType} />
             {gameBoard}
           </div>
         );
