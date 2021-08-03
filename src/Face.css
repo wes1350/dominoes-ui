@@ -1,0 +1,40 @@
+.face-container {
+    display: grid;
+    position: relative;
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 96px;
+    height: 96px;
+}
+
+.dot {
+    position: absolute;
+    background-color: #000;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+}
+
+.row-1 {
+    top: 16px;
+}
+
+.row-2 {
+    top: 40px;
+}
+
+.row-3 {
+    top: 64px;
+}
+
+.col-1 {
+    left: 16px;
+}
+
+.col-2 {
+    left: 40px;
+}
+
+.col-3 {
+    left: 66px;
+}
