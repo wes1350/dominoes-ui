@@ -1,8 +1,7 @@
 .face-container {
-    display: grid;
     position: relative;
-    border: 2px solid black;
-    border-radius: 10px;
+    /* border: 2px solid black;
+    border-radius: 10px; */
     width: 96px;
     height: 96px;
 }

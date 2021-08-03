@@ -1,0 +1,9 @@
+.domino-outer-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.domino-container {
+    border: 2px solid black;
+}

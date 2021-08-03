@@ -34,28 +34,28 @@ export const Hand = (props: IProps) => {
     return (
         <div style={props.style}>
             <div className="player-hand">
-                {/* {this.state.dominos} */}
+                {/* {this.state.dominos}
                 {props.faces.map((dom, i) => {
                     return (
                         <Domino
                             face1={dom[0]}
                             face2={dom[1]}
-                            x1={1 + i}
-                            y1={1}
-                            x2={1 + i}
-                            y2={2}
-                            span={1}
-                            size={50}
-                            opacity={
-                                1
-                                // this.state.playable_dominos?.includes(i)
-                                //     ? 1
-                                //     : 0.5
-                            }
-                            key={i}
+                            // x1={1 + i}
+                            // y1={1}
+                            // x2={1 + i}
+                            // y2={2}
+                            // span={1}
+                            // size={50}
+                            // opacity={
+                            //     1
+                            //     // this.state.playable_dominos?.includes(i)
+                            //     //     ? 1
+                            //     //     : 0.5
+                            // }
+                            // key={i}
                         />
                     );
-                })}
+                })} */}
             </div>
         </div>
     );

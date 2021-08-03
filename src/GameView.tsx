@@ -1,4 +1,6 @@
 import React from "react";
+import { Direction } from "./Direction";
+import { Domino } from "./Domino";
 import { Face } from "./Face";
 
 interface IProps {}
@@ -6,13 +8,10 @@ interface IProps {}
 export const GameView = (props: IProps) => {
     return (
         <div className="game-view">
-            <Face num={0} />
-            <Face num={1} />
-            <Face num={2} />
-            <Face num={3} />
-            <Face num={4} />
-            <Face num={5} />
-            <Face num={6} />
+            <Domino face1={0} face2={6} direction={Direction.NORTH} />
+            <Domino face1={1} face2={5} direction={Direction.EAST} />
+            <Domino face1={2} face2={4} direction={Direction.SOUTH} />
+            <Domino face1={3} face2={3} direction={Direction.WEST} />
         </div>
     );
 };
