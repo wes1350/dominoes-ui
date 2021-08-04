@@ -1,7 +1,9 @@
-.domino-board{
-  background-color: #282c34;
-  display: grid;
-  /*grid-template-columns: repeat(auto-fill, 25px);*/
-  /*grid-template-columns: repeat(60, 16px);
+.board {
+    display: grid;
+    background-color: #282c34;
+    grid-template-columns: repeat(36, 25px);
+    grid-template-rows: repeat(36, 25px);
+    /*grid-template-columns: repeat(auto-fill, 25px);*/
+    /*grid-template-columns: repeat(60, 16px);
   grid-auto-rows: 16px;*/
 }
