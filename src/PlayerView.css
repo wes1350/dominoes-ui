@@ -1,0 +1,65 @@
+.player-view {
+    position: fixed;
+    padding: 10px 10px 10px 10px;
+}
+
+.player-name {
+    position: absolute;
+}
+
+.player-score {
+    position: absolute;
+}
+
+.player-score-me,
+.player-score-1 {
+    right: 0%;
+    margin-right: 10px;
+}
+
+.player-score-2,
+.player-score-3 {
+    bottom: 0%;
+    margin-bottom: 10px;
+}
+
+.my-player {
+    left: 50%;
+    bottom: 0%;
+    transform: translateX(-50%);
+    width: var(--player-view-large-size);
+    height: var(--player-view-small-size);
+    background-color: darkseagreen;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.opponent {
+    background-color: darksalmon;
+}
+
+.opponent-1 {
+    top: 0%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--player-view-large-size);
+    height: var(--player-view-small-size);
+    border-radius: 0px 0px 10px 10px;
+}
+
+.opponent-2 {
+    left: 0%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--player-view-small-size);
+    height: var(--player-view-large-size);
+    border-radius: 0px 10px 10px 0px;
+}
+
+.opponent-3 {
+    top: 50%;
+    right: 0%;
+    transform: translateY(-50%);
+    width: var(--player-view-small-size);
+    height: var(--player-view-large-size);
+    border-radius: 10px 0px 0px 10px;
+}

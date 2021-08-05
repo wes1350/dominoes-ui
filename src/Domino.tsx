@@ -47,18 +47,19 @@ export const Domino = (props: IProps) => {
     }
 
     let flexDirection: "row" | "column" | "column-reverse" | "row-reverse";
-    let borders1: number[], borders2: number[];
+    let borderRadii1: (number | string)[], borderRadii2: (number | string)[];
     let blankBorder1: string, blankBorder2: string; // for hiding middle borders
 
-    const bottomRounded = [0, 0, 12, 12];
-    const topRounded = [12, 12, 0, 0];
-    const leftRounded = [12, 0, 0, 12];
-    const rightRounded = [0, 12, 12, 0];
+    const roundedBorderRadius = "12.5%";
+    const bottomRounded = [0, 0, roundedBorderRadius, roundedBorderRadius];
+    const topRounded = [roundedBorderRadius, roundedBorderRadius, 0, 0];
+    const leftRounded = [roundedBorderRadius, 0, 0, roundedBorderRadius];
+    const rightRounded = [0, roundedBorderRadius, roundedBorderRadius, 0];
     switch (props.direction) {
         case Direction.NORTH:
             flexDirection = "column-reverse";
-            borders1 = bottomRounded;
-            borders2 = topRounded;
+            borderRadii1 = bottomRounded;
+            borderRadii2 = topRounded;
             if (hidden) {
                 blankBorder1 = "border-top-width";
                 blankBorder2 = "border-bottom-width";
@@ -66,46 +67,46 @@ export const Domino = (props: IProps) => {
             break;
         case Direction.EAST:
             flexDirection = "row";
-            borders1 = leftRounded;
-            borders2 = rightRounded;
+            borderRadii1 = leftRounded;
+            borderRadii2 = rightRounded;
             if (hidden) {
-                blankBorder1 = "border-right-width";
-                blankBorder2 = "border-left-width";
+                blankBorder1 = "borderRightWidth";
+                blankBorder2 = "borderLeftWidth";
             }
             break;
         case Direction.SOUTH:
             flexDirection = "column";
-            borders1 = topRounded;
-            borders2 = bottomRounded;
+            borderRadii1 = topRounded;
+            borderRadii2 = bottomRounded;
             if (hidden) {
-                blankBorder1 = "border-bottom-width";
-                blankBorder2 = "border-top-width";
+                blankBorder1 = "borderBottomWidth";
+                blankBorder2 = "borderTopWidth";
             }
             break;
         case Direction.WEST:
             flexDirection = "row-reverse";
-            borders1 = rightRounded;
-            borders2 = leftRounded;
+            borderRadii1 = rightRounded;
+            borderRadii2 = leftRounded;
             if (hidden) {
-                blankBorder1 = "border-left-width";
-                blankBorder2 = "border-right-width";
+                blankBorder1 = "borderLeftWidth";
+                blankBorder2 = "borderRightWidth";
             }
             break;
         default:
             flexDirection = "row";
-            borders1 = leftRounded;
-            borders2 = rightRounded;
+            borderRadii1 = leftRounded;
+            borderRadii2 = rightRounded;
             if (hidden) {
-                blankBorder1 = "border-right-width";
-                blankBorder2 = "border-left-width";
+                blankBorder1 = "borderRightWidth";
+                blankBorder2 = "borderLeftWidth";
             }
     }
 
     const style1: any = {
-        borderRadius: borders1.join("px ") + "px"
+        borderRadius: borderRadii1.join(" ")
     };
     const style2: any = {
-        borderRadius: borders2.join("px ") + "px"
+        borderRadius: borderRadii2.join(" ")
     };
 
     if (blankBorder1 && blankBorder2) {

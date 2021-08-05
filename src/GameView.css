@@ -1,2 +1,4 @@
 .game-view {
+    --player-view-small-size: 80px;
+    --player-view-large-size: 380px;
 }

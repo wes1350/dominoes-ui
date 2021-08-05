@@ -1,46 +1,35 @@
 .face-container {
     position: relative;
-    /* border: 2px solid black;
-    border-radius: 10px; */
 }
 
 .dot {
     position: absolute;
     background-color: #000;
-    /* width: 16px; */
     width: 16.67%;
-    /* height: 16px; */
     height: 16.67%;
-    /* border-radius: 8px; */
     border-radius: 50%;
 }
 
 .row-1 {
-    /* top: 16px; */
     top: 16.67%;
 }
 
 .row-2 {
-    /* top: 40px; */
     top: 41.67%;
 }
 
 .row-3 {
-    /* top: 64px; */
     top: 66.67%;
 }
 
 .col-1 {
-    /* left: 16px; */
     left: 16.67%;
 }
 
 .col-2 {
-    /* left: 40px; */
     left: 41.67%;
 }
 
 .col-3 {
-    /* left: 66px; */
     left: 66.67%;
 }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Board.css";
 import { Direction } from "./Direction";
 import { Domino } from "./Domino";
+import { DominoDescription } from "./DominoDescription";
 
 interface CoordinateDescription {
     x: number;
@@ -14,14 +15,6 @@ interface BoundingBoxDescription {
     east: number;
     south: number;
     west: number;
-}
-
-interface DominoDescription {
-    face1?: number;
-    face2?: number;
-    direction: Direction;
-    x: number;
-    y: number;
 }
 
 interface TranslatedDominoDescription {

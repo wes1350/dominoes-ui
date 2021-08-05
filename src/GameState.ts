@@ -1,9 +1,19 @@
+import { Player } from "./Player";
+
 export class GameState {
     private _gameOver: boolean;
     private _responseType: string;
-    private _players: any[];
+    private _players: Player[];
 
-    constructor() {}
+    constructor() {
+        this._gameOver = false;
+        this._responseType = null;
+        this._players = [];
+    }
+
+    public AddPlayer(player: Player) {
+        this._players.push(player);
+    }
 
     public get GameOver(): boolean {
         return this._gameOver;
@@ -17,7 +27,7 @@ export class GameState {
         return this._players.length;
     }
 
-    public get Players(): any {
+    public get Players(): Player[] {
         return this._players;
     }
 }

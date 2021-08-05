@@ -5,7 +5,9 @@ import React from "react";
 // import MoveInput from "./MoveInput.js";
 // import Hand from "./Hand.js";
 import "./App.css";
+import { GameState } from "./GameState";
 import { GameView } from "./GameView";
+import { Player } from "./Player";
 const io = require("socket.io-client");
 
 // export enum QueryType {
@@ -117,9 +119,21 @@ class App extends React.Component<
         //     );
         // }
         // return <div className="App">{content}</div>;
+
+        const me = new Player("1", "Me", true, 1);
+        const opponent1 = new Player("2", "Opponent 1", false, 0);
+        const opponent2 = new Player("3", "Opponent 2", false, 3);
+        const opponent3 = new Player("4", "Opponent 3", false, 2);
+
+        const gameState = new GameState();
+        gameState.AddPlayer(me);
+        gameState.AddPlayer(opponent1);
+        gameState.AddPlayer(opponent2);
+        gameState.AddPlayer(opponent3);
+
         return (
             <div className="App">
-                <GameView gameState={null}></GameView>
+                <GameView gameState={gameState}></GameView>
             </div>
         );
     }

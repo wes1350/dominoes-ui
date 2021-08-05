@@ -1,6 +1,18 @@
 .board {
     display: grid;
-    background-color: #282c34;
+    position: absolute;
+    overflow: scroll;
+    border-radius: 10px;
+    --board-margin: 50px;
+    top: calc(var(--player-view-small-size) + var(--board-margin));
+    left: calc(var(--player-view-small-size) + var(--board-margin));
+    height: calc(
+        100% - 2 * var(--player-view-small-size) - 2 * var(--board-margin)
+    );
+    width: calc(
+        100% - 2 * var(--player-view-small-size) - 2 * var(--board-margin)
+    );
+    background-color: #c9b5a3;
     grid-template-columns: repeat(36, 25px);
     grid-template-rows: repeat(36, 25px);
     /*grid-template-columns: repeat(auto-fill, 25px);*/
