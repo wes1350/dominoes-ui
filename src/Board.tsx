@@ -17,16 +17,16 @@ interface BoundingBoxDescription {
 }
 
 interface DominoDescription {
-    face1: number;
-    face2: number;
+    face1?: number;
+    face2?: number;
     direction: Direction;
     x: number;
     y: number;
 }
 
 interface TranslatedDominoDescription {
-    face1: number;
-    face2: number;
+    face1?: number;
+    face2?: number;
     direction: Direction;
     north: number;
     east: number;

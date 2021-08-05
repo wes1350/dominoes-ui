@@ -119,7 +119,7 @@ class App extends React.Component<
         // return <div className="App">{content}</div>;
         return (
             <div className="App">
-                <GameView></GameView>
+                <GameView gameState={null}></GameView>
             </div>
         );
     }

@@ -2,14 +2,14 @@ import React from "react";
 import "./Face.css";
 
 interface IProps {
-    num: number;
+    num?: number;
     size?: number;
 }
 
 export const Face = (props: IProps) => {
     // Temporary, just for error checking
 
-    if (![0, 1, 2, 3, 4, 5, 6].includes(props.num)) {
+    if (![0, 1, 2, 3, 4, 5, 6].includes(props.num) && !!props.num) {
         console.log("INVALID VALUE FOR FACE NUM!", props.num);
         return (
             <div className="face-container">
@@ -27,7 +27,7 @@ export const Face = (props: IProps) => {
     }
 
     let dots;
-    if (props.num === 0) {
+    if (props.num === 0 || !props.num) {
         dots = <></>;
     }
 
