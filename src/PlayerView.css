@@ -1,14 +1,31 @@
 .player-view {
+    display: flex;
     position: fixed;
+    justify-content: space-between;
+    padding: 10px 10px 10px 10px;
+}
+
+.player-view-horizontal {
+    flex-direction: row;
+}
+
+.player-view-vertical {
+    flex-direction: column;
+}
+
+.player-view {
+    display: flex;
+    position: fixed;
+    justify-content: space-between;
     padding: 10px 10px 10px 10px;
 }
 
 .player-name {
-    position: absolute;
+    /* position: absolute; */
 }
 
 .player-score {
-    position: absolute;
+    /* position: absolute; */
 }
 
 .player-score-me,
@@ -27,22 +44,22 @@
     left: 50%;
     bottom: 0%;
     transform: translateX(-50%);
-    width: var(--player-view-large-size);
-    height: var(--player-view-small-size);
-    background-color: darkseagreen;
+    width: var(--player-view-large-side-horizontal);
+    height: var(--player-view-small-side);
+    background-color: #b9f296;
     border-radius: 10px 10px 0px 0px;
 }
 
 .opponent {
-    background-color: darksalmon;
+    background-color: #fad59b;
 }
 
 .opponent-1 {
     top: 0%;
     left: 50%;
     transform: translateX(-50%);
-    width: var(--player-view-large-size);
-    height: var(--player-view-small-size);
+    width: var(--player-view-large-side-horizontal);
+    height: var(--player-view-small-side);
     border-radius: 0px 0px 10px 10px;
 }
 
@@ -50,8 +67,8 @@
     left: 0%;
     top: 50%;
     transform: translateY(-50%);
-    width: var(--player-view-small-size);
-    height: var(--player-view-large-size);
+    width: var(--player-view-small-side);
+    height: var(--player-view-large-side-vertical);
     border-radius: 0px 10px 10px 0px;
 }
 
@@ -59,7 +76,24 @@
     top: 50%;
     right: 0%;
     transform: translateY(-50%);
-    width: var(--player-view-small-size);
-    height: var(--player-view-large-size);
+    width: var(--player-view-small-side);
+    height: var(--player-view-large-side-vertical);
     border-radius: 10px 0px 0px 10px;
+}
+
+.hand-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.hand-container-vertical {
+    flex-direction: column;
+}
+
+.hand-container-horizontal {
+    flex-direction: row;
+}
+
+.hand-domino-container {
+    margin: 1px;
 }

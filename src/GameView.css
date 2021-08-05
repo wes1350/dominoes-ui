@@ -1,4 +1,5 @@
 .game-view {
-    --player-view-small-size: 80px;
-    --player-view-large-size: 380px;
+    --player-view-small-side: 80px;
+    --player-view-large-side-vertical: 480px;
+    --player-view-large-side-horizontal: 580px;
 }

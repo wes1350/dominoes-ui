@@ -21,6 +21,20 @@ export class Player {
         this._hand = hand;
     }
 
+    public AddDomino(desc: DominoDescription) {
+        this._hand.push(desc);
+    }
+
+    public RemoveDomino(desc: DominoDescription) {
+        if (!desc.face1 && !desc.face2) {
+            this._hand = this._hand.slice(1);
+        } else {
+            this._hand = this._hand.filter(
+                (d) => !(d.face1 === desc.face1 && d.face2 === desc.face2)
+            );
+        }
+    }
+
     public SetScore(score: number) {
         this._score = score;
     }

@@ -1,4 +1,6 @@
 import React from "react";
+import { Direction } from "./Direction";
+import { Domino } from "./Domino";
 import { Player } from "./Player";
 import "./PlayerView.css";
 
@@ -8,9 +10,23 @@ interface IProps {
 
 export const MyPlayerView = (props: IProps) => {
     return (
-        <div className={`player-view my-player`}>
+        <div className={`player-view player-view-horizontal my-player`}>
             <div className={"player-name player-name-me"}>
                 {props.player.Name}
+            </div>
+            <div className={"hand-container hand-container-horizontal"}>
+                {props.player.Hand.map((domino, i) => {
+                    return (
+                        <div key={i} className={"hand-domino-container"}>
+                            <Domino
+                                face1={domino.face1}
+                                face2={domino.face2}
+                                direction={Direction.SOUTH}
+                                size={36}
+                            />
+                        </div>
+                    );
+                })}
             </div>
             <div className={"player-score player-score-me"}>
                 Score: {props.player.Score}

@@ -2,6 +2,7 @@ import React from "react";
 import { Face } from "./Face";
 import "./Domino.css";
 import { Direction } from "./Direction";
+import { isNullOrUndefined } from "./utils";
 
 interface IProps {
     face1?: number;
@@ -40,8 +41,12 @@ export const Domino = (props: IProps) => {
     //     transform: "rotate(" + (props.rotate ? 9 : "") + "0deg)"
     // }; /*,
     //                        border: "3px solid #66CC33"};*/
-    const hidden = !props.face1 && !props.face2;
-    if (!hidden && !(props.face1 && props.face2)) {
+    const hidden =
+        isNullOrUndefined(props.face1) && isNullOrUndefined(props.face2);
+    if (
+        !hidden &&
+        (isNullOrUndefined(props.face1) || isNullOrUndefined(props.face2))
+    ) {
         console.error("Only one face supplied, returning null domino");
         return null;
     }

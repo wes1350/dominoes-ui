@@ -5,6 +5,7 @@ import React from "react";
 // import MoveInput from "./MoveInput.js";
 // import Hand from "./Hand.js";
 import "./App.css";
+import { Direction } from "./Direction";
 import { GameState } from "./GameState";
 import { GameView } from "./GameView";
 import { Player } from "./Player";
@@ -124,6 +125,36 @@ class App extends React.Component<
         const opponent1 = new Player("2", "Opponent 1", false, 0);
         const opponent2 = new Player("3", "Opponent 2", false, 3);
         const opponent3 = new Player("4", "Opponent 3", false, 2);
+
+        me.SetHand([
+            { face1: 4, face2: 3, direction: Direction.SOUTH },
+            { face1: 5, face2: 0, direction: Direction.SOUTH },
+            { face1: 4, face2: 3, direction: Direction.SOUTH },
+            { face1: 5, face2: 0, direction: Direction.SOUTH },
+            { face1: 4, face2: 3, direction: Direction.SOUTH },
+            { face1: 5, face2: 0, direction: Direction.SOUTH },
+            { face1: 4, face2: 3, direction: Direction.SOUTH },
+            { face1: 5, face2: 0, direction: Direction.SOUTH },
+            { face1: 6, face2: 2, direction: Direction.SOUTH }
+        ]);
+
+        opponent1.SetHand([
+            { direction: Direction.SOUTH },
+            { direction: Direction.SOUTH },
+            { direction: Direction.SOUTH }
+        ]);
+
+        opponent2.SetHand([
+            { direction: Direction.SOUTH },
+            { direction: Direction.SOUTH },
+            { direction: Direction.SOUTH }
+        ]);
+
+        opponent3.SetHand([
+            { direction: Direction.SOUTH },
+            { direction: Direction.SOUTH },
+            { direction: Direction.SOUTH }
+        ]);
 
         const gameState = new GameState();
         gameState.AddPlayer(me);
