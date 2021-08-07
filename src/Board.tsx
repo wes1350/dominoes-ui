@@ -246,12 +246,12 @@ export const Board = (props: IProps) => {
                             north: isDouble(desc)
                                 ? boxAtEdge.north - 1
                                 : boxAtEdge.north +
-                                  (currentEastEdge.double ? 1 : 0),
+                                  (currentWestEdge.double ? 1 : 0),
                             east: boxAtEdge.west,
                             south: isDouble(desc)
                                 ? boxAtEdge.south + 1
                                 : boxAtEdge.south -
-                                  (currentEastEdge.double ? 1 : 0),
+                                  (currentWestEdge.double ? 1 : 0),
                             west: isDouble(desc)
                                 ? boxAtEdge.west - 2
                                 : boxAtEdge.west - 4
@@ -302,6 +302,15 @@ export const Board = (props: IProps) => {
             (desc) => desc.north === maxNorthPreBend
         );
 
+        const maxEastPreBend = Math.min(
+            ...translatedDescriptions.map((desc) =>
+                desc.east >= 18 ? desc.east : 1000
+            )
+        );
+        const eastLimitBoundingBox = translatedDescriptions.find(
+            (desc) => desc.east === maxEastPreBend
+        );
+
         const maxSouthPreBend = Math.min(
             ...translatedDescriptions.map((desc) =>
                 desc.south >= 14 ? desc.south : 1000
@@ -311,27 +320,42 @@ export const Board = (props: IProps) => {
             (desc) => desc.south === maxSouthPreBend
         );
 
+        const maxWestPreBend = Math.max(
+            ...translatedDescriptions.map((desc) =>
+                desc.west <= -14 ? desc.west : -1000
+            )
+        );
+        const westLimitBoundingBox = translatedDescriptions.find(
+            (desc) => desc.west === maxWestPreBend
+        );
+
         const newNorthOrigin = {
             x: northLimitBoundingBox.west,
             y: northLimitBoundingBox.north
+        };
+
+        const newEastOrigin = {
+            x: eastLimitBoundingBox.east,
+            y: eastLimitBoundingBox.north
         };
 
         const newSouthOrigin = {
             x: southLimitBoundingBox.east,
             y: southLimitBoundingBox.south
         };
-        console.log(newSouthOrigin);
+
+        const newWestOrigin = {
+            x: westLimitBoundingBox.west,
+            y: westLimitBoundingBox.south
+        };
+        // console.log(newSouthOrigin);
         translatedDescriptions.forEach((desc, i) => {
             if (desc.south <= -14) {
                 bentDescriptions.push({
-                    // -13 -> -11
                     ...desc,
                     north: newNorthOrigin.y - (desc.east - newNorthOrigin.x),
-                    // 1 -> 3
                     east: newNorthOrigin.x - (desc.north - newNorthOrigin.y),
-                    // -9 -> -9
                     south: newNorthOrigin.y - (desc.west - newNorthOrigin.x),
-                    // -1 -> -1
                     west: newNorthOrigin.x - (desc.south - newNorthOrigin.y),
                     direction: rotateDirection(desc.direction)
                 });
@@ -342,6 +366,25 @@ export const Board = (props: IProps) => {
                     east: newSouthOrigin.x - (desc.south - newSouthOrigin.y),
                     south: newSouthOrigin.y - (desc.east - newSouthOrigin.x),
                     west: newSouthOrigin.x - (desc.north - newSouthOrigin.y),
+                    direction: rotateDirection(desc.direction)
+                });
+                // Need to ensure we do this only if the spinner has been encountered here
+            } else if (desc.west >= 18) {
+                bentDescriptions.push({
+                    ...desc,
+                    north: newEastOrigin.y + (desc.east - newEastOrigin.x),
+                    east: newEastOrigin.x + (desc.north - newEastOrigin.y),
+                    south: newEastOrigin.y + (desc.west - newEastOrigin.x),
+                    west: newEastOrigin.x + (desc.south - newEastOrigin.y),
+                    direction: rotateDirection(desc.direction)
+                });
+            } else if (desc.east <= -14) {
+                bentDescriptions.push({
+                    ...desc,
+                    north: newWestOrigin.y + (desc.west - newWestOrigin.x),
+                    east: newWestOrigin.x + (desc.south - newWestOrigin.y),
+                    south: newWestOrigin.y + (desc.east - newWestOrigin.x),
+                    west: newWestOrigin.x + (desc.north - newWestOrigin.y),
                     direction: rotateDirection(desc.direction)
                 });
             } else {
@@ -384,6 +427,7 @@ export const Board = (props: IProps) => {
     const translatedDescriptions = translateDescriptionsToActualSizes(
         props.dominoDescriptions
     );
+    // const bentDescriptions = translatedDescriptions;
     const bentDescriptions = bendDescriptions(translatedDescriptions);
 
     const westBoundary =

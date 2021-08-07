@@ -31,6 +31,29 @@ const d15 = { face1: 6, face2: 3, direction: Direction.SOUTH, x: 1, y: -4 };
 const d16 = { face1: 3, face2: 1, direction: Direction.SOUTH, x: 1, y: -5 };
 const d17 = { face1: 1, face2: 1, direction: Direction.WEST, x: 1, y: -6 };
 const d18 = { face1: 1, face2: 2, direction: Direction.SOUTH, x: 1, y: -7 };
+
+const d19 = { face1: 3, face2: 4, direction: Direction.EAST, x: 4, y: 0 };
+const d20 = { face1: 4, face2: 5, direction: Direction.EAST, x: 5, y: 0 };
+const d21 = { face1: 5, face2: 6, direction: Direction.EAST, x: 6, y: 0 };
+const d22 = { face1: 6, face2: 6, direction: Direction.SOUTH, x: 7, y: 0 };
+const d23 = { face1: 6, face2: 1, direction: Direction.EAST, x: 8, y: 0 };
+const d24 = { face1: 1, face2: 2, direction: Direction.EAST, x: 9, y: 0 };
+const d25 = { face1: 2, face2: 2, direction: Direction.SOUTH, x: 10, y: 0 };
+const d26 = { face1: 2, face2: 3, direction: Direction.EAST, x: 11, y: 0 };
+
+const d27 = { face1: 1, face2: 2, direction: Direction.WEST, x: -1, y: 0 };
+const d28 = { face1: 2, face2: 3, direction: Direction.WEST, x: -2, y: 0 };
+const d29 = { face1: 3, face2: 3, direction: Direction.NORTH, x: -3, y: 0 };
+const d30 = { face1: 3, face2: 4, direction: Direction.WEST, x: -4, y: 0 };
+const d31 = { face1: 4, face2: 5, direction: Direction.WEST, x: -5, y: 0 };
+const d32 = { face1: 5, face2: 5, direction: Direction.SOUTH, x: -6, y: 0 };
+const d33 = { face1: 5, face2: 6, direction: Direction.WEST, x: -7, y: 0 };
+const d34 = { face1: 6, face2: 6, direction: Direction.NORTH, x: -8, y: 0 };
+const d35 = { face1: 0, face2: 6, direction: Direction.EAST, x: -9, y: 0 };
+const d36 = { face1: 1, face2: 0, direction: Direction.EAST, x: -10, y: 0 };
+const d37 = { face1: 1, face2: 1, direction: Direction.NORTH, x: -11, y: 0 };
+const d38 = { face1: 1, face2: 4, direction: Direction.WEST, x: -12, y: 0 };
+
 // const d8 = { direction: Direction.EAST, x: 1, y: -2 };
 
 export const GameView = (props: IProps) => {
@@ -82,7 +105,27 @@ export const GameView = (props: IProps) => {
                         d15,
                         d16,
                         d17,
-                        d18
+                        d18,
+                        d19,
+                        d20,
+                        d21,
+                        d22,
+                        d23,
+                        d24,
+                        d25,
+                        d26,
+                        d27,
+                        d28,
+                        d29,
+                        d30,
+                        d31,
+                        d32,
+                        d33,
+                        d34,
+                        d35,
+                        d36,
+                        d37,
+                        d38
                     ]}
                 />
             </div>
