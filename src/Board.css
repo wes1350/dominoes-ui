@@ -1,5 +1,6 @@
 .board {
     display: grid;
+    box-sizing: border-box;
     position: absolute;
     overflow: scroll;
     border-radius: 10px;
@@ -13,8 +14,8 @@
         100% - 2 * var(--player-view-small-side) - 2 * var(--board-margin)
     );
     background-color: #c9b5a3;
-    grid-template-columns: repeat(36, 25px);
-    grid-template-rows: repeat(36, 25px);
+    /* grid-template-columns: repeat(36, 25px);
+    grid-template-rows: repeat(36, 25px); */
     /*grid-template-columns: repeat(auto-fill, 25px);*/
     /*grid-template-columns: repeat(60, 16px);
   grid-auto-rows: 16px;*/

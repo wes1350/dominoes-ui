@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { useState } from "react";
 import "./Board.css";
 import { Direction } from "./Direction";
@@ -235,39 +236,93 @@ export const Board = (props: IProps) => {
             const currentBoundingBox = coordinatesToBoundingBoxes
                 .get(desc.x)
                 .get(desc.y);
+
             newDescriptions.push({
                 ...desc,
-                north: currentBoundingBox.north + 20,
-                east: currentBoundingBox.east + 20,
-                south: currentBoundingBox.south + 20,
-                west: currentBoundingBox.west + 20
+                north: currentBoundingBox.north,
+                east: currentBoundingBox.east,
+                south: currentBoundingBox.south,
+                west: currentBoundingBox.west
             });
         });
 
         return newDescriptions;
     };
 
+    const translatedDescriptions = translateDescriptionsToActualSizes(
+        props.dominoDescriptions
+    );
+    const westBoundary =
+        Math.min(...translatedDescriptions.map((desc) => desc.west)) - 3;
+    const eastBoundary =
+        Math.max(...translatedDescriptions.map((desc) => desc.east)) + 2;
+    const northBoundary =
+        Math.min(...translatedDescriptions.map((desc) => desc.north)) - 3;
+    const southBoundary =
+        Math.max(...translatedDescriptions.map((desc) => desc.north)) + 2;
+    const minGridWidthInSquares = eastBoundary - westBoundary;
+    const minGridHeightInSquares = southBoundary - northBoundary;
+
+    const availableHeight = window.innerHeight - 290;
+    const availableWidth = window.innerWidth - 290;
+    const limitingRatio = Math.min(
+        availableHeight / minGridHeightInSquares,
+        availableWidth / minGridWidthInSquares
+    );
+    const dominoSize = Math.max(2 * Math.round(500 / limitingRatio), 20);
+    const gridWidthInSquares = (2 * availableWidth) / dominoSize;
+    const gridHeightInSquares = (2 * availableHeight) / dominoSize;
+
+    const gridHorizontalSquareMargin = Math.round(
+        (gridWidthInSquares - minGridWidthInSquares) / 2
+    );
+    const gridVerticalSquareMargin = Math.round(
+        (gridHeightInSquares - minGridHeightInSquares) / 2
+    );
+
+    const finalDescriptions = translatedDescriptions.map((desc) => {
+        return {
+            ...desc,
+            north: desc.north + gridVerticalSquareMargin - northBoundary,
+            east: desc.east + gridHorizontalSquareMargin - westBoundary,
+            south: desc.south + gridVerticalSquareMargin - northBoundary,
+            west: desc.west + gridHorizontalSquareMargin - westBoundary
+        };
+    });
+
     return (
-        <div className="board">
-            {translateDescriptionsToActualSizes(props.dominoDescriptions).map(
-                (d, i) => {
-                    return (
-                        <div
-                            key={i}
-                            style={{
-                                gridArea: `${d.north} / ${d.west} / ${d.south} / ${d.east}`
-                            }}
-                        >
-                            <Domino
-                                face1={d.face1}
-                                face2={d.face2}
-                                direction={d.direction}
-                                size={48}
-                            />
-                        </div>
-                    );
-                }
-            )}
+        <div
+            className="board"
+            style={{
+                gridTemplateRows: `repeat(${Math.round(
+                    (2 * availableHeight) / dominoSize
+                )}, ${
+                    dominoSize / 2 + 1 // + 1 accounts for borders
+                }px)`,
+                gridTemplateColumns: `repeat(${Math.round(
+                    (2 * availableWidth) / dominoSize
+                )}, ${
+                    dominoSize / 2 + 1 // + 1 accounts for borders
+                }px)`
+            }}
+        >
+            {finalDescriptions.map((d, i) => {
+                return (
+                    <div
+                        key={i}
+                        style={{
+                            gridArea: `${d.north} / ${d.west} / ${d.south} / ${d.east}`
+                        }}
+                    >
+                        <Domino
+                            face1={d.face1}
+                            face2={d.face2}
+                            direction={d.direction}
+                            size={dominoSize}
+                        />
+                    </div>
+                );
+            })}
             {/* <div style={{ gridRow: "4 / 6" }}>
                 <Domino
                     face1={3}

@@ -10,6 +10,7 @@
     "@types/node": "^16.4.10",
     "@types/react": "^17.0.15",
     "@types/react-dom": "^17.0.9",
+    "lodash": "^4.17.21",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
@@ -36,5 +37,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.172"
   }
 }
