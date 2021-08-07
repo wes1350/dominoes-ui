@@ -302,11 +302,25 @@ export const Board = (props: IProps) => {
             (desc) => desc.north === maxNorthPreBend
         );
 
+        const maxSouthPreBend = Math.min(
+            ...translatedDescriptions.map((desc) =>
+                desc.south >= 14 ? desc.south : 1000
+            )
+        );
+        const southLimitBoundingBox = translatedDescriptions.find(
+            (desc) => desc.south === maxSouthPreBend
+        );
+
         const newNorthOrigin = {
-            x: northLimitBoundingBox.west, // -1
-            y: northLimitBoundingBox.north // -9
+            x: northLimitBoundingBox.west,
+            y: northLimitBoundingBox.north
         };
-        console.log(newNorthOrigin);
+
+        const newSouthOrigin = {
+            x: southLimitBoundingBox.east,
+            y: southLimitBoundingBox.south
+        };
+        console.log(newSouthOrigin);
         translatedDescriptions.forEach((desc, i) => {
             if (desc.south <= -14) {
                 bentDescriptions.push({
@@ -319,6 +333,15 @@ export const Board = (props: IProps) => {
                     south: newNorthOrigin.y - (desc.west - newNorthOrigin.x),
                     // -1 -> -1
                     west: newNorthOrigin.x - (desc.south - newNorthOrigin.y),
+                    direction: rotateDirection(desc.direction)
+                });
+            } else if (desc.north >= 14) {
+                bentDescriptions.push({
+                    ...desc,
+                    north: newSouthOrigin.y - (desc.west - newSouthOrigin.x),
+                    east: newSouthOrigin.x - (desc.south - newSouthOrigin.y),
+                    south: newSouthOrigin.y - (desc.east - newSouthOrigin.x),
+                    west: newSouthOrigin.x - (desc.north - newSouthOrigin.y),
                     direction: rotateDirection(desc.direction)
                 });
             } else {

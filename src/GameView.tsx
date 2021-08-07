@@ -24,7 +24,13 @@ const d8 = { face1: 2, face2: 3, direction: Direction.NORTH, x: 1, y: 3 };
 const d9 = { face1: 3, face2: 0, direction: Direction.NORTH, x: 1, y: 4 };
 const d10 = { face1: 0, face2: 6, direction: Direction.NORTH, x: 1, y: 5 };
 const d11 = { face1: 6, face2: 6, direction: Direction.WEST, x: 1, y: 6 };
-const d12 = { face1: 4, face2: 6, direction: Direction.SOUTH, x: 1, y: 7 };
+const d12 = { face1: 6, face2: 1, direction: Direction.NORTH, x: 1, y: 7 };
+const d13 = { face1: 4, face2: 4, direction: Direction.EAST, x: 1, y: -2 };
+const d14 = { face1: 4, face2: 6, direction: Direction.SOUTH, x: 1, y: -3 };
+const d15 = { face1: 6, face2: 3, direction: Direction.SOUTH, x: 1, y: -4 };
+const d16 = { face1: 3, face2: 1, direction: Direction.SOUTH, x: 1, y: -5 };
+const d17 = { face1: 1, face2: 1, direction: Direction.WEST, x: 1, y: -6 };
+const d18 = { face1: 1, face2: 2, direction: Direction.SOUTH, x: 1, y: -7 };
 // const d8 = { direction: Direction.EAST, x: 1, y: -2 };
 
 export const GameView = (props: IProps) => {
@@ -70,7 +76,13 @@ export const GameView = (props: IProps) => {
                         d9,
                         d10,
                         d11,
-                        d12
+                        d12,
+                        d13,
+                        d14,
+                        d15,
+                        d16,
+                        d17,
+                        d18
                     ]}
                 />
             </div>
