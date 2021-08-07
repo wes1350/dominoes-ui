@@ -1,15 +1,124 @@
-import React from "react";
-// import Board from "./Board.js";
-// import TextInfo from "./TextInfo.js";
-// import ScoreInfo from "./ScoreInfo.js";
-// import MoveInput from "./MoveInput.js";
-// import Hand from "./Hand.js";
+import React, { useState } from "react";
 import "./App.css";
 import { Direction } from "./Direction";
+import { DominoDescription } from "./DominoDescription";
 import { GameState } from "./GameState";
 import { GameView } from "./GameView";
 import { Player } from "./Player";
 const io = require("socket.io-client");
+
+interface IProps {}
+
+export const App = (props: IProps) => {
+    const [socket, setSocket] = useState(io("http://localhost:3001"));
+    // started: false,
+    // gameOver: false,
+    // responseType: null
+    const [gameState, setGameState] = useState(new GameState());
+
+    socket.on("GAME_START", () => {
+        gameState.Start();
+    });
+
+    socket.on("GAME_OVER", () => {
+        gameState.Finish();
+    });
+
+    socket.on(
+        "NEW_PLAYER",
+        (details: {
+            seatNumber: number;
+            playerName: string;
+            isMe: boolean;
+        }) => {
+            gameState.AddPlayer(
+                new Player(
+                    details.seatNumber.toString(),
+                    details.playerName,
+                    details.isMe,
+                    details.seatNumber
+                )
+            );
+        }
+    );
+
+    socket.on("TURN", (turn: { seat: number; domino: DominoDescription }) => {
+        gameState.ProcessTurn(turn);
+    });
+
+    socket.on("QUERY_DOMINO", () => {});
+
+    // this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
+
+    // componentDidMount() {
+    //     const socket = io("http://localhost:3001");
+    //     socket.on("GAME_START", () => {
+    //         this.setState({ started: true });
+    //     });
+    //     this.setState({ socket: socket });
+    // }
+
+    // handleStartButtonClick() {
+    //     console.log("starting game");
+    //     this.state.socket.emit("GAME_START");
+    // }
+
+    // render() {
+    const me = new Player("1", "Me", true, 1);
+    const opponent1 = new Player("2", "Opponent 1", false, 0);
+    const opponent2 = new Player("3", "Opponent 2", false, 3);
+    const opponent3 = new Player("4", "Opponent 3", false, 2);
+
+    me.SetHand([
+        { face1: 4, face2: 3, direction: Direction.SOUTH },
+        { face1: 5, face2: 0, direction: Direction.SOUTH },
+        { face1: 4, face2: 3, direction: Direction.SOUTH },
+        { face1: 5, face2: 0, direction: Direction.SOUTH },
+        { face1: 4, face2: 3, direction: Direction.SOUTH },
+        { face1: 5, face2: 0, direction: Direction.SOUTH },
+        { face1: 4, face2: 3, direction: Direction.SOUTH },
+        { face1: 5, face2: 0, direction: Direction.SOUTH },
+        { face1: 6, face2: 2, direction: Direction.SOUTH }
+    ]);
+
+    opponent1.SetHand([
+        { direction: Direction.SOUTH },
+        { direction: Direction.SOUTH },
+        { direction: Direction.SOUTH }
+    ]);
+
+    opponent2.SetHand([
+        { direction: Direction.SOUTH },
+        { direction: Direction.SOUTH },
+        { direction: Direction.SOUTH }
+    ]);
+
+    opponent3.SetHand([
+        { direction: Direction.SOUTH },
+        { direction: Direction.SOUTH },
+        { direction: Direction.SOUTH }
+    ]);
+
+    // const gameState = new GameState();
+    gameState.AddPlayer(me);
+    gameState.AddPlayer(opponent1);
+    gameState.AddPlayer(opponent2);
+    gameState.AddPlayer(opponent3);
+
+    return (
+        <div className="App">
+            <GameView gameState={gameState}></GameView>
+            {!gameState.Running && (
+                <button
+                    onClick={() => {
+                        console.log("starting game");
+                        socket.emit("GAME_START");
+                    }}
+                ></button>
+            )}
+        </div>
+    );
+};
 
 // export enum QueryType {
 //     DOMINO = "DOMINO",
@@ -26,148 +135,64 @@ const io = require("socket.io-client");
 //     SCORES = "SCORES",
 //     ERROR = "ERROR"
 // }
-interface IProps {}
 
-class App extends React.Component<
-    {},
-    { socket: any; started: boolean; gameOver: boolean; responseType: string }
-> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            socket: null,
-            started: false,
-            gameOver: false,
-            responseType: null
-        };
-        this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
-    }
+// const started = this.state.started;
+// const gameOver = this.state.gameOver;
+// let content;
+// let scoreInfo = (
+//     <ScoreInfo
+//         style={{ gridColumn: "1", gridRow: "1" }}
+//         socket={this.state.socket}
+//     />
+// );
+// let gameBoard = (
+//     <Board
+//         style={{ gridColumn: "2", gridRow: "1 / 7" }}
+//         socket={this.state.socket}
+//     />
+// );
 
-    componentDidMount() {
-        const socket = io("http://localhost:3001");
-        socket.on("GAME_START", () => {
-            this.setState({ started: true });
-        });
-        socket.on("GAME_OVER", () => {
-            this.setState({ gameOver: true });
-        });
-        this.setState({ socket: socket });
-    }
-
-    handleStartButtonClick() {
-        console.log("starting game");
-        this.state.socket.emit("GAME_START");
-    }
-
-    render() {
-        // const started = this.state.started;
-        // const gameOver = this.state.gameOver;
-        // let content;
-        // let scoreInfo = (
-        //     <ScoreInfo
-        //         style={{ gridColumn: "1", gridRow: "1" }}
-        //         socket={this.state.socket}
-        //     />
-        // );
-        // let gameBoard = (
-        //     <Board
-        //         style={{ gridColumn: "2", gridRow: "1 / 7" }}
-        //         socket={this.state.socket}
-        //     />
-        // );
-
-        // if (started) {
-        //     if (gameOver) {
-        //         content = (
-        //             <div className="gameover-page">
-        //                 <h3>Game over!</h3>
-        //                 {scoreInfo}
-        //                 {gameBoard}
-        //             </div>
-        //         );
-        //     } else {
-        //         content = (
-        //             <div className="gameplay-page">
-        //                 {scoreInfo}
-        //                 <TextInfo
-        //                     style={{ gridColumn: "1", gridRow: "2 / 4" }}
-        //                     socket={this.state.socket}
-        //                     setResponseType={(type) => {
-        //                         this.setState({ responseType: type });
-        //                     }}
-        //                 />
-        //                 <Hand
-        //                     style={{ gridColumn: "1", gridRow: "4" }}
-        //                     socket={this.state.socket}
-        //                 />
-        //                 <MoveInput
-        //                     style={{ gridColumn: "1", gridRow: "5" }}
-        //                     socket={this.state.socket}
-        //                     responseType={this.state.responseType}
-        //                 />
-        //                 {gameBoard}
-        //             </div>
-        //         );
-        //     }
-        // } else {
-        //     content = (
-        //         <>
-        //             <p>Dominos!</p>
-        //             <button onClick={this.handleStartButtonClick}>
-        //                 Start Game
-        //             </button>
-        //         </>
-        //     );
-        // }
-        // return <div className="App">{content}</div>;
-
-        const me = new Player("1", "Me", true, 1);
-        const opponent1 = new Player("2", "Opponent 1", false, 0);
-        const opponent2 = new Player("3", "Opponent 2", false, 3);
-        const opponent3 = new Player("4", "Opponent 3", false, 2);
-
-        me.SetHand([
-            { face1: 4, face2: 3, direction: Direction.SOUTH },
-            { face1: 5, face2: 0, direction: Direction.SOUTH },
-            { face1: 4, face2: 3, direction: Direction.SOUTH },
-            { face1: 5, face2: 0, direction: Direction.SOUTH },
-            { face1: 4, face2: 3, direction: Direction.SOUTH },
-            { face1: 5, face2: 0, direction: Direction.SOUTH },
-            { face1: 4, face2: 3, direction: Direction.SOUTH },
-            { face1: 5, face2: 0, direction: Direction.SOUTH },
-            { face1: 6, face2: 2, direction: Direction.SOUTH }
-        ]);
-
-        opponent1.SetHand([
-            { direction: Direction.SOUTH },
-            { direction: Direction.SOUTH },
-            { direction: Direction.SOUTH }
-        ]);
-
-        opponent2.SetHand([
-            { direction: Direction.SOUTH },
-            { direction: Direction.SOUTH },
-            { direction: Direction.SOUTH }
-        ]);
-
-        opponent3.SetHand([
-            { direction: Direction.SOUTH },
-            { direction: Direction.SOUTH },
-            { direction: Direction.SOUTH }
-        ]);
-
-        const gameState = new GameState();
-        gameState.AddPlayer(me);
-        gameState.AddPlayer(opponent1);
-        gameState.AddPlayer(opponent2);
-        gameState.AddPlayer(opponent3);
-
-        return (
-            <div className="App">
-                <GameView gameState={gameState}></GameView>
-            </div>
-        );
-    }
-}
-
-export default App;
+// if (started) {
+//     if (gameOver) {
+//         content = (
+//             <div className="gameover-page">
+//                 <h3>Game over!</h3>
+//                 {scoreInfo}
+//                 {gameBoard}
+//             </div>
+//         );
+//     } else {
+//         content = (
+//             <div className="gameplay-page">
+//                 {scoreInfo}
+//                 <TextInfo
+//                     style={{ gridColumn: "1", gridRow: "2 / 4" }}
+//                     socket={this.state.socket}
+//                     setResponseType={(type) => {
+//                         this.setState({ responseType: type });
+//                     }}
+//                 />
+//                 <Hand
+//                     style={{ gridColumn: "1", gridRow: "4" }}
+//                     socket={this.state.socket}
+//                 />
+//                 <MoveInput
+//                     style={{ gridColumn: "1", gridRow: "5" }}
+//                     socket={this.state.socket}
+//                     responseType={this.state.responseType}
+//                 />
+//                 {gameBoard}
+//             </div>
+//         );
+//     }
+// } else {
+//     content = (
+//         <>
+//             <p>Dominos!</p>
+//             <button onClick={this.handleStartButtonClick}>
+//                 Start Game
+//             </button>
+//         </>
+//     );
+// }
+// return <div className="App">{content}</div>;

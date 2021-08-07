@@ -1,11 +1,14 @@
+import { DominoDescription } from "./DominoDescription";
 import { Player } from "./Player";
 
 export class GameState {
+    private _started: boolean;
     private _gameOver: boolean;
     private _responseType: string;
     private _players: Player[];
 
     constructor() {
+        this._started = false;
         this._gameOver = false;
         this._responseType = null;
         this._players = [];
@@ -13,6 +16,18 @@ export class GameState {
 
     public AddPlayer(player: Player) {
         this._players.push(player);
+    }
+
+    public Start() {
+        this._started = true;
+    }
+
+    public Finish() {
+        this._gameOver = true;
+    }
+
+    public ProcessTurn(turn: { seat: number; domino: DominoDescription }) {
+        //
     }
 
     public get GameOver(): boolean {
@@ -29,5 +44,9 @@ export class GameState {
 
     public get Players(): Player[] {
         return this._players;
+    }
+
+    public get Running(): boolean {
+        return this._started;
     }
 }

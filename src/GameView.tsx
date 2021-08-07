@@ -20,7 +20,12 @@ const d4 = { face1: 3, face2: 3, direction: Direction.NORTH, x: 3, y: 0 };
 const d5 = { face1: 5, face2: 4, direction: Direction.SOUTH, x: 1, y: -1 };
 const d6 = { face1: 5, face2: 2, direction: Direction.NORTH, x: 1, y: 1 };
 const d7 = { face1: 2, face2: 2, direction: Direction.EAST, x: 1, y: 2 };
-const d8 = { direction: Direction.EAST, x: 1, y: -2 };
+const d8 = { face1: 2, face2: 3, direction: Direction.NORTH, x: 1, y: 3 };
+const d9 = { face1: 3, face2: 0, direction: Direction.NORTH, x: 1, y: 4 };
+const d10 = { face1: 0, face2: 6, direction: Direction.NORTH, x: 1, y: 5 };
+const d11 = { face1: 6, face2: 6, direction: Direction.WEST, x: 1, y: 6 };
+const d12 = { face1: 4, face2: 6, direction: Direction.SOUTH, x: 1, y: 7 };
+// const d8 = { direction: Direction.EAST, x: 1, y: -2 };
 
 export const GameView = (props: IProps) => {
     const n_players = props.gameState.N_Players;
@@ -52,7 +57,22 @@ export const GameView = (props: IProps) => {
             <Domino face1={3} face2={2} direction={Direction.SOUTH} />
             <Domino face1={3} face2={2} direction={Direction.WEST} /> */}
             <div className={"board-container"}>
-                <Board dominoDescriptions={[d1, d2, d3, d4, d5, d6, d7, d8]} />
+                <Board
+                    dominoDescriptions={[
+                        d1,
+                        d2,
+                        d3,
+                        d4,
+                        d5,
+                        d6,
+                        d7,
+                        d8,
+                        d9,
+                        d10,
+                        d11,
+                        d12
+                    ]}
+                />
             </div>
             <div className={"player-container"}>
                 {props.gameState.Players.filter(

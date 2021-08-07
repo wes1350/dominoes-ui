@@ -45,18 +45,29 @@ const addValueToNestedMap = (
 };
 
 export const Board = (props: IProps) => {
+    const coordinatesToBoundingBoxes = new Map<
+        number,
+        Map<number, BoundingBoxDescription>
+    >();
+    // double = true, else = false
+    const coordinatesToIsDouble = new Map<number, Map<number, boolean>>();
     const isDouble = (desc: DominoDescription): boolean => {
         return desc.face1 === desc.face2;
+    };
+
+    const rotateDirection = (direction: Direction) => {
+        return direction === Direction.NORTH
+            ? Direction.EAST
+            : direction === Direction.EAST
+            ? Direction.SOUTH
+            : direction === Direction.SOUTH
+            ? Direction.WEST
+            : Direction.NORTH;
     };
 
     const translateDescriptionsToActualSizes = (
         descriptions: DominoDescription[]
     ): TranslatedDominoDescription[] => {
-        const coordinatesToBoundingBoxes = new Map<
-            number,
-            Map<number, BoundingBoxDescription>
-        >();
-
         const newDescriptions: TranslatedDominoDescription[] = [];
         // Keep track of coordinates of the most extreme dominoes in each direction
         // For north/south, this will originate with the spinner
@@ -75,6 +86,7 @@ export const Board = (props: IProps) => {
                         south: 2,
                         west: -1
                     });
+                    addValueToNestedMap(coordinatesToIsDouble, 0, 0, true);
 
                     currentNorthEdge = { x: 0, y: 0, double: true };
                     currentEastEdge = { x: 0, y: 0, double: true };
@@ -87,6 +99,7 @@ export const Board = (props: IProps) => {
                         south: 1,
                         west: -2
                     });
+                    addValueToNestedMap(coordinatesToIsDouble, 0, 0, false);
                     currentEastEdge = { x: 0, y: 0, double: false };
                     currentWestEdge = { x: 0, y: 0, double: false };
                     // this is not the spinner, so don't set the north/south edges
@@ -129,6 +142,13 @@ export const Board = (props: IProps) => {
                                       : 0)
                         }
                     );
+
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
+                    );
                     currentNorthEdge = {
                         x: desc.x,
                         y: desc.y,
@@ -165,6 +185,12 @@ export const Board = (props: IProps) => {
                                       : 0)
                         }
                     );
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
+                    );
                     currentSouthEdge = {
                         x: desc.x,
                         y: desc.y,
@@ -194,6 +220,12 @@ export const Board = (props: IProps) => {
                                   (currentEastEdge.double ? 1 : 0),
                             west: boxAtEdge.east
                         }
+                    );
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
                     );
                     currentEastEdge = {
                         x: desc.x,
@@ -225,6 +257,12 @@ export const Board = (props: IProps) => {
                                 : boxAtEdge.west - 4
                         }
                     );
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
+                    );
                     currentWestEdge = {
                         x: desc.x,
                         y: desc.y,
@@ -246,32 +284,105 @@ export const Board = (props: IProps) => {
             });
         });
 
+        console.log("new:", newDescriptions);
         return newDescriptions;
+    };
+
+    const bendDescriptions = (
+        translatedDescriptions: TranslatedDominoDescription[]
+    ) => {
+        const bentDescriptions: TranslatedDominoDescription[] = [];
+
+        const maxNorthPreBend = Math.max(
+            ...translatedDescriptions.map((desc) =>
+                desc.north <= -14 ? desc.north : -1000
+            )
+        );
+        const northLimitBoundingBox = translatedDescriptions.find(
+            (desc) => desc.north === maxNorthPreBend
+        );
+
+        const newNorthOrigin = {
+            x: northLimitBoundingBox.west, // -1
+            y: northLimitBoundingBox.north // -9
+        };
+        console.log(newNorthOrigin);
+        translatedDescriptions.forEach((desc, i) => {
+            if (desc.south <= -14) {
+                bentDescriptions.push({
+                    // -13 -> -11
+                    ...desc,
+                    north: newNorthOrigin.y - (desc.east - newNorthOrigin.x),
+                    // 1 -> 3
+                    east: newNorthOrigin.x - (desc.north - newNorthOrigin.y),
+                    // -9 -> -9
+                    south: newNorthOrigin.y - (desc.west - newNorthOrigin.x),
+                    // -1 -> -1
+                    west: newNorthOrigin.x - (desc.south - newNorthOrigin.y),
+                    direction: rotateDirection(desc.direction)
+                });
+            } else {
+                bentDescriptions.push(desc);
+            }
+            //     // const northLimitBoundingBox = coordinatesToBoundingBoxes
+            //     //     .get(desc.north)
+            //     //     .get(4);
+            //     // check for is double for the above box
+            //     const newOrigin = {
+            //         x: northLimitBoundingBox.west, // -1
+            //         y: northLimitBoundingBox.north // -9
+            //     };
+            //     addValueToNestedMap(
+            //         coordinatesToBoundingBoxes,
+            //         desc.x, // 0
+            //         desc.y, // 5
+            //         {
+            //             // -13 -> -11
+            //             north:
+            //                 newOrigin.y - (originalBoundingBox.east - newOrigin.x),
+            //             // 1 -> 3
+            //             east:
+            //                 newOrigin.x - (originalBoundingBox.north - newOrigin.y),
+            //             // -9 -> -9
+            //             south:
+            //                 newOrigin.y - (originalBoundingBox.west - newOrigin.x),
+            //             // -1 -> -1
+            //             west:
+            //                 newOrigin.x - (originalBoundingBox.south - newOrigin.y),
+            //             direction: rotateDirection(desc.direction)
+            //         }
+            //     );
+            // }
+        });
+        console.log("bent:", bentDescriptions);
+        return bentDescriptions;
     };
 
     const translatedDescriptions = translateDescriptionsToActualSizes(
         props.dominoDescriptions
     );
+    const bentDescriptions = bendDescriptions(translatedDescriptions);
+
     const westBoundary =
-        Math.min(...translatedDescriptions.map((desc) => desc.west)) - 3;
+        Math.min(...bentDescriptions.map((desc) => desc.west)) - 3;
     const eastBoundary =
-        Math.max(...translatedDescriptions.map((desc) => desc.east)) + 2;
+        Math.max(...bentDescriptions.map((desc) => desc.east)) + 2;
     const northBoundary =
-        Math.min(...translatedDescriptions.map((desc) => desc.north)) - 3;
+        Math.min(...bentDescriptions.map((desc) => desc.north)) - 3;
     const southBoundary =
-        Math.max(...translatedDescriptions.map((desc) => desc.north)) + 2;
+        Math.max(...bentDescriptions.map((desc) => desc.north)) + 2;
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 
-    const availableHeight = window.innerHeight - 290;
-    const availableWidth = window.innerWidth - 290;
+    const availableHeight = window.innerHeight - 320;
+    const availableWidth = window.innerWidth - 320;
     const limitingRatio = Math.min(
         availableHeight / minGridHeightInSquares,
         availableWidth / minGridWidthInSquares
     );
-    const dominoSize = Math.max(2 * Math.round(500 / limitingRatio), 20);
-    const gridWidthInSquares = (2 * availableWidth) / dominoSize;
-    const gridHeightInSquares = (2 * availableHeight) / dominoSize;
+    const gridSizeInPixels = 2 * Math.round(limitingRatio / 2); // Math.max(2 * Math.round(500 / limitingRatio), 0);
+    const gridWidthInSquares = availableWidth / gridSizeInPixels;
+    const gridHeightInSquares = availableHeight / gridSizeInPixels;
 
     const gridHorizontalSquareMargin = Math.round(
         (gridWidthInSquares - minGridWidthInSquares) / 2
@@ -280,7 +391,7 @@ export const Board = (props: IProps) => {
         (gridHeightInSquares - minGridHeightInSquares) / 2
     );
 
-    const finalDescriptions = translatedDescriptions.map((desc) => {
+    const finalDescriptions = bentDescriptions.map((desc) => {
         return {
             ...desc,
             north: desc.north + gridVerticalSquareMargin - northBoundary,
@@ -289,24 +400,26 @@ export const Board = (props: IProps) => {
             west: desc.west + gridHorizontalSquareMargin - westBoundary
         };
     });
+    console.log(finalDescriptions);
 
     return (
         <div
             className="board"
             style={{
                 gridTemplateRows: `repeat(${Math.round(
-                    (2 * availableHeight) / dominoSize
+                    availableHeight / gridSizeInPixels
                 )}, ${
-                    dominoSize / 2 + 1 // + 1 accounts for borders
+                    gridSizeInPixels + 1 // + 1 accounts for borders
                 }px)`,
                 gridTemplateColumns: `repeat(${Math.round(
-                    (2 * availableWidth) / dominoSize
+                    availableWidth / gridSizeInPixels
                 )}, ${
-                    dominoSize / 2 + 1 // + 1 accounts for borders
+                    gridSizeInPixels + 1 // + 1 accounts for borders
                 }px)`
             }}
         >
             {finalDescriptions.map((d, i) => {
+                console.log();
                 return (
                     <div
                         key={i}
@@ -318,7 +431,7 @@ export const Board = (props: IProps) => {
                             face1={d.face1}
                             face2={d.face2}
                             direction={d.direction}
-                            size={dominoSize}
+                            size={gridSizeInPixels * 2}
                         />
                     </div>
                 );

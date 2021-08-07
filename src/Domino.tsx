@@ -125,10 +125,10 @@ export const Domino = (props: IProps) => {
             style={{ flexDirection: flexDirection }}
         >
             <div className={"domino-container"} style={style1}>
-                <Face num={props.face1} size={props.size ?? 96} />
+                <Face num={props.face1} size={props.size ?? 32} />
             </div>
             <div className={"domino-container"} style={style2}>
-                <Face num={props.face2} size={props.size ?? 96} />
+                <Face num={props.face2} size={props.size ?? 32} />
             </div>
         </div>
     );
