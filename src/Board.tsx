@@ -486,18 +486,18 @@ export const Board = (props: IProps) => {
     const bentDescriptions = bendDescriptions(translatedDescriptions);
 
     const westBoundary =
-        Math.min(...bentDescriptions.map((desc) => desc.west)) - 3;
+        Math.min(...bentDescriptions.map((desc) => desc.west)) - 1;
     const eastBoundary =
-        Math.max(...bentDescriptions.map((desc) => desc.east)) + 2;
+        Math.max(...bentDescriptions.map((desc) => desc.east)) + 0;
     const northBoundary =
-        Math.min(...bentDescriptions.map((desc) => desc.north)) - 3;
+        Math.min(...bentDescriptions.map((desc) => desc.north)) - 1;
     const southBoundary =
-        Math.max(...bentDescriptions.map((desc) => desc.north)) + 2;
+        Math.max(...bentDescriptions.map((desc) => desc.north)) + 0;
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 
-    const availableHeight = window.innerHeight - 320;
-    const availableWidth = window.innerWidth - 320;
+    const availableHeight = window.innerHeight - 300;
+    const availableWidth = window.innerWidth - 300;
     const limitingRatio = Math.min(
         availableHeight / minGridHeightInSquares,
         availableWidth / minGridWidthInSquares
