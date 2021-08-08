@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { max } from "lodash";
 import React, { useState } from "react";
 import "./Board.css";
 import { Direction } from "./Direction";
@@ -288,14 +288,99 @@ export const Board = (props: IProps) => {
         return newDescriptions;
     };
 
+    const minVerticalBendThreshold = 8;
+    const minHorizontalBendThreshold = 20;
+
+    const findNorthBendThreshold = (
+        translatedDescriptions: TranslatedDominoDescription[]
+    ) => {
+        const sortedDescriptions = translatedDescriptions
+            .filter((desc) => desc.south <= -1 * minVerticalBendThreshold)
+            .sort((a, b) => b.north - a.north);
+        for (let i = 0; i < sortedDescriptions.length - 1; i++) {
+            const desc = sortedDescriptions[i];
+            if (i < sortedDescriptions.length - 1) {
+                if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
+                    return desc.north;
+                }
+            }
+        }
+        return -1 * minVerticalBendThreshold;
+    };
+
+    const findSouthBendThreshold = (
+        translatedDescriptions: TranslatedDominoDescription[]
+    ) => {
+        const sortedDescriptions = translatedDescriptions
+            .filter((desc) => desc.north >= minVerticalBendThreshold)
+            .sort((a, b) => a.north - b.north);
+        for (let i = 0; i < sortedDescriptions.length - 1; i++) {
+            const desc = sortedDescriptions[i];
+            if (i < sortedDescriptions.length - 1) {
+                if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
+                    return desc.south;
+                }
+            }
+        }
+        return minVerticalBendThreshold;
+    };
+
+    const findEastBendThreshold = (
+        translatedDescriptions: TranslatedDominoDescription[]
+    ) => {
+        const sortedDescriptions = translatedDescriptions
+            .filter((desc) => desc.west >= minHorizontalBendThreshold)
+            .sort((a, b) => a.east - b.east);
+        for (let i = 0; i < sortedDescriptions.length - 1; i++) {
+            const desc = sortedDescriptions[i];
+            if (i < sortedDescriptions.length - 1) {
+                if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
+                    return desc.east;
+                }
+            }
+        }
+        return minHorizontalBendThreshold;
+    };
+
+    const findWestBendThreshold = (
+        translatedDescriptions: TranslatedDominoDescription[]
+    ) => {
+        const sortedDescriptions = translatedDescriptions
+            .filter((desc) => desc.east <= -1 * minHorizontalBendThreshold)
+            .sort((a, b) => b.east - a.east);
+        for (let i = 0; i < sortedDescriptions.length - 1; i++) {
+            const desc = sortedDescriptions[i];
+            if (i < sortedDescriptions.length - 1) {
+                if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
+                    return desc.west;
+                }
+            }
+        }
+        return -1 * minHorizontalBendThreshold;
+    };
+
     const bendDescriptions = (
         translatedDescriptions: TranslatedDominoDescription[]
     ) => {
         const bentDescriptions: TranslatedDominoDescription[] = [];
 
+        console.log(findNorthBendThreshold(translatedDescriptions));
+        console.log(findEastBendThreshold(translatedDescriptions));
+        console.log(findSouthBendThreshold(translatedDescriptions));
+        console.log(findWestBendThreshold(translatedDescriptions));
+
+        const northBendThreshold = findNorthBendThreshold(
+            translatedDescriptions
+        );
+        const eastBendThreshold = findEastBendThreshold(translatedDescriptions);
+        const southBendThreshold = findSouthBendThreshold(
+            translatedDescriptions
+        );
+        const westBendThreshold = findWestBendThreshold(translatedDescriptions);
+
         const maxNorthPreBend = Math.max(
             ...translatedDescriptions.map((desc) =>
-                desc.north <= -14 ? desc.north : -1000
+                desc.north <= northBendThreshold ? desc.north : -1000
             )
         );
         const northLimitBoundingBox = translatedDescriptions.find(
@@ -304,7 +389,7 @@ export const Board = (props: IProps) => {
 
         const maxEastPreBend = Math.min(
             ...translatedDescriptions.map((desc) =>
-                desc.east >= 18 ? desc.east : 1000
+                desc.east >= eastBendThreshold ? desc.east : 1000
             )
         );
         const eastLimitBoundingBox = translatedDescriptions.find(
@@ -313,7 +398,7 @@ export const Board = (props: IProps) => {
 
         const maxSouthPreBend = Math.min(
             ...translatedDescriptions.map((desc) =>
-                desc.south >= 14 ? desc.south : 1000
+                desc.south >= southBendThreshold ? desc.south : 1000
             )
         );
         const southLimitBoundingBox = translatedDescriptions.find(
@@ -322,7 +407,7 @@ export const Board = (props: IProps) => {
 
         const maxWestPreBend = Math.max(
             ...translatedDescriptions.map((desc) =>
-                desc.west <= -14 ? desc.west : -1000
+                desc.west <= westBendThreshold ? desc.west : -1000
             )
         );
         const westLimitBoundingBox = translatedDescriptions.find(
@@ -350,7 +435,7 @@ export const Board = (props: IProps) => {
         };
         // console.log(newSouthOrigin);
         translatedDescriptions.forEach((desc, i) => {
-            if (desc.south <= -14) {
+            if (desc.south <= northBendThreshold) {
                 bentDescriptions.push({
                     ...desc,
                     north: newNorthOrigin.y - (desc.east - newNorthOrigin.x),
@@ -359,7 +444,7 @@ export const Board = (props: IProps) => {
                     west: newNorthOrigin.x - (desc.south - newNorthOrigin.y),
                     direction: rotateDirection(desc.direction)
                 });
-            } else if (desc.north >= 14) {
+            } else if (desc.north >= southBendThreshold) {
                 bentDescriptions.push({
                     ...desc,
                     north: newSouthOrigin.y - (desc.west - newSouthOrigin.x),
@@ -369,7 +454,7 @@ export const Board = (props: IProps) => {
                     direction: rotateDirection(desc.direction)
                 });
                 // Need to ensure we do this only if the spinner has been encountered here
-            } else if (desc.west >= 18) {
+            } else if (desc.west >= eastBendThreshold) {
                 bentDescriptions.push({
                     ...desc,
                     north: newEastOrigin.y + (desc.east - newEastOrigin.x),
@@ -378,7 +463,7 @@ export const Board = (props: IProps) => {
                     west: newEastOrigin.x + (desc.south - newEastOrigin.y),
                     direction: rotateDirection(desc.direction)
                 });
-            } else if (desc.east <= -14) {
+            } else if (desc.east <= westBendThreshold) {
                 bentDescriptions.push({
                     ...desc,
                     north: newWestOrigin.y + (desc.west - newWestOrigin.x),
@@ -390,35 +475,6 @@ export const Board = (props: IProps) => {
             } else {
                 bentDescriptions.push(desc);
             }
-            //     // const northLimitBoundingBox = coordinatesToBoundingBoxes
-            //     //     .get(desc.north)
-            //     //     .get(4);
-            //     // check for is double for the above box
-            //     const newOrigin = {
-            //         x: northLimitBoundingBox.west, // -1
-            //         y: northLimitBoundingBox.north // -9
-            //     };
-            //     addValueToNestedMap(
-            //         coordinatesToBoundingBoxes,
-            //         desc.x, // 0
-            //         desc.y, // 5
-            //         {
-            //             // -13 -> -11
-            //             north:
-            //                 newOrigin.y - (originalBoundingBox.east - newOrigin.x),
-            //             // 1 -> 3
-            //             east:
-            //                 newOrigin.x - (originalBoundingBox.north - newOrigin.y),
-            //             // -9 -> -9
-            //             south:
-            //                 newOrigin.y - (originalBoundingBox.west - newOrigin.x),
-            //             // -1 -> -1
-            //             west:
-            //                 newOrigin.x - (originalBoundingBox.south - newOrigin.y),
-            //             direction: rotateDirection(desc.direction)
-            //         }
-            //     );
-            // }
         });
         console.log("bent:", bentDescriptions);
         return bentDescriptions;
@@ -427,7 +483,6 @@ export const Board = (props: IProps) => {
     const translatedDescriptions = translateDescriptionsToActualSizes(
         props.dominoDescriptions
     );
-    // const bentDescriptions = translatedDescriptions;
     const bentDescriptions = bendDescriptions(translatedDescriptions);
 
     const westBoundary =
@@ -447,7 +502,7 @@ export const Board = (props: IProps) => {
         availableHeight / minGridHeightInSquares,
         availableWidth / minGridWidthInSquares
     );
-    const gridSizeInPixels = 2 * Math.round(limitingRatio / 2); // Math.max(2 * Math.round(500 / limitingRatio), 0);
+    const gridSizeInPixels = 2 * Math.floor(limitingRatio / 2);
     const gridWidthInSquares = availableWidth / gridSizeInPixels;
     const gridHeightInSquares = availableHeight / gridSizeInPixels;
 
@@ -473,12 +528,12 @@ export const Board = (props: IProps) => {
         <div
             className="board"
             style={{
-                gridTemplateRows: `repeat(${Math.round(
+                gridTemplateRows: `repeat(${Math.floor(
                     availableHeight / gridSizeInPixels
                 )}, ${
                     gridSizeInPixels + 1 // + 1 accounts for borders
                 }px)`,
-                gridTemplateColumns: `repeat(${Math.round(
+                gridTemplateColumns: `repeat(${Math.floor(
                     availableWidth / gridSizeInPixels
                 )}, ${
                     gridSizeInPixels + 1 // + 1 accounts for borders
@@ -503,39 +558,6 @@ export const Board = (props: IProps) => {
                     </div>
                 );
             })}
-            {/* <div style={{ gridRow: "4 / 6" }}>
-                <Domino
-                    face1={3}
-                    face2={2}
-                    direction={Direction.NORTH}
-                    size={48}
-                />
-            </div>
-            <div style={{ gridColumn: "7 / 9", gridRow: "6 / 7" }}>
-                <Domino
-                    face1={3}
-                    face2={2}
-                    direction={Direction.EAST}
-                    size={48}
-                />
-            </div>
-            <div style={{ gridColumn: "8 / 10", gridRow: "4 / 5" }}>
-                <Domino
-                    face1={3}
-                    face2={2}
-                    direction={Direction.WEST}
-                    size={48}
-                />
-            </div>
-            <div style={{ gridRow: "1 / 3" }}>
-                <Domino
-                    face1={3}
-                    face2={2}
-                    direction={Direction.SOUTH}
-                    size={48}
-                />
-            </div> */}
         </div>
     );
-    // }
 };
