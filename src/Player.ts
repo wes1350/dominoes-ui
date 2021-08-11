@@ -9,6 +9,7 @@ export class Player {
     private _seatNumber: number;
 
     constructor(id: string, name: string, isMe: boolean, seat: number) {
+        console.log("new player:", id, name, isMe, seat);
         this._id = id;
         this._name = name;
         this._isMe = isMe;

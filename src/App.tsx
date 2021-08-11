@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { Direction } from "./Direction";
 import { DominoDescription } from "./DominoDescription";
+import { MessageType } from "./Enums";
 import { GameState } from "./GameState";
 import { GameView } from "./GameView";
 import { Player } from "./Player";
@@ -9,132 +10,172 @@ const io = require("socket.io-client");
 
 interface IProps {}
 
+interface PlayerDescription {
+    seatNumber: number;
+    name: string;
+    isMe: boolean;
+}
+
 export const App = (props: IProps) => {
-    const [socket, setSocket] = useState(io("http://localhost:3001"));
-    // started: false,
-    // gameOver: false,
-    // responseType: null
-    const [gameState, setGameState] = useState(new GameState());
+    const [socket, setSocket] = useState(null);
+    const [gameState, setGameState] = useState<GameState>(null);
 
-    socket.on("GAME_START", () => {
-        gameState.Start();
-    });
+    React.useEffect(() => {
+        const newSocket = io("http://localhost:3001");
 
-    socket.on("GAME_OVER", () => {
-        gameState.Finish();
-    });
+        setSocket(newSocket);
+        setUpSocketForGameStart(newSocket);
+        return () => newSocket.close();
+    }, []);
 
-    socket.on(
-        "NEW_PLAYER",
-        (details: {
-            seatNumber: number;
-            playerName: string;
-            isMe: boolean;
-        }) => {
-            gameState.AddPlayer(
+    const setUpSocketForGameStart = (socket: any) => {
+        socket.on(
+            MessageType.GAME_START,
+            (gameDetails: {
+                players: PlayerDescription[];
+                dominoes: { face1: number; face2: number }[];
+            }) => {
+                console.log(gameDetails);
+                const newGameState = initializeGameState(gameDetails);
+                setGameState(newGameState);
+
+                setUpSocketForGameplay(socket, newGameState);
+                setUpSocketForGameFinish(socket);
+
+                socket.off(MessageType.GAME_START);
+            }
+        );
+    };
+
+    const initializeGameState = (gameDetails: {
+        players: PlayerDescription[];
+        dominoes: { face1: number; face2: number }[];
+    }) => {
+        const newGameState = new GameState();
+
+        gameDetails.players.forEach((player) => {
+            newGameState.AddPlayer(
                 new Player(
-                    details.seatNumber.toString(),
-                    details.playerName,
-                    details.isMe,
-                    details.seatNumber
+                    player.seatNumber.toString(),
+                    player.name,
+                    player.isMe,
+                    player.seatNumber
                 )
             );
-        }
-    );
+        });
 
-    socket.on("TURN", (turn: { seat: number; domino: DominoDescription }) => {
-        gameState.ProcessTurn(turn);
-    });
+        const hand = gameDetails.dominoes.map(
+            (domino: { face1: number; face2: number }) => {
+                return { ...domino, direction: Direction.SOUTH };
+            }
+        );
+        newGameState.Me.SetHand(hand);
+        newGameState.Players.filter((player) => !player.IsMe()).forEach(
+            (player) => {
+                const newHand = [];
+                for (let i = 0; i < hand.length; i++) {
+                    newHand.push({ direction: Direction.SOUTH });
+                }
+                player.SetHand(newHand);
+            }
+        );
 
-    socket.on("QUERY_DOMINO", () => {});
+        newGameState.Start();
+        return newGameState;
+    };
 
-    // this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
+    const setUpSocketForGameplay = (socket: any, gameState: GameState) => {
+        socket.on(
+            MessageType.TURN,
+            (seat: number, domino: DominoDescription, score: number) => {
+                gameState.ProcessTurn(seat, domino, score);
+            }
+        );
+        socket.on("QUERY_DOMINO", () => {});
+    };
 
-    // componentDidMount() {
-    //     const socket = io("http://localhost:3001");
-    //     socket.on("GAME_START", () => {
-    //         this.setState({ started: true });
-    //     });
-    //     this.setState({ socket: socket });
-    // }
+    const setUpSocketForGameFinish = (socket: any) => {
+        socket.on(MessageType.GAME_OVER, () => {
+            gameState.Finish();
+        });
+    };
 
-    // handleStartButtonClick() {
-    //     console.log("starting game");
-    //     this.state.socket.emit("GAME_START");
-    // }
+    // socket.on(
+    //     "NEW_PLAYER",
+    //     (details: {
+    //         seatNumber: number;
+    //         playerName: string;
+    //         isMe: boolean;
+    //     }) => {
+    //         gameState.AddPlayer(
+    //             new Player(
+    //                 details.seatNumber.toString(),
+    //                 details.playerName,
+    //                 details.isMe,
+    //                 details.seatNumber
+    //             )
+    //         );
+    //     }
+    // );
 
-    // render() {
-    const me = new Player("1", "Me", true, 1);
-    const opponent1 = new Player("2", "Opponent 1", false, 0);
-    const opponent2 = new Player("3", "Opponent 2", false, 3);
-    const opponent3 = new Player("4", "Opponent 3", false, 2);
+    // const me = new Player("1", "Me", true, 1);
+    // const opponent1 = new Player("2", "Opponent 1", false, 0);
+    // const opponent2 = new Player("3", "Opponent 2", false, 3);
+    // const opponent3 = new Player("4", "Opponent 3", false, 2);
 
-    me.SetHand([
-        { face1: 4, face2: 3, direction: Direction.SOUTH },
-        { face1: 5, face2: 0, direction: Direction.SOUTH },
-        { face1: 4, face2: 3, direction: Direction.SOUTH },
-        { face1: 5, face2: 0, direction: Direction.SOUTH },
-        { face1: 4, face2: 3, direction: Direction.SOUTH },
-        { face1: 5, face2: 0, direction: Direction.SOUTH },
-        { face1: 4, face2: 3, direction: Direction.SOUTH },
-        { face1: 5, face2: 0, direction: Direction.SOUTH },
-        { face1: 6, face2: 2, direction: Direction.SOUTH }
-    ]);
+    // me.SetHand([
+    //     { face1: 4, face2: 3, direction: Direction.SOUTH },
+    //     { face1: 5, face2: 0, direction: Direction.SOUTH },
+    //     { face1: 4, face2: 3, direction: Direction.SOUTH },
+    //     { face1: 5, face2: 0, direction: Direction.SOUTH },
+    //     { face1: 4, face2: 3, direction: Direction.SOUTH },
+    //     { face1: 5, face2: 0, direction: Direction.SOUTH },
+    //     { face1: 4, face2: 3, direction: Direction.SOUTH },
+    //     { face1: 5, face2: 0, direction: Direction.SOUTH },
+    //     { face1: 6, face2: 2, direction: Direction.SOUTH }
+    // ]);
 
-    opponent1.SetHand([
-        { direction: Direction.SOUTH },
-        { direction: Direction.SOUTH },
-        { direction: Direction.SOUTH }
-    ]);
+    // opponent1.SetHand([
+    //     { direction: Direction.SOUTH },
+    //     { direction: Direction.SOUTH },
+    //     { direction: Direction.SOUTH }
+    // ]);
 
-    opponent2.SetHand([
-        { direction: Direction.SOUTH },
-        { direction: Direction.SOUTH },
-        { direction: Direction.SOUTH }
-    ]);
+    // opponent2.SetHand([
+    //     { direction: Direction.SOUTH },
+    //     { direction: Direction.SOUTH },
+    //     { direction: Direction.SOUTH }
+    // ]);
 
-    opponent3.SetHand([
-        { direction: Direction.SOUTH },
-        { direction: Direction.SOUTH },
-        { direction: Direction.SOUTH }
-    ]);
+    // opponent3.SetHand([
+    //     { direction: Direction.SOUTH },
+    //     { direction: Direction.SOUTH },
+    //     { direction: Direction.SOUTH }
+    // ]);
 
-    // const gameState = new GameState();
-    gameState.AddPlayer(me);
-    gameState.AddPlayer(opponent1);
-    gameState.AddPlayer(opponent2);
-    gameState.AddPlayer(opponent3);
+    // gameState.AddPlayer(me);
+    // gameState.AddPlayer(opponent1);
+    // gameState.AddPlayer(opponent2);
+    // gameState.AddPlayer(opponent3);
 
     return (
         <div className="App">
-            <GameView gameState={gameState}></GameView>
-            {!gameState.Running && (
+            {gameState ? (
+                <GameView gameState={gameState}></GameView>
+            ) : (
                 <button
+                    className={"game-start-button"}
                     onClick={() => {
                         console.log("starting game");
-                        socket.emit("GAME_START");
+                        socket?.emit("GAME_START");
                     }}
-                ></button>
+                >
+                    Start
+                </button>
             )}
         </div>
     );
 };
-
-// export enum QueryType {
-//     DOMINO = "DOMINO",
-//     DIRECTION = "DIRECTION",
-//     PULL = "PULL"
-// }
-
-// export enum MessageType {
-//     ADD_DOMINO = "ADD_DOMINO",
-//     PLAYABLE_DOMINOS = "PLAYABLE_DOMINOS",
-//     HAND = "HAND",
-//     GAME_OVER = "GAME_OVER",
-//     PACK_EMPTY = "PACK_EMPTY",
-//     SCORES = "SCORES",
-//     ERROR = "ERROR"
-// }
 
 // const started = this.state.started;
 // const gameOver = this.state.gameOver;

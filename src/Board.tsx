@@ -1,5 +1,4 @@
-import _, { max } from "lodash";
-import React, { useState } from "react";
+import React from "react";
 import "./Board.css";
 import { Direction } from "./Direction";
 import { Domino } from "./Domino";
@@ -361,7 +360,11 @@ export const Board = (props: IProps) => {
 
     const bendDescriptions = (
         translatedDescriptions: TranslatedDominoDescription[]
-    ) => {
+    ): TranslatedDominoDescription[] => {
+        if (translatedDescriptions.length === 0) {
+            return [];
+        }
+
         const bentDescriptions: TranslatedDominoDescription[] = [];
 
         console.log(findNorthBendThreshold(translatedDescriptions));
