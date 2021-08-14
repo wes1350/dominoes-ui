@@ -1,11 +1,12 @@
 import { DominoDescription } from "./DominoDescription";
+import { QueryType } from "./Enums";
 import { Player } from "./Player";
 
 export class GameState {
     private _started: boolean;
     private _gameOver: boolean;
     private _currentTurn: number;
-    private _responseType: string;
+    private _currentQueryType: QueryType;
     private _players: Player[];
     private _addedDominos: DominoDescription[];
 
@@ -13,7 +14,6 @@ export class GameState {
         this._started = false;
         this._gameOver = false;
         this._currentTurn = null;
-        this._responseType = null;
         this._players = [];
         this._addedDominos = [];
     }
@@ -31,6 +31,7 @@ export class GameState {
     }
 
     public ProcessTurn(seat: number, domino: DominoDescription, score: number) {
+        console.log("PROCESSING TURN");
         if (domino) {
             this._addedDominos.push(domino);
         }
@@ -47,12 +48,20 @@ export class GameState {
         this._addedDominos.push(desc);
     }
 
+    public SetQueryType(type: QueryType) {
+        if (type === QueryType.DIRECTION) {
+            this._currentQueryType = QueryType.DIRECTION;
+        } else if (type === QueryType.DOMINO) {
+            this._currentQueryType = QueryType.DOMINO;
+        }
+    }
+
     public get GameOver(): boolean {
         return this._gameOver;
     }
 
-    public get ResponseType(): string {
-        return this._responseType;
+    public get CurrentQueryType(): QueryType {
+        return this._currentQueryType;
     }
 
     public get N_Players(): number {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { Direction } from "./Direction";
 import { DominoDescription } from "./DominoDescription";
-import { MessageType } from "./Enums";
+import { MessageType, QueryType } from "./Enums";
 import { GameState } from "./GameState";
 import { GameView } from "./GameView";
 import { Player } from "./Player";
@@ -91,13 +91,28 @@ export const App = (props: IProps) => {
                 gameState.ProcessTurn(seat, domino, score);
             }
         );
-        socket.on("QUERY_DOMINO", () => {});
+        socket.on(QueryType.DOMINO, async (message: string) => {
+            console.log("got queried for a domino");
+            console.log("message:", message);
+            gameState.SetQueryType(QueryType.DOMINO);
+        });
+        socket.on(QueryType.DIRECTION, async (message: string) => {
+            console.log("got queried for a direction");
+            console.log("message:", message);
+            gameState.SetQueryType(QueryType.DIRECTION);
+        });
     };
 
     const setUpSocketForGameFinish = (socket: any) => {
         socket.on(MessageType.GAME_OVER, () => {
             gameState.Finish();
         });
+    };
+
+    const respondToQuery = (type: QueryType, value: any) => {
+        console.log("responding with type:", type, "with value:", value);
+        socket.emit(type, value);
+        // queryCallback(value);
     };
 
     // socket.on(
@@ -161,7 +176,10 @@ export const App = (props: IProps) => {
     return (
         <div className="App">
             {gameState ? (
-                <GameView gameState={gameState}></GameView>
+                <GameView
+                    gameState={gameState}
+                    respond={respondToQuery}
+                ></GameView>
             ) : (
                 <button
                     className={"game-start-button"}

@@ -8,9 +8,12 @@ import { MyPlayerView } from "./MyPlayerView";
 import { OpponentPlayerView } from "./OpponentPlayerView";
 import { Player } from "./Player";
 import "./GameView.css";
+import { QueryType } from "./Enums";
+import { UserInput } from "./UserInput";
 
 interface IProps {
     gameState: GameState;
+    respond: (type: QueryType, value: any) => void;
 }
 
 // const d1 = { face1: 5, face2: 1, direction: Direction.WEST, x: 0, y: 0 };
@@ -146,6 +149,10 @@ export const GameView = (props: IProps) => {
                     player={props.gameState.Players.find((player: Player) =>
                         player.IsMe()
                     )}
+                />
+                <UserInput
+                    gameState={props.gameState}
+                    respond={props.respond}
                 />
             </div>
         </div>
