@@ -1,8 +1,8 @@
 import React from "react";
 import { Face } from "./Face";
 import "./Domino.css";
-import { Direction } from "./Direction";
 import { isNullOrUndefined } from "./utils";
+import { Direction } from "./Enums";
 
 interface IProps {
     face1?: number;
@@ -97,7 +97,19 @@ export const Domino = (props: IProps) => {
                 blankBorder2 = "borderRightWidth";
             }
             break;
+        case Direction.NONE:
+            if (props.face1 === props.face2) {
+                flexDirection = "column";
+                borderRadii1 = topRounded;
+                borderRadii2 = bottomRounded;
+            } else {
+                flexDirection = "row";
+                borderRadii1 = leftRounded;
+                borderRadii2 = rightRounded;
+            }
+            break;
         default:
+            // should not get here
             flexDirection = "row";
             borderRadii1 = leftRounded;
             borderRadii2 = rightRounded;

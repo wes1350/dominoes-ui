@@ -1,4 +1,4 @@
-import { Direction } from "./Direction";
+import { Direction } from "./Enums";
 
 export interface DominoDescription {
     face1?: number;

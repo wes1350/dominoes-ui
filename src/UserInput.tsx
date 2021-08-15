@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { Direction } from "./Direction";
-import { Domino } from "./Domino";
 import { QueryType } from "./Enums";
 import { GameState } from "./GameState";
-import { Player } from "./Player";
-import "./PlayerView.css";
 
 interface IProps {
     gameState: GameState;
@@ -12,6 +8,7 @@ interface IProps {
 }
 
 export const UserInput = (props: IProps) => {
+    console.log(props.gameState.Dominos);
     const [inputValue, setInputValue] = useState("");
 
     const onSubmit = (e: any) => {

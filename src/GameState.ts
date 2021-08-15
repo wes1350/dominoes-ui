@@ -32,8 +32,9 @@ export class GameState {
 
     public ProcessTurn(seat: number, domino: DominoDescription, score: number) {
         console.log("PROCESSING TURN");
+        console.log(seat, score, domino);
         if (domino) {
-            this._addedDominos.push(domino);
+            this._addedDominos = [...this._addedDominos, domino];
         }
         if (score) {
             const currentPlayer = this._players.find(
@@ -42,10 +43,7 @@ export class GameState {
             currentPlayer.SetScore(score + currentPlayer.Score);
         }
         this._currentTurn = (this._currentTurn + 1) % this.N_Players;
-    }
-
-    public AddDominoToBoard(desc: DominoDescription) {
-        this._addedDominos.push(desc);
+        console.log(this._addedDominos, this._currentTurn);
     }
 
     public SetQueryType(type: QueryType) {

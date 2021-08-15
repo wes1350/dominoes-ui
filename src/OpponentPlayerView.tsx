@@ -1,6 +1,6 @@
 import React from "react";
-import { Direction } from "./Direction";
 import { Domino } from "./Domino";
+import { Direction } from "./Enums";
 import { Player } from "./Player";
 import "./PlayerView.css";
 

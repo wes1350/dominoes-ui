@@ -1,8 +1,8 @@
 import React from "react";
 import "./Board.css";
-import { Direction } from "./Direction";
 import { Domino } from "./Domino";
 import { DominoDescription } from "./DominoDescription";
+import { Direction } from "./Enums";
 
 interface CoordinateDescription {
     x: number;
@@ -29,6 +29,7 @@ interface TranslatedDominoDescription {
 
 interface IProps {
     dominoDescriptions: DominoDescription[];
+    ndoms: number;
 }
 
 const addValueToNestedMap = (
@@ -44,6 +45,9 @@ const addValueToNestedMap = (
 };
 
 export const Board = (props: IProps) => {
+    console.log("in board");
+    console.log(props.ndoms);
+    console.log(props.dominoDescriptions);
     const coordinatesToBoundingBoxes = new Map<
         number,
         Map<number, BoundingBoxDescription>
@@ -417,26 +421,34 @@ export const Board = (props: IProps) => {
             (desc) => desc.west === maxWestPreBend
         );
 
-        const newNorthOrigin = {
-            x: northLimitBoundingBox.west,
-            y: northLimitBoundingBox.north
-        };
+        const newNorthOrigin = northLimitBoundingBox
+            ? {
+                  x: northLimitBoundingBox.west,
+                  y: northLimitBoundingBox.north
+              }
+            : null;
 
-        const newEastOrigin = {
-            x: eastLimitBoundingBox.east,
-            y: eastLimitBoundingBox.north
-        };
+        const newEastOrigin = eastLimitBoundingBox
+            ? {
+                  x: eastLimitBoundingBox.east,
+                  y: eastLimitBoundingBox.north
+              }
+            : null;
 
-        const newSouthOrigin = {
-            x: southLimitBoundingBox.east,
-            y: southLimitBoundingBox.south
-        };
+        const newSouthOrigin = southLimitBoundingBox
+            ? {
+                  x: southLimitBoundingBox.east,
+                  y: southLimitBoundingBox.south
+              }
+            : null;
 
-        const newWestOrigin = {
-            x: westLimitBoundingBox.west,
-            y: westLimitBoundingBox.south
-        };
-        // console.log(newSouthOrigin);
+        const newWestOrigin = westLimitBoundingBox
+            ? {
+                  x: westLimitBoundingBox.west,
+                  y: westLimitBoundingBox.south
+              }
+            : null;
+
         translatedDescriptions.forEach((desc, i) => {
             if (desc.south <= northBendThreshold) {
                 bentDescriptions.push({
@@ -505,7 +517,7 @@ export const Board = (props: IProps) => {
         availableHeight / minGridHeightInSquares,
         availableWidth / minGridWidthInSquares
     );
-    const gridSizeInPixels = 2 * Math.floor(limitingRatio / 2);
+    const gridSizeInPixels = Math.min(2 * Math.floor(limitingRatio / 2), 20);
     const gridWidthInSquares = availableWidth / gridSizeInPixels;
     const gridHeightInSquares = availableHeight / gridSizeInPixels;
 
