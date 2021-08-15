@@ -54,6 +54,10 @@ export class GameState {
         }
     }
 
+    public ClearBoard(): void {
+        this._addedDominos = [];
+    }
+
     public get GameOver(): boolean {
         return this._gameOver;
     }

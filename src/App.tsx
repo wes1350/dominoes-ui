@@ -116,6 +116,12 @@ export const App = (props: IProps) => {
             )?.RemoveDomino({ direction: Direction.SOUTH });
             setRenderKey((key: number) => key + 1);
         });
+        socket.on(MessageType.CLEAR_BOARD, (payload: string) => {
+            console.log(renderKey);
+            console.log("Clearing board");
+            gameState.ClearBoard();
+            setRenderKey((key: number) => key + 1);
+        });
 
         socket.on(QueryType.DOMINO, (message: string) => {
             console.log("got queried for a domino");
