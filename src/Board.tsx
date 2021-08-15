@@ -306,7 +306,7 @@ export const Board = (props: IProps) => {
                 }
             }
         }
-        return -1 * minVerticalBendThreshold;
+        return -1000;
     };
 
     const findSouthBendThreshold = (
@@ -323,7 +323,7 @@ export const Board = (props: IProps) => {
                 }
             }
         }
-        return minVerticalBendThreshold;
+        return 1000;
     };
 
     const findEastBendThreshold = (
@@ -340,7 +340,7 @@ export const Board = (props: IProps) => {
                 }
             }
         }
-        return minHorizontalBendThreshold;
+        return 1000;
     };
 
     const findWestBendThreshold = (
@@ -357,7 +357,7 @@ export const Board = (props: IProps) => {
                 }
             }
         }
-        return -1 * minHorizontalBendThreshold;
+        return -1000;
     };
 
     const bendDescriptions = (

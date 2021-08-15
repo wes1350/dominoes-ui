@@ -9,6 +9,7 @@ interface IProps {
 }
 
 export const MyPlayerView = (props: IProps) => {
+    console.log("props.player:", props.player);
     return (
         <div className={`player-view player-view-horizontal my-player`}>
             <div className={"player-name player-name-me"}>

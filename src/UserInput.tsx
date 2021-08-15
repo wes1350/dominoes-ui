@@ -12,24 +12,11 @@ export const UserInput = (props: IProps) => {
     const [inputValue, setInputValue] = useState("");
 
     const onSubmit = (e: any) => {
-        // props.socket.emit(this.props.responseType, this.state.value);
-        console.log("responding:", inputValue);
         props.respond(props.gameState.CurrentQueryType, inputValue);
         setInputValue("");
         e.preventDefault();
     };
     return (
-        // <div>
-        //     Move:
-        //     <input
-        //         type="text"
-        //         value={inputValue}
-        //         onChange={(e: any) => {
-        //             setInputValue(e.target.value);
-        //         }}
-        //     />
-        // </div>
-
         <div className={"input-container"}>
             <form onSubmit={onSubmit}>
                 <div>
