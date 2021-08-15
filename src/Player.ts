@@ -60,7 +60,7 @@ export class Player {
         return this._hand;
     }
 
-    public IsMe() {
+    public get IsMe() {
         return this._isMe;
     }
 }

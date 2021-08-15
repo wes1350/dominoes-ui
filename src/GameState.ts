@@ -75,7 +75,7 @@ export class GameState {
     }
 
     public get Me(): Player {
-        return this._players.find((player) => player.IsMe());
+        return this._players.find((player) => player.IsMe);
     }
 
     public get Dominos(): DominoDescription[] {

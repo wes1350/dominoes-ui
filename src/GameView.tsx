@@ -17,8 +17,8 @@ export const GameView = (props: IProps) => {
     const n_players = props.gameState.N_Players;
     // maps opponent seat number to the display index
     const playerIndices = new Map<number, number>();
-    const mySeat = props.gameState.Players.find((player) =>
-        player.IsMe()
+    const mySeat = props.gameState.Players.find(
+        (player) => player.IsMe
     ).SeatNumber;
     if (n_players === 2) {
         playerIndices.set((mySeat + 1) % n_players, 1);
@@ -44,7 +44,7 @@ export const GameView = (props: IProps) => {
             </div>
             <div className={"player-container"}>
                 {props.gameState.Players.filter(
-                    (player: Player) => !player.IsMe()
+                    (player: Player) => !player.IsMe
                 ).map((player: Player, i: number) => {
                     return (
                         <OpponentPlayerView
@@ -55,8 +55,8 @@ export const GameView = (props: IProps) => {
                     );
                 })}
                 <MyPlayerView
-                    player={props.gameState.Players.find((player: Player) =>
-                        player.IsMe()
+                    player={props.gameState.Players.find(
+                        (player: Player) => player.IsMe
                     )}
                 />
             </div>

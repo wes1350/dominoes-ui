@@ -70,7 +70,7 @@ export const App = (props: IProps) => {
             }
         );
         newGameState.Me.SetHand(myHand);
-        newGameState.Players.filter((player) => !player.IsMe()).forEach(
+        newGameState.Players.filter((player) => !player.IsMe).forEach(
             (player) => {
                 const newHand = [];
                 for (let i = 0; i < myHand.length; i++) {
@@ -106,6 +106,14 @@ export const App = (props: IProps) => {
             console.log(renderKey);
             console.log("Got Hand:", payload);
             gameState.Me.SetHand(payload);
+            setRenderKey((key: number) => key + 1);
+        });
+        socket.on(MessageType.DOMINO_PLAYED, (payload: { player: number }) => {
+            console.log(renderKey);
+            console.log("Removing opponent domino", payload);
+            gameState.Players.find(
+                (player) => player.SeatNumber === payload.player && !player.IsMe
+            )?.RemoveDomino({ direction: Direction.SOUTH });
             setRenderKey((key: number) => key + 1);
         });
 
