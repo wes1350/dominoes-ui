@@ -5,15 +5,18 @@ export enum QueryType {
 }
 
 export enum MessageType {
-    GAME_START = "GAME_START",
     ADD_DOMINO = "ADD_DOMINO",
     PLAYABLE_DOMINOS = "PLAYABLE_DOMINOS",
     HAND = "HAND",
+    GAME_START = "GAME_START",
     GAME_OVER = "GAME_OVER",
+    ROUND_OVER = "ROUND_OVER",
     PACK_EMPTY = "PACK_EMPTY",
+    CLEAR_BOARD = "CLEAR_BOARD",
     SCORES = "SCORES",
     ERROR = "ERROR",
-    TURN = "TURN"
+    TURN = "TURN",
+    PULL = "PULL"
 }
 
 export enum Direction {

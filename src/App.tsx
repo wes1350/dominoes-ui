@@ -17,7 +17,7 @@ interface PlayerDescription {
 
 export const App = (props: IProps) => {
     const [socket, setSocket] = useState(null);
-    const [nDominos, setNDominos] = useState(0);
+    const [renderKey, setRenderKey] = useState(0);
     const [gameState, setGameState] = useState<GameState>(null);
 
     React.useEffect(() => {
@@ -64,16 +64,16 @@ export const App = (props: IProps) => {
             );
         });
 
-        const hand = gameDetails.dominoes.map(
+        const myHand = gameDetails.dominoes.map(
             (domino: { face1: number; face2: number }) => {
                 return { ...domino, direction: Direction.SOUTH };
             }
         );
-        newGameState.Me.SetHand(hand);
+        newGameState.Me.SetHand(myHand);
         newGameState.Players.filter((player) => !player.IsMe()).forEach(
             (player) => {
                 const newHand = [];
-                for (let i = 0; i < hand.length; i++) {
+                for (let i = 0; i < myHand.length; i++) {
                     newHand.push({ direction: Direction.SOUTH });
                 }
                 player.SetHand(newHand);
@@ -98,16 +98,23 @@ export const App = (props: IProps) => {
                     turnDescription.score
                 );
                 if (turnDescription.domino) {
-                    setNDominos((oldN: number) => oldN + 1);
+                    setRenderKey((key: number) => key + 1);
                 }
             }
         );
-        socket.on(QueryType.DOMINO, async (message: string) => {
+        socket.on(MessageType.HAND, (payload: any) => {
+            console.log(renderKey);
+            console.log("Got Hand:", payload);
+            gameState.Me.SetHand(payload);
+            setRenderKey((key: number) => key + 1);
+        });
+
+        socket.on(QueryType.DOMINO, (message: string) => {
             console.log("got queried for a domino");
             console.log("message:", message);
             gameState.SetQueryType(QueryType.DOMINO);
         });
-        socket.on(QueryType.DIRECTION, async (message: string) => {
+        socket.on(QueryType.DIRECTION, (message: string) => {
             console.log("got queried for a direction");
             console.log("message:", message);
             gameState.SetQueryType(QueryType.DIRECTION);
@@ -128,9 +135,12 @@ export const App = (props: IProps) => {
     return (
         <div className="App">
             {gameState ? (
+                // Refactor this: don't want to re-render the whole game view on any change,
+                // need to figure out a way to get individual components to re-render
+                // even though the props currently in use don't force re-renders when they change
                 <GameView
                     gameState={gameState}
-                    nDominos={nDominos}
+                    key={renderKey}
                     respond={respondToQuery}
                 ></GameView>
             ) : (

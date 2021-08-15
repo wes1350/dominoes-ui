@@ -29,7 +29,6 @@ interface TranslatedDominoDescription {
 
 interface IProps {
     dominoDescriptions: DominoDescription[];
-    ndoms: number;
 }
 
 const addValueToNestedMap = (
@@ -46,7 +45,6 @@ const addValueToNestedMap = (
 
 export const Board = (props: IProps) => {
     console.log("in board");
-    console.log(props.ndoms);
     console.log(props.dominoDescriptions);
     const coordinatesToBoundingBoxes = new Map<
         number,

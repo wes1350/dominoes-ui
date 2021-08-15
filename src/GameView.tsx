@@ -10,7 +10,6 @@ import { UserInput } from "./UserInput";
 
 interface IProps {
     gameState: GameState;
-    nDominos: number;
     respond: (type: QueryType, value: any) => void;
 }
 
@@ -41,11 +40,7 @@ export const GameView = (props: IProps) => {
     return (
         <div className="game-view">
             <div className={"board-container"}>
-                <Board
-                    key={props.gameState.Dominos.length}
-                    dominoDescriptions={[...props.gameState.Dominos]}
-                    ndoms={props.gameState.Dominos.length}
-                />
+                <Board dominoDescriptions={[...props.gameState.Dominos]} />
             </div>
             <div className={"player-container"}>
                 {props.gameState.Players.filter(
