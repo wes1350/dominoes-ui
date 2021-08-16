@@ -9,6 +9,7 @@ interface IProps {
     face2?: number;
     direction: Direction;
     size?: number;
+    faded?: boolean;
     // x1: number;
     // x2: number;
     // y1: number;
@@ -134,7 +135,10 @@ export const Domino = (props: IProps) => {
     return (
         <div
             className={"domino-outer-container"}
-            style={{ flexDirection: flexDirection }}
+            style={{
+                flexDirection: flexDirection,
+                opacity: props.faded ? 0.5 : 1
+            }}
         >
             <div className={"domino-container"} style={style1}>
                 <Face num={props.face1} size={props.size ?? 32} />

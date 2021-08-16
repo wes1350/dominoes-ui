@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { useState } from "react";
 import "./App.css";
 import { DominoDescription } from "./DominoDescription";
@@ -96,6 +97,8 @@ export const App = (props: IProps) => {
                     turnDescription.domino,
                     turnDescription.score
                 );
+
+                gameState.Me.SetPlayableDominoes(null);
                 if (turnDescription.domino) {
                     setRenderKey((key: number) => key + 1);
                 }
@@ -105,6 +108,12 @@ export const App = (props: IProps) => {
             console.log(renderKey);
             console.log("Got Hand:", payload);
             gameState.Me.SetHand(payload);
+            setRenderKey((key: number) => key + 1);
+        });
+        socket.on(MessageType.PLAYABLE_DOMINOS, (payload: string) => {
+            // console.log(renderKey);
+            console.log("Got Playable dominoes:", payload);
+            gameState.Me.SetPlayableDominoes(JSON.parse("[" + payload + "]"));
             setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.DOMINO_PLAYED, (payload: { player: number }) => {

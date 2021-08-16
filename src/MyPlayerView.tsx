@@ -10,6 +10,7 @@ interface IProps {
 
 export const MyPlayerView = (props: IProps) => {
     console.log("props.player:", props.player);
+    const playableDominoes = props.player.PlayableDominoes;
     return (
         <div className={`player-view player-view-horizontal my-player`}>
             <div className={"player-name player-name-me"}>
@@ -24,6 +25,11 @@ export const MyPlayerView = (props: IProps) => {
                                 face2={domino.face2}
                                 direction={Direction.SOUTH}
                                 size={36}
+                                faded={
+                                    playableDominoes === null
+                                        ? false
+                                        : !playableDominoes.includes(i)
+                                }
                             />
                         </div>
                     );

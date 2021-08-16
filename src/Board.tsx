@@ -567,6 +567,7 @@ export const Board = (props: IProps) => {
                             face2={d.face2}
                             direction={d.direction}
                             size={gridSizeInPixels * 2}
+                            faded={false}
                         />
                     </div>
                 );

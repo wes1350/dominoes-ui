@@ -34,6 +34,7 @@ export const OpponentPlayerView = (props: IProps) => {
                                         : Direction.EAST
                                 }
                                 size={36}
+                                faded={false}
                             />
                         </div>
                     );
