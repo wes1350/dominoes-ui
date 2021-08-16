@@ -1,8 +1,10 @@
 import { DominoDescription } from "./DominoDescription";
 import { QueryType } from "./Enums";
+import { hiddenDomino } from "./HiddenDomino";
 import { Player } from "./Player";
 
 export class GameState {
+    private _n_dominoes: number;
     private _started: boolean;
     private _gameOver: boolean;
     private _currentPlayer: number;
@@ -10,7 +12,8 @@ export class GameState {
     private _players: Player[];
     private _addedDominos: DominoDescription[];
 
-    constructor() {
+    constructor(n_dominoes: number) {
+        this._n_dominoes = n_dominoes;
         this._started = false;
         this._gameOver = false;
         this._currentPlayer = null;
@@ -58,8 +61,24 @@ export class GameState {
         this._currentPlayer = seat;
     }
 
+    public SetOpponentHands() {
+        this._players
+            .filter((player) => !player.IsMe)
+            .forEach((player) => {
+                const newHand = [];
+                for (let i = 0; i < this._n_dominoes; i++) {
+                    newHand.push(hiddenDomino());
+                }
+                player.SetHand(newHand);
+            });
+    }
+
     public ClearBoard(): void {
         this._addedDominos = [];
+    }
+
+    public PlayerAtSeat(seat: number): Player {
+        return this._players.find((player) => player.SeatNumber === seat);
     }
 
     public get GameOver(): boolean {

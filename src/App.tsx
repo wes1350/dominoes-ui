@@ -1,11 +1,11 @@
-import _ from "lodash";
 import React, { useState } from "react";
 import "./App.css";
 import { DominoDescription } from "./DominoDescription";
-import { Direction, MessageType, QueryType } from "./Enums";
+import { MessageType, QueryType } from "./Enums";
 import { GameState } from "./GameState";
 import { GameView } from "./GameView";
-import { GameStartMessage, PlayerDescription } from "./MessageTypes";
+import { hiddenDomino } from "./HiddenDomino";
+import { GameStartMessage, NewRoundMessage } from "./MessageTypes";
 import { Player } from "./Player";
 const io = require("socket.io-client");
 
@@ -37,7 +37,7 @@ export const App = (props: IProps) => {
     };
 
     const initializeGameState = (gameDetails: GameStartMessage) => {
-        const newGameState = new GameState();
+        const newGameState = new GameState(gameDetails.config.n_dominoes);
 
         gameDetails.players.forEach((player) => {
             newGameState.AddPlayer(
@@ -49,16 +49,6 @@ export const App = (props: IProps) => {
                 )
             );
         });
-
-        newGameState.Players.filter((player) => !player.IsMe).forEach(
-            (player) => {
-                const newHand = [];
-                for (let i = 0; i < gameDetails.config.n_dominoes; i++) {
-                    newHand.push({ direction: Direction.SOUTH });
-                }
-                player.SetHand(newHand);
-            }
-        );
 
         newGameState.Start();
         return newGameState;
@@ -96,12 +86,13 @@ export const App = (props: IProps) => {
             gameState.Me.SetPlayableDominoes(JSON.parse("[" + payload + "]"));
             setRenderKey((key: number) => key + 1);
         });
-        socket.on(MessageType.DOMINO_PLAYED, (payload: { player: number }) => {
+        socket.on(MessageType.DOMINO_PLAYED, (payload: { seat: number }) => {
             console.log(renderKey);
             console.log("Removing opponent domino", payload);
-            gameState.Players.find(
-                (player) => player.SeatNumber === payload.player && !player.IsMe
-            )?.RemoveDomino({ direction: Direction.SOUTH });
+            const player = gameState.PlayerAtSeat(payload.seat);
+            if (!player.IsMe) {
+                player.RemoveDomino(hiddenDomino());
+            }
             setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.CLEAR_BOARD, (payload: string) => {
@@ -110,10 +101,20 @@ export const App = (props: IProps) => {
             gameState.ClearBoard();
             setRenderKey((key: number) => key + 1);
         });
-        socket.on(MessageType.CURRENT_PLAYER, (payload: number) => {
+        socket.on(MessageType.PULL, (payload: { seat: number }) => {
             console.log(renderKey);
-            console.log("Setting current player", payload);
-            gameState.SetCurrentPlayer(payload);
+            console.log("Domino pulled:", payload);
+            const player = gameState.PlayerAtSeat(payload.seat);
+            if (!player.IsMe) {
+                player.AddDomino(hiddenDomino());
+            }
+            setRenderKey((key: number) => key + 1);
+        });
+        socket.on(MessageType.NEW_ROUND, (payload: NewRoundMessage) => {
+            console.log(renderKey);
+            console.log("New round:", payload);
+            gameState.SetCurrentPlayer(payload.currentPlayer);
+            gameState.SetOpponentHands();
             setRenderKey((key: number) => key + 1);
         });
 
