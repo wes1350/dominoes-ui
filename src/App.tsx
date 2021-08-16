@@ -5,16 +5,11 @@ import { DominoDescription } from "./DominoDescription";
 import { Direction, MessageType, QueryType } from "./Enums";
 import { GameState } from "./GameState";
 import { GameView } from "./GameView";
+import { GameStartMessage, PlayerDescription } from "./MessageTypes";
 import { Player } from "./Player";
 const io = require("socket.io-client");
 
 interface IProps {}
-
-interface PlayerDescription {
-    seatNumber: number;
-    name: string;
-    isMe: boolean;
-}
 
 export const App = (props: IProps) => {
     const [socket, setSocket] = useState(null);
@@ -30,27 +25,18 @@ export const App = (props: IProps) => {
     }, []);
 
     const setUpSocketForGameStart = (socket: any) => {
-        socket.on(
-            MessageType.GAME_START,
-            (gameDetails: {
-                players: PlayerDescription[];
-                dominoes: { face1: number; face2: number }[];
-            }) => {
-                console.log(gameDetails);
-                const newGameState = initializeGameState(gameDetails);
-                setGameState(newGameState);
+        socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
+            console.log(gameDetails);
+            const newGameState = initializeGameState(gameDetails);
+            setGameState(newGameState);
 
-                setUpSocketForGameplay(socket, newGameState);
+            setUpSocketForGameplay(socket, newGameState);
 
-                socket.off(MessageType.GAME_START);
-            }
-        );
+            socket.off(MessageType.GAME_START);
+        });
     };
 
-    const initializeGameState = (gameDetails: {
-        players: PlayerDescription[];
-        dominoes: { face1: number; face2: number }[];
-    }) => {
+    const initializeGameState = (gameDetails: GameStartMessage) => {
         const newGameState = new GameState();
 
         gameDetails.players.forEach((player) => {
@@ -64,16 +50,10 @@ export const App = (props: IProps) => {
             );
         });
 
-        const myHand = gameDetails.dominoes.map(
-            (domino: { face1: number; face2: number }) => {
-                return { ...domino, direction: Direction.SOUTH };
-            }
-        );
-        newGameState.Me.SetHand(myHand);
         newGameState.Players.filter((player) => !player.IsMe).forEach(
             (player) => {
                 const newHand = [];
-                for (let i = 0; i < myHand.length; i++) {
+                for (let i = 0; i < gameDetails.config.n_dominoes; i++) {
                     newHand.push({ direction: Direction.SOUTH });
                 }
                 player.SetHand(newHand);
@@ -128,6 +108,12 @@ export const App = (props: IProps) => {
             console.log(renderKey);
             console.log("Clearing board");
             gameState.ClearBoard();
+            setRenderKey((key: number) => key + 1);
+        });
+        socket.on(MessageType.CURRENT_PLAYER, (payload: number) => {
+            console.log(renderKey);
+            console.log("Setting current player", payload);
+            gameState.SetCurrentPlayer(payload);
             setRenderKey((key: number) => key + 1);
         });
 

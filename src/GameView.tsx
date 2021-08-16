@@ -37,6 +37,7 @@ export const GameView = (props: IProps) => {
     }
     console.log("in game view");
 
+    const me = props.gameState.Players.find((player: Player) => player.IsMe);
     return (
         <div className="game-view">
             <div className={"board-container"}>
@@ -51,13 +52,16 @@ export const GameView = (props: IProps) => {
                             key={i}
                             index={playerIndices.get(player.SeatNumber)}
                             player={player}
+                            current={
+                                props.gameState.CurrentPlayer ===
+                                player.SeatNumber
+                            }
                         />
                     );
                 })}
                 <MyPlayerView
-                    player={props.gameState.Players.find(
-                        (player: Player) => player.IsMe
-                    )}
+                    player={me}
+                    current={props.gameState.CurrentPlayer === me.SeatNumber}
                 />
             </div>
             <div className={"input-container"}>

@@ -7,6 +7,7 @@ import "./PlayerView.css";
 interface IProps {
     index: number;
     player: Player;
+    current: boolean;
 }
 
 export const OpponentPlayerView = (props: IProps) => {
@@ -14,7 +15,9 @@ export const OpponentPlayerView = (props: IProps) => {
         <div
             className={`player-view player-view-${
                 props.index === 1 ? "horizontal" : "vertical"
-            } opponent opponent-${props.index}`}
+            } opponent opponent-${props.index} ${
+                props.current ? " current" : ""
+            }`}
         >
             <div className={`player-name player-name-${props.index}`}>
                 {props.player.Name}

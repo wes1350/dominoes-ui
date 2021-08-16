@@ -5,7 +5,7 @@ import { Player } from "./Player";
 export class GameState {
     private _started: boolean;
     private _gameOver: boolean;
-    private _currentTurn: number;
+    private _currentPlayer: number;
     private _currentQueryType: QueryType;
     private _players: Player[];
     private _addedDominos: DominoDescription[];
@@ -13,7 +13,7 @@ export class GameState {
     constructor() {
         this._started = false;
         this._gameOver = false;
-        this._currentTurn = null;
+        this._currentPlayer = null;
         this._players = [];
         this._addedDominos = [];
     }
@@ -42,8 +42,8 @@ export class GameState {
             );
             currentPlayer.SetScore(score + currentPlayer.Score);
         }
-        this._currentTurn = (this._currentTurn + 1) % this.N_Players;
-        console.log(this._addedDominos, this._currentTurn);
+        this._currentPlayer = (this._currentPlayer + 1) % this.N_Players;
+        console.log(this._addedDominos, this._currentPlayer);
     }
 
     public SetQueryType(type: QueryType) {
@@ -52,6 +52,10 @@ export class GameState {
         } else if (type === QueryType.DOMINO) {
             this._currentQueryType = QueryType.DOMINO;
         }
+    }
+
+    public SetCurrentPlayer(seat: number) {
+        this._currentPlayer = seat;
     }
 
     public ClearBoard(): void {
@@ -72,6 +76,10 @@ export class GameState {
 
     public get Players(): Player[] {
         return this._players;
+    }
+
+    public get CurrentPlayer(): number {
+        return this._currentPlayer;
     }
 
     public get Running(): boolean {

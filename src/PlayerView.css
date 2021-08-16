@@ -97,3 +97,7 @@
 .hand-domino-container {
     margin: 1px;
 }
+
+.current {
+    border: 5px solid #44f;
+}
