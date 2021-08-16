@@ -40,7 +40,6 @@ export const App = (props: IProps) => {
                 setGameState(newGameState);
 
                 setUpSocketForGameplay(socket, newGameState);
-                setUpSocketForGameFinish(socket);
 
                 socket.off(MessageType.GAME_START);
             }
@@ -133,9 +132,7 @@ export const App = (props: IProps) => {
             console.log("message:", message);
             gameState.SetQueryType(QueryType.DIRECTION);
         });
-    };
 
-    const setUpSocketForGameFinish = (socket: any) => {
         socket.on(MessageType.GAME_OVER, () => {
             gameState.Finish();
         });
