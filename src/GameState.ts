@@ -33,20 +33,22 @@ export class GameState {
         this._gameOver = true;
     }
 
-    public ProcessTurn(seat: number, domino: DominoDescription, score: number) {
+    public ProcessTurn(seat: number, domino: DominoDescription) {
         console.log("PROCESSING TURN");
-        console.log(seat, score, domino);
+        console.log(seat, domino);
         if (domino) {
             this._addedDominos = [...this._addedDominos, domino];
         }
-        if (score) {
-            const currentPlayer = this._players.find(
-                (player) => player.SeatNumber === seat
-            );
-            currentPlayer.SetScore(score + currentPlayer.Score);
-        }
+
         this._currentPlayer = (this._currentPlayer + 1) % this.N_Players;
         console.log(this._addedDominos, this._currentPlayer);
+    }
+
+    public ProcessScore(seat: number, score: number) {
+        const currentPlayer = this._players.find(
+            (player) => player.SeatNumber === seat
+        );
+        currentPlayer.SetScore(score + currentPlayer.Score);
     }
 
     public SetQueryType(type: QueryType) {

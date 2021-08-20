@@ -64,14 +64,22 @@ export const App = (props: IProps) => {
             }) => {
                 gameState.ProcessTurn(
                     turnDescription.seat,
-                    turnDescription.domino,
-                    turnDescription.score
+                    turnDescription.domino
                 );
 
                 gameState.Me.SetPlayableDominoes(null);
                 if (turnDescription.domino) {
                     setRenderKey((key: number) => key + 1);
                 }
+            }
+        );
+        socket.on(
+            MessageType.SCORE,
+            (payload: { seat: number; score: number }) => {
+                console.log(renderKey);
+                console.log("Got Score:", payload);
+                gameState.ProcessScore(payload.seat, payload.score);
+                setRenderKey((key: number) => key + 1);
             }
         );
         socket.on(MessageType.HAND, (payload: any) => {
