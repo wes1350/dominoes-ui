@@ -29,7 +29,16 @@ export const MyPlayerView = (props: IProps) => {
                                 face1={domino.face1}
                                 face2={domino.face2}
                                 direction={Direction.SOUTH}
-                                size={36}
+                                size={
+                                    2 *
+                                    Math.floor(
+                                        0.5 *
+                                            Math.min(
+                                                36,
+                                                300 / props.player.Hand.length
+                                            )
+                                    )
+                                }
                                 faded={
                                     playableDominoes === null
                                         ? false

@@ -36,7 +36,16 @@ export const OpponentPlayerView = (props: IProps) => {
                                         ? Direction.SOUTH
                                         : Direction.EAST
                                 }
-                                size={36}
+                                size={
+                                    2 *
+                                    Math.floor(
+                                        0.5 *
+                                            Math.min(
+                                                36,
+                                                300 / props.player.Hand.length
+                                            )
+                                    )
+                                }
                                 faded={false}
                             />
                         </div>
