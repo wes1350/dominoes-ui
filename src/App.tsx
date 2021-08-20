@@ -57,11 +57,7 @@ export const App = (props: IProps) => {
     const setUpSocketForGameplay = (socket: any, gameState: GameState) => {
         socket.on(
             MessageType.TURN,
-            (turnDescription: {
-                seat: number;
-                domino: DominoDescription;
-                score: number;
-            }) => {
+            (turnDescription: { seat: number; domino: DominoDescription }) => {
                 gameState.ProcessTurn(
                     turnDescription.seat,
                     turnDescription.domino
