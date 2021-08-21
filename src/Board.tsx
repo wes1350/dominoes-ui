@@ -499,13 +499,13 @@ export const Board = (props: IProps) => {
     const bentDescriptions = bendDescriptions(translatedDescriptions);
 
     const westBoundary =
-        Math.min(...bentDescriptions.map((desc) => desc.west)) - 1;
+        Math.min(...bentDescriptions.map((desc) => desc.west)) - 2;
     const eastBoundary =
-        Math.max(...bentDescriptions.map((desc) => desc.east)) + 0;
+        Math.max(...bentDescriptions.map((desc) => desc.east)) + 2;
     const northBoundary =
-        Math.min(...bentDescriptions.map((desc) => desc.north)) - 1;
+        Math.min(...bentDescriptions.map((desc) => desc.north)) - 2;
     const southBoundary =
-        Math.max(...bentDescriptions.map((desc) => desc.north)) + 0;
+        Math.max(...bentDescriptions.map((desc) => desc.north)) + 2;
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 
