@@ -11,6 +11,7 @@ export class GameState {
     private _currentQueryType: QueryType;
     private _players: Player[];
     private _addedDominos: DominoDescription[];
+    private _logs: string[];
 
     constructor(n_dominoes: number) {
         this._n_dominoes = n_dominoes;
@@ -19,6 +20,7 @@ export class GameState {
         this._currentPlayer = null;
         this._players = [];
         this._addedDominos = [];
+        this._logs = [];
     }
 
     public AddPlayer(player: Player) {
@@ -81,6 +83,14 @@ export class GameState {
 
     public PlayerAtSeat(seat: number): Player {
         return this._players.find((player) => player.SeatNumber === seat);
+    }
+
+    public AddLog(log: string): void {
+        this._logs.push(log);
+    }
+
+    public get Logs(): string[] {
+        return this._logs;
     }
 
     public get GameOver(): boolean {

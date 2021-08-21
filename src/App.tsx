@@ -5,7 +5,11 @@ import { MessageType, QueryType } from "./Enums";
 import { GameState } from "./GameState";
 import { GameView } from "./GameView";
 import { hiddenDomino } from "./HiddenDomino";
-import { GameStartMessage, NewRoundMessage } from "./MessageTypes";
+import {
+    GameStartMessage,
+    GameLogMessage,
+    NewRoundMessage
+} from "./MessageTypes";
 import { Player } from "./Player";
 const io = require("socket.io-client");
 
@@ -55,6 +59,11 @@ export const App = (props: IProps) => {
     };
 
     const setUpSocketForGameplay = (socket: any, gameState: GameState) => {
+        socket.on(MessageType.GAME_LOG, (logDetails: GameLogMessage) => {
+            console.log(logDetails);
+            gameState.AddLog(logDetails.message);
+            setRenderKey((key: number) => key + 1);
+        });
         socket.on(
             MessageType.TURN,
             (turnDescription: { seat: number; domino: DominoDescription }) => {
@@ -99,7 +108,7 @@ export const App = (props: IProps) => {
             }
             setRenderKey((key: number) => key + 1);
         });
-        socket.on(MessageType.CLEAR_BOARD, (payload: string) => {
+        socket.on(MessageType.CLEAR_BOARD, () => {
             console.log(renderKey);
             console.log("Clearing board");
             gameState.ClearBoard();
@@ -133,8 +142,9 @@ export const App = (props: IProps) => {
             gameState.SetQueryType(QueryType.DIRECTION);
         });
 
-        socket.on(MessageType.GAME_OVER, () => {
+        socket.on(MessageType.GAME_OVER, (winner: number) => {
             gameState.Finish();
+            console.log(`Player ${winner} wins!`);
         });
     };
 

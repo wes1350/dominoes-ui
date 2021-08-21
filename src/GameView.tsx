@@ -7,6 +7,7 @@ import { Player } from "./Player";
 import "./GameView.css";
 import { QueryType } from "./Enums";
 import { UserInput } from "./UserInput";
+import { GameLogs } from "./GameLogs";
 
 interface IProps {
     gameState: GameState;
@@ -70,7 +71,7 @@ export const GameView = (props: IProps) => {
                     respond={props.respond}
                 />
             </div>
-            <div className={"test"}>{props.gameState?.Dominos.length}</div>
+            <GameLogs logs={props.gameState.Logs} />
         </div>
     );
 };
