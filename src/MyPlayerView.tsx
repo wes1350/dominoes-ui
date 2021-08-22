@@ -41,7 +41,7 @@ export const MyPlayerView = (props: IProps) => {
                                 }
                                 faded={
                                     playableDominoes === null
-                                        ? false
+                                        ? true
                                         : !playableDominoes.includes(i)
                                 }
                             />

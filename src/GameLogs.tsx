@@ -19,7 +19,7 @@ export const GameLogs = (props: IProps) => {
     return (
         <div className={"game-logs-container"}>
             {props.logs.map((log) => {
-                return <div>{log}</div>;
+                return log.trim() ? <div>{log}</div> : <div>&nbsp;</div>;
             })}
             <div ref={endOfLogsRef}></div>
         </div>
