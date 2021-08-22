@@ -131,15 +131,10 @@ export const App = (props: IProps) => {
             setRenderKey((key: number) => key + 1);
         });
 
-        socket.on(QueryType.DOMINO, (message: string) => {
-            console.log("got queried for a domino");
+        socket.on(QueryType.MOVE, (message: string) => {
+            console.log("got queried for a move");
             console.log("message:", message);
-            gameState.SetQueryType(QueryType.DOMINO);
-        });
-        socket.on(QueryType.DIRECTION, (message: string) => {
-            console.log("got queried for a direction");
-            console.log("message:", message);
-            gameState.SetQueryType(QueryType.DIRECTION);
+            gameState.SetQueryType(QueryType.MOVE);
         });
 
         socket.on(MessageType.GAME_OVER, (winner: number) => {

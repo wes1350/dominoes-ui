@@ -12,7 +12,9 @@ export const UserInput = (props: IProps) => {
     const [inputValue, setInputValue] = useState("");
 
     const onSubmit = (e: any) => {
-        props.respond(props.gameState.CurrentQueryType, inputValue);
+        const domino = parseInt(inputValue.split(" ")[0]);
+        const direction = inputValue.split(" ")[1];
+        props.respond(props.gameState.CurrentQueryType, { domino, direction });
         setInputValue("");
         e.preventDefault();
     };

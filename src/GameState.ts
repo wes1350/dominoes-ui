@@ -54,10 +54,8 @@ export class GameState {
     }
 
     public SetQueryType(type: QueryType) {
-        if (type === QueryType.DIRECTION) {
-            this._currentQueryType = QueryType.DIRECTION;
-        } else if (type === QueryType.DOMINO) {
-            this._currentQueryType = QueryType.DOMINO;
+        if (type === QueryType.MOVE) {
+            this._currentQueryType = QueryType.MOVE;
         }
     }
 
