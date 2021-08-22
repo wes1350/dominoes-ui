@@ -28,3 +28,7 @@ export enum Direction {
     WEST = "W",
     NONE = ""
 }
+
+export const DragItemTypes = {
+    DOMINO: "DOMINO"
+};

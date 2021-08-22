@@ -8,6 +8,8 @@ import "./GameView.css";
 import { QueryType } from "./Enums";
 import { UserInput } from "./UserInput";
 import { GameLogs } from "./GameLogs";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 interface IProps {
     gameState: GameState;
@@ -40,38 +42,42 @@ export const GameView = (props: IProps) => {
 
     const me = props.gameState.Players.find((player: Player) => player.IsMe);
     return (
-        <div className="game-view">
-            <div className={"board-container"}>
-                <Board dominoDescriptions={[...props.gameState.Dominos]} />
+        <DndProvider backend={HTML5Backend}>
+            <div className="game-view">
+                <div className={"board-container"}>
+                    <Board dominoDescriptions={[...props.gameState.Dominos]} />
+                </div>
+                <div className={"player-container"}>
+                    {props.gameState.Players.filter(
+                        (player: Player) => !player.IsMe
+                    ).map((player: Player, i: number) => {
+                        return (
+                            <OpponentPlayerView
+                                key={i}
+                                index={playerIndices.get(player.SeatNumber)}
+                                player={player}
+                                current={
+                                    props.gameState.CurrentPlayer ===
+                                    player.SeatNumber
+                                }
+                            />
+                        );
+                    })}
+                    <MyPlayerView
+                        player={me}
+                        current={
+                            props.gameState.CurrentPlayer === me.SeatNumber
+                        }
+                    />
+                </div>
+                <div className={"input-container"}>
+                    <UserInput
+                        gameState={props.gameState}
+                        respond={props.respond}
+                    />
+                </div>
+                <GameLogs logs={props.gameState.Logs} />
             </div>
-            <div className={"player-container"}>
-                {props.gameState.Players.filter(
-                    (player: Player) => !player.IsMe
-                ).map((player: Player, i: number) => {
-                    return (
-                        <OpponentPlayerView
-                            key={i}
-                            index={playerIndices.get(player.SeatNumber)}
-                            player={player}
-                            current={
-                                props.gameState.CurrentPlayer ===
-                                player.SeatNumber
-                            }
-                        />
-                    );
-                })}
-                <MyPlayerView
-                    player={me}
-                    current={props.gameState.CurrentPlayer === me.SeatNumber}
-                />
-            </div>
-            <div className={"input-container"}>
-                <UserInput
-                    gameState={props.gameState}
-                    respond={props.respond}
-                />
-            </div>
-            <GameLogs logs={props.gameState.Logs} />
-        </div>
+        </DndProvider>
     );
 };

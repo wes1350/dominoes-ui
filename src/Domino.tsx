@@ -2,7 +2,8 @@ import React from "react";
 import { Face } from "./Face";
 import "./Domino.css";
 import { isNullOrUndefined } from "./utils";
-import { Direction } from "./Enums";
+import { Direction, DragItemTypes } from "./Enums";
+import { useDrag } from "react-dnd";
 
 interface IProps {
     face1?: number;
@@ -10,38 +11,18 @@ interface IProps {
     direction: Direction;
     size?: number;
     faded?: boolean;
-    // x1: number;
-    // x2: number;
-    // y1: number;
-    // y2: number;
-    // opacity: number;
-    // span: number;
-    // rotate?: boolean;
-    // reversed?: boolean;
+    draggable?: boolean;
 }
 
 export const Domino = (props: IProps) => {
-    // const isDouble = () => {
-    //     return props.face1 === props.face2;
-    // };
+    const [{ isDragging }, drag] = useDrag(() => ({
+        type: DragItemTypes.DOMINO,
+        item: { face1: props.face1, face2: props.face2 },
+        collect: (monitor) => ({
+            isDragging: !!monitor.isDragging()
+        })
+    }));
 
-    // let size = { width: props.size + "px", height: props.size + "px" };
-    // let style1 = {
-    //     ...size,
-    //     gridColumn: props.x1 + "/" + (props.x1 + props.span),
-    //     gridRow: props.y1 + "/" + (props.y1 + props.span),
-    //     opacity: props.opacity,
-    //     transform: "rotate(" + (props.rotate ? 9 : "") + "0deg)"
-    // }; /*,
-    //                        border: "3px solid #66CC33"};*/
-    // let style2 = {
-    //     ...size,
-    //     gridColumn: props.x2 + "/" + (props.x2 + props.span),
-    //     gridRow: props.y2 + "/" + (props.y2 + props.span),
-    //     opacity: props.opacity,
-    //     transform: "rotate(" + (props.rotate ? 9 : "") + "0deg)"
-    // }; /*,
-    //                        border: "3px solid #66CC33"};*/
     const hidden =
         isNullOrUndefined(props.face1) && isNullOrUndefined(props.face2);
     if (
@@ -135,9 +116,10 @@ export const Domino = (props: IProps) => {
     return (
         <div
             className={"domino-outer-container"}
+            ref={props.draggable ? drag : null}
             style={{
                 flexDirection: flexDirection,
-                opacity: props.faded ? 0.5 : 1
+                opacity: props.faded || isDragging ? 0.5 : 1
             }}
         >
             <div className={"domino-container"} style={style1}>

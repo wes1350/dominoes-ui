@@ -8,7 +8,6 @@ interface IProps {
 }
 
 export const UserInput = (props: IProps) => {
-    console.log(props.gameState.Dominos);
     const [inputValue, setInputValue] = useState("");
 
     const onSubmit = (e: any) => {
