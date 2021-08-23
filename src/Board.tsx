@@ -1,6 +1,7 @@
 import React from "react";
 import "./Board.css";
 import { BoardDomino } from "./BoardDomino";
+import { BoardDominoDropArea } from "./BoardDominoDropArea";
 import { Domino } from "./Domino";
 import { DominoDescription } from "./DominoDescription";
 import { Direction } from "./Enums";
@@ -22,20 +23,6 @@ interface TranslatedDominoDescription {
     face1?: number;
     face2?: number;
     direction: Direction;
-    north: number;
-    east: number;
-    south: number;
-    west: number;
-}
-
-interface DropAreaDescription {
-    placementDirection: Direction;
-    isDouble: boolean;
-}
-
-interface DropAreaBoundingBoxDescription {
-    placementDirection: Direction;
-    isDouble: boolean;
     north: number;
     east: number;
     south: number;
@@ -299,37 +286,127 @@ export const Board = (props: IProps) => {
         };
     };
 
+    const generateDropAreaBoundingBoxDescriptions = (
+        descriptions: TranslatedDominoDescription[]
+    ) => {
+        // Mimic domino descriptions for determining drop area bounding boxes
+        const dropAreaDescriptions = new Map<
+            boolean,
+            Map<Direction, BoundingBoxDescription>
+        >();
+        dropAreaDescriptions.set(false, new Map());
+        dropAreaDescriptions.set(true, new Map());
+
+        if (descriptions.length === 0) {
+            [true, false].forEach((isDouble) => {
+                const mockDominoDescription = {
+                    face1: 0,
+                    face2: isDouble ? 0 : 1,
+                    direction: Direction.NONE,
+                    x: 0,
+                    y: 0
+                };
+                dropAreaDescriptions
+                    .get(isDouble)
+                    .set(
+                        Direction.NONE,
+                        generateNextTranslatedDominoDescription(
+                            descriptions,
+                            mockDominoDescription
+                        )
+                    );
+            });
+        } else {
+            [true, false].forEach((isDouble) => {
+                if (currentEastEdge) {
+                    const mockDominoDescription = {
+                        face1: 0,
+                        face2: isDouble ? 0 : 1,
+                        direction: Direction.NONE, // not used
+                        x: currentEastEdge.x + 1,
+                        y: 0
+                    };
+                    dropAreaDescriptions
+                        .get(isDouble)
+                        .set(
+                            Direction.EAST,
+                            generateNextTranslatedDominoDescription(
+                                descriptions,
+                                mockDominoDescription
+                            )
+                        );
+                }
+                if (currentWestEdge) {
+                    const mockDominoDescription = {
+                        face1: 0,
+                        face2: isDouble ? 0 : 1,
+                        direction: Direction.NONE, // not used
+                        x: currentWestEdge.x - 1,
+                        y: 0
+                    };
+                    dropAreaDescriptions
+                        .get(isDouble)
+                        .set(
+                            Direction.WEST,
+                            generateNextTranslatedDominoDescription(
+                                descriptions,
+                                mockDominoDescription
+                            )
+                        );
+                }
+                if (currentNorthEdge) {
+                    const mockDominoDescription = {
+                        face1: 0,
+                        face2: isDouble ? 0 : 1,
+                        direction: Direction.NONE, // not used
+                        x: currentNorthEdge.x,
+                        y: currentNorthEdge.y + 1
+                    };
+
+                    dropAreaDescriptions
+                        .get(isDouble)
+                        .set(
+                            Direction.NORTH,
+                            generateNextTranslatedDominoDescription(
+                                descriptions,
+                                mockDominoDescription
+                            )
+                        );
+                }
+                if (currentSouthEdge) {
+                    const mockDominoDescription = {
+                        face1: 0,
+                        face2: isDouble ? 0 : 1,
+                        direction: Direction.NONE, // not used
+                        x: currentSouthEdge.x,
+                        y: currentSouthEdge.y - 1
+                    };
+                    dropAreaDescriptions
+                        .get(isDouble)
+                        .set(
+                            Direction.SOUTH,
+                            generateNextTranslatedDominoDescription(
+                                descriptions,
+                                mockDominoDescription
+                            )
+                        );
+                }
+            });
+        }
+
+        return dropAreaDescriptions;
+    };
+
     const translateDescriptionsToActualSizes = (
         descriptions: DominoDescription[]
     ): {
         descriptions: TranslatedDominoDescription[];
-        dropAreaBoundingBoxes: DropAreaBoundingBoxDescription[];
+        dropAreaBoundingBoxes: Map<
+            boolean,
+            Map<Direction, BoundingBoxDescription>
+        >;
     } => {
         const newDescriptions: TranslatedDominoDescription[] = [];
-
-        // const dropAreaDescriptions: DropAreaDescription[] = [];
-        // if (descriptions.length === 0) {
-        //     [true, false].forEach((value) => {
-        //         dropAreaDescriptions.push({
-        //             placementDirection: Direction.NONE,
-        //             isDouble: value
-        //         });
-        //     });
-        // } else {
-        //     [true, false].forEach((value) => {
-        //         [
-        //             Direction.NORTH,
-        //             Direction.EAST,
-        //             Direction.SOUTH,
-        //             Direction.WEST
-        //         ].forEach((dir) => {
-        //             dropAreaDescriptions.push({
-        //                 placementDirection: dir,
-        //                 isDouble: value
-        //             });
-        //         });
-        //     });
-        // }
 
         descriptions.forEach((desc) => {
             newDescriptions.push(
@@ -340,10 +417,8 @@ export const Board = (props: IProps) => {
         console.log("new:", newDescriptions);
 
         // Now that the descriptions have been translated, determine the possible drop area coordinates
-        const dropAreaBoundingBoxes: DropAreaBoundingBoxDescription[] = [];
-        if (!currentEastEdge) {
-            // No dominoes on the board, render just a base box
-        }
+        const dropAreaBoundingBoxes =
+            generateDropAreaBoundingBoxDescriptions(newDescriptions);
 
         return {
             descriptions: newDescriptions,
@@ -423,61 +498,65 @@ export const Board = (props: IProps) => {
     };
 
     const bendDescriptions = (
-        translatedDescriptions: TranslatedDominoDescription[]
-    ): TranslatedDominoDescription[] => {
-        if (translatedDescriptions.length === 0) {
-            return [];
+        descriptions: TranslatedDominoDescription[],
+        dropAreaBoundingBoxes: Map<
+            boolean,
+            Map<Direction, BoundingBoxDescription>
+        >
+    ): {
+        descriptions: TranslatedDominoDescription[];
+        dropAreaBoundingBoxes: Map<
+            boolean,
+            Map<Direction, BoundingBoxDescription>
+        >;
+    } => {
+        if (descriptions.length === 0) {
+            return {
+                descriptions: [],
+                dropAreaBoundingBoxes: dropAreaBoundingBoxes
+            };
         }
 
         const bentDescriptions: TranslatedDominoDescription[] = [];
 
-        console.log(findNorthBendThreshold(translatedDescriptions));
-        console.log(findEastBendThreshold(translatedDescriptions));
-        console.log(findSouthBendThreshold(translatedDescriptions));
-        console.log(findWestBendThreshold(translatedDescriptions));
-
-        const northBendThreshold = findNorthBendThreshold(
-            translatedDescriptions
-        );
-        const eastBendThreshold = findEastBendThreshold(translatedDescriptions);
-        const southBendThreshold = findSouthBendThreshold(
-            translatedDescriptions
-        );
-        const westBendThreshold = findWestBendThreshold(translatedDescriptions);
+        const northBendThreshold = findNorthBendThreshold(descriptions);
+        const eastBendThreshold = findEastBendThreshold(descriptions);
+        const southBendThreshold = findSouthBendThreshold(descriptions);
+        const westBendThreshold = findWestBendThreshold(descriptions);
 
         const maxNorthPreBend = Math.max(
-            ...translatedDescriptions.map((desc) =>
+            ...descriptions.map((desc) =>
                 desc.north <= northBendThreshold ? desc.north : -1000
             )
         );
-        const northLimitBoundingBox = translatedDescriptions.find(
+        const northLimitBoundingBox = descriptions.find(
             (desc) => desc.north === maxNorthPreBend
         );
 
         const maxEastPreBend = Math.min(
-            ...translatedDescriptions.map((desc) =>
+            ...descriptions.map((desc) =>
                 desc.east >= eastBendThreshold ? desc.east : 1000
             )
         );
-        const eastLimitBoundingBox = translatedDescriptions.find(
+        const eastLimitBoundingBox = descriptions.find(
             (desc) => desc.east === maxEastPreBend
         );
 
         const maxSouthPreBend = Math.min(
-            ...translatedDescriptions.map((desc) =>
+            ...descriptions.map((desc) =>
                 desc.south >= southBendThreshold ? desc.south : 1000
             )
         );
-        const southLimitBoundingBox = translatedDescriptions.find(
+        const southLimitBoundingBox = descriptions.find(
             (desc) => desc.south === maxSouthPreBend
         );
 
         const maxWestPreBend = Math.max(
-            ...translatedDescriptions.map((desc) =>
+            ...descriptions.map((desc) =>
                 desc.west <= westBendThreshold ? desc.west : -1000
             )
         );
-        const westLimitBoundingBox = translatedDescriptions.find(
+        const westLimitBoundingBox = descriptions.find(
             (desc) => desc.west === maxWestPreBend
         );
 
@@ -509,67 +588,119 @@ export const Board = (props: IProps) => {
               }
             : null;
 
-        translatedDescriptions.forEach((desc, i) => {
+        const generateNextBentDominoDescription = (
+            desc: TranslatedDominoDescription
+        ) => {
             if (desc.south <= northBendThreshold) {
-                bentDescriptions.push({
+                return {
                     ...desc,
                     north: newNorthOrigin.y - (desc.east - newNorthOrigin.x),
                     east: newNorthOrigin.x - (desc.north - newNorthOrigin.y),
                     south: newNorthOrigin.y - (desc.west - newNorthOrigin.x),
                     west: newNorthOrigin.x - (desc.south - newNorthOrigin.y),
                     direction: rotateDirection(desc.direction)
-                });
+                };
             } else if (desc.north >= southBendThreshold) {
-                bentDescriptions.push({
+                return {
                     ...desc,
                     north: newSouthOrigin.y - (desc.west - newSouthOrigin.x),
                     east: newSouthOrigin.x - (desc.south - newSouthOrigin.y),
                     south: newSouthOrigin.y - (desc.east - newSouthOrigin.x),
                     west: newSouthOrigin.x - (desc.north - newSouthOrigin.y),
                     direction: rotateDirection(desc.direction)
-                });
+                };
                 // Need to ensure we do this only if the spinner has been encountered here
             } else if (desc.west >= eastBendThreshold) {
-                bentDescriptions.push({
+                return {
                     ...desc,
                     north: newEastOrigin.y + (desc.east - newEastOrigin.x),
                     east: newEastOrigin.x + (desc.north - newEastOrigin.y),
                     south: newEastOrigin.y + (desc.west - newEastOrigin.x),
                     west: newEastOrigin.x + (desc.south - newEastOrigin.y),
                     direction: rotateDirection(desc.direction)
-                });
+                };
             } else if (desc.east <= westBendThreshold) {
-                bentDescriptions.push({
+                return {
                     ...desc,
                     north: newWestOrigin.y + (desc.west - newWestOrigin.x),
                     east: newWestOrigin.x + (desc.south - newWestOrigin.y),
                     south: newWestOrigin.y + (desc.east - newWestOrigin.x),
                     west: newWestOrigin.x + (desc.north - newWestOrigin.y),
                     direction: rotateDirection(desc.direction)
-                });
+                };
             } else {
-                bentDescriptions.push(desc);
+                return desc;
             }
+        };
+
+        descriptions.forEach((desc, i) => {
+            bentDescriptions.push(generateNextBentDominoDescription(desc));
         });
         console.log("bent:", bentDescriptions);
-        return bentDescriptions;
+
+        // Bend the drop area bounding boxes
+
+        const bentDropAreaBoundingBoxes = new Map<
+            boolean,
+            Map<Direction, BoundingBoxDescription>
+        >();
+
+        bentDropAreaBoundingBoxes.set(false, new Map());
+        bentDropAreaBoundingBoxes.set(true, new Map());
+
+        [true, false].forEach((isDouble) => {
+            const boundingBoxMap = dropAreaBoundingBoxes.get(isDouble);
+            Array.from(boundingBoxMap.keys()).forEach((direction) => {
+                const translatedBoundingBox = boundingBoxMap.get(direction);
+                const mockDominoDescription = {
+                    north: translatedBoundingBox.north,
+                    east: translatedBoundingBox.east,
+                    south: translatedBoundingBox.south,
+                    west: translatedBoundingBox.west,
+                    face1: 0,
+                    face2: isDouble ? 0 : 1,
+                    direction: Direction.NONE // doesn't matter
+                };
+                bentDropAreaBoundingBoxes
+                    .get(isDouble)
+                    .set(
+                        direction,
+                        generateNextBentDominoDescription(mockDominoDescription)
+                    );
+            });
+        });
+
+        return {
+            descriptions: bentDescriptions,
+            dropAreaBoundingBoxes: bentDropAreaBoundingBoxes
+        };
     };
 
     const translatedDescriptions = translateDescriptionsToActualSizes(
         props.dominoDescriptions
     );
+
     const bentDescriptions = bendDescriptions(
-        translatedDescriptions.descriptions
+        translatedDescriptions.descriptions,
+        translatedDescriptions.dropAreaBoundingBoxes
+    );
+
+    const bentDominoDescriptions = bentDescriptions.descriptions;
+    const bentDropAreaDescriptions = bentDescriptions.dropAreaBoundingBoxes;
+
+    console.log(
+        "bentDropAreaDescriptions:",
+        Array.from(bentDropAreaDescriptions.get(false).keys())
     );
 
     const westBoundary =
-        Math.min(...bentDescriptions.map((desc) => desc.west)) - 2;
+        Math.min(...bentDominoDescriptions.map((desc) => desc.west)) - 2;
     const eastBoundary =
-        Math.max(...bentDescriptions.map((desc) => desc.east)) + 2;
+        Math.max(...bentDominoDescriptions.map((desc) => desc.east)) + 2;
     const northBoundary =
-        Math.min(...bentDescriptions.map((desc) => desc.north)) - 2;
+        Math.min(...bentDominoDescriptions.map((desc) => desc.north)) - 2;
     const southBoundary =
-        Math.max(...bentDescriptions.map((desc) => desc.north)) + 2;
+        Math.max(...bentDominoDescriptions.map((desc) => desc.north)) + 2;
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 
@@ -590,16 +721,21 @@ export const Board = (props: IProps) => {
         (gridHeightInSquares - minGridHeightInSquares) / 2
     );
 
-    const finalDescriptions = bentDescriptions.map((desc) => {
+    const northShift = gridVerticalSquareMargin - northBoundary;
+    const eastShift = gridHorizontalSquareMargin - westBoundary;
+    const southShift = gridVerticalSquareMargin - northBoundary;
+    const westShift = gridHorizontalSquareMargin - westBoundary;
+
+    const finalDominoDescriptions = bentDominoDescriptions.map((desc) => {
         return {
             ...desc,
-            north: desc.north + gridVerticalSquareMargin - northBoundary,
-            east: desc.east + gridHorizontalSquareMargin - westBoundary,
-            south: desc.south + gridVerticalSquareMargin - northBoundary,
-            west: desc.west + gridHorizontalSquareMargin - westBoundary
+            north: desc.north + northShift,
+            east: desc.east + eastShift,
+            south: desc.south + southShift,
+            west: desc.west + westShift
         };
     });
-    console.log(finalDescriptions);
+    console.log(finalDominoDescriptions);
 
     return (
         <div
@@ -617,7 +753,7 @@ export const Board = (props: IProps) => {
                 }px)`
             }}
         >
-            {finalDescriptions.map((d, i) => {
+            {finalDominoDescriptions.map((d, i) => {
                 return (
                     <BoardDomino
                         key={i}
@@ -637,6 +773,32 @@ export const Board = (props: IProps) => {
                     </BoardDomino>
                 );
             })}
+            {Array.from(bentDropAreaDescriptions.get(false).values()).map(
+                (box, i) => {
+                    return (
+                        <BoardDominoDropArea
+                            north={box.north + northShift}
+                            east={box.east + eastShift}
+                            south={box.south + southShift}
+                            west={box.west + westShift}
+                            isHighlighted={true}
+                        ></BoardDominoDropArea>
+                    );
+                }
+            )}
+            {Array.from(bentDropAreaDescriptions.get(true).values()).map(
+                (box, i) => {
+                    return (
+                        <BoardDominoDropArea
+                            north={box.north + northShift}
+                            east={box.east + eastShift}
+                            south={box.south + southShift}
+                            west={box.west + westShift}
+                            isHighlighted={true}
+                        ></BoardDominoDropArea>
+                    );
+                }
+            )}
         </div>
     );
 };
