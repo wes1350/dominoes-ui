@@ -76,41 +76,61 @@ export const Board = (props: IProps) => {
 
     const generateNextTranslatedDominoDescription = (
         existingTranslatedDescriptions: TranslatedDominoDescription[],
-        desc: DominoDescription
+        desc: DominoDescription,
+        onlyCalculate?: boolean
     ): TranslatedDominoDescription => {
-        //
+        let currentBoundingBox;
         if (existingTranslatedDescriptions.length === 0) {
             // first domino is always at 0, 0
             if (isDouble(desc)) {
-                addValueToNestedMap(coordinatesToBoundingBoxes, 0, 0, {
+                currentBoundingBox = {
                     north: -2,
                     east: 1,
                     south: 2,
                     west: -1
-                });
-                addValueToNestedMap(coordinatesToIsDouble, 0, 0, true);
+                };
 
-                currentNorthEdge = { x: 0, y: 0, double: true };
-                currentEastEdge = { x: 0, y: 0, double: true };
-                currentSouthEdge = { x: 0, y: 0, double: true };
-                currentWestEdge = { x: 0, y: 0, double: true };
+                if (!onlyCalculate) {
+                    addValueToNestedMap(
+                        coordinatesToBoundingBoxes,
+                        0,
+                        0,
+                        currentBoundingBox
+                    );
+                    addValueToNestedMap(coordinatesToIsDouble, 0, 0, true);
+
+                    currentNorthEdge = { x: 0, y: 0, double: true };
+                    currentEastEdge = { x: 0, y: 0, double: true };
+                    currentSouthEdge = { x: 0, y: 0, double: true };
+                    currentWestEdge = { x: 0, y: 0, double: true };
+                }
             } else {
-                addValueToNestedMap(coordinatesToBoundingBoxes, 0, 0, {
+                currentBoundingBox = {
                     north: -1,
                     east: 2,
                     south: 1,
                     west: -2
-                });
-                addValueToNestedMap(coordinatesToIsDouble, 0, 0, false);
-                currentEastEdge = { x: 0, y: 0, double: false };
-                currentWestEdge = { x: 0, y: 0, double: false };
-                // this is not the spinner, so don't set the north/south edges
+                };
+                if (!onlyCalculate) {
+                    addValueToNestedMap(
+                        coordinatesToBoundingBoxes,
+                        0,
+                        0,
+                        currentBoundingBox
+                    );
+                    addValueToNestedMap(coordinatesToIsDouble, 0, 0, false);
+                    currentEastEdge = { x: 0, y: 0, double: false };
+                    currentWestEdge = { x: 0, y: 0, double: false };
+                    // this is not the spinner, so don't set the north/south edges
+                }
             }
         } else {
             if (isDouble(desc) && !currentNorthEdge) {
-                // This is the spinner, set the north/south edges properly
-                currentNorthEdge = { x: desc.x, y: 0, double: true };
-                currentSouthEdge = { x: desc.x, y: 0, double: true };
+                if (!onlyCalculate) {
+                    // This is the spinner, set the north/south edges properly
+                    currentNorthEdge = { x: desc.x, y: 0, double: true };
+                    currentSouthEdge = { x: desc.x, y: 0, double: true };
+                }
             }
 
             if (desc.y > 0) {
@@ -119,163 +139,166 @@ export const Board = (props: IProps) => {
                     .get(currentNorthEdge.x)
                     .get(currentNorthEdge.y);
 
-                addValueToNestedMap(
-                    coordinatesToBoundingBoxes,
-                    desc.x,
-                    desc.y,
-                    {
-                        north: isDouble(desc)
-                            ? boxAtEdge.north - 2
-                            : boxAtEdge.north - 4,
-                        east: isDouble(desc)
-                            ? boxAtEdge.east + 1
-                            : boxAtEdge.east -
-                              (currentNorthEdge.double &&
-                              currentNorthEdge.y !== 0
-                                  ? 1
-                                  : 0),
-                        south: boxAtEdge.north,
-                        west: isDouble(desc)
-                            ? boxAtEdge.west - 1
-                            : boxAtEdge.west +
-                              (currentNorthEdge.double &&
-                              currentNorthEdge.y !== 0
-                                  ? 1
-                                  : 0)
-                    }
-                );
-
-                addValueToNestedMap(
-                    coordinatesToIsDouble,
-                    desc.x,
-                    desc.y,
-                    isDouble(desc)
-                );
-                currentNorthEdge = {
-                    x: desc.x,
-                    y: desc.y,
-                    double: isDouble(desc)
+                currentBoundingBox = {
+                    north: isDouble(desc)
+                        ? boxAtEdge.north - 2
+                        : boxAtEdge.north - 4,
+                    east: isDouble(desc)
+                        ? boxAtEdge.east + 1
+                        : boxAtEdge.east -
+                          (currentNorthEdge.double && currentNorthEdge.y !== 0
+                              ? 1
+                              : 0),
+                    south: boxAtEdge.north,
+                    west: isDouble(desc)
+                        ? boxAtEdge.west - 1
+                        : boxAtEdge.west +
+                          (currentNorthEdge.double && currentNorthEdge.y !== 0
+                              ? 1
+                              : 0)
                 };
+
+                if (!onlyCalculate) {
+                    addValueToNestedMap(
+                        coordinatesToBoundingBoxes,
+                        desc.x,
+                        desc.y,
+                        currentBoundingBox
+                    );
+
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
+                    );
+                    currentNorthEdge = {
+                        x: desc.x,
+                        y: desc.y,
+                        double: isDouble(desc)
+                    };
+                }
             } else if (desc.y < 0) {
                 // adding on south side
                 const boxAtEdge = coordinatesToBoundingBoxes
                     .get(currentSouthEdge.x)
                     .get(currentSouthEdge.y);
 
-                addValueToNestedMap(
-                    coordinatesToBoundingBoxes,
-                    desc.x,
-                    desc.y,
-                    {
-                        north: boxAtEdge.south,
-                        east: isDouble(desc)
-                            ? boxAtEdge.east + 1
-                            : boxAtEdge.east -
-                              (currentSouthEdge.double &&
-                              currentSouthEdge.y !== 0
-                                  ? 1
-                                  : 0),
-                        south: isDouble(desc)
-                            ? boxAtEdge.south + 2
-                            : boxAtEdge.south + 4,
-                        west: isDouble(desc)
-                            ? boxAtEdge.west - 1
-                            : boxAtEdge.west +
-                              (currentSouthEdge.double &&
-                              currentSouthEdge.y !== 0
-                                  ? 1
-                                  : 0)
-                    }
-                );
-                addValueToNestedMap(
-                    coordinatesToIsDouble,
-                    desc.x,
-                    desc.y,
-                    isDouble(desc)
-                );
-                currentSouthEdge = {
-                    x: desc.x,
-                    y: desc.y,
-                    double: isDouble(desc)
+                currentBoundingBox = {
+                    north: boxAtEdge.south,
+                    east: isDouble(desc)
+                        ? boxAtEdge.east + 1
+                        : boxAtEdge.east -
+                          (currentSouthEdge.double && currentSouthEdge.y !== 0
+                              ? 1
+                              : 0),
+                    south: isDouble(desc)
+                        ? boxAtEdge.south + 2
+                        : boxAtEdge.south + 4,
+                    west: isDouble(desc)
+                        ? boxAtEdge.west - 1
+                        : boxAtEdge.west +
+                          (currentSouthEdge.double && currentSouthEdge.y !== 0
+                              ? 1
+                              : 0)
                 };
+
+                if (!onlyCalculate) {
+                    addValueToNestedMap(
+                        coordinatesToBoundingBoxes,
+                        desc.x,
+                        desc.y,
+                        currentBoundingBox
+                    );
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
+                    );
+                    currentSouthEdge = {
+                        x: desc.x,
+                        y: desc.y,
+                        double: isDouble(desc)
+                    };
+                }
             } else if (desc.x > 0) {
                 // adding on east side
                 const boxAtEdge = coordinatesToBoundingBoxes
                     .get(currentEastEdge.x)
                     .get(currentEastEdge.y);
 
-                addValueToNestedMap(
-                    coordinatesToBoundingBoxes,
-                    desc.x,
-                    desc.y,
-                    {
-                        north: isDouble(desc)
-                            ? boxAtEdge.north - 1
-                            : boxAtEdge.north +
-                              (currentEastEdge.double ? 1 : 0),
-                        east: isDouble(desc)
-                            ? boxAtEdge.east + 2
-                            : boxAtEdge.east + 4,
-                        south: isDouble(desc)
-                            ? boxAtEdge.south + 1
-                            : boxAtEdge.south -
-                              (currentEastEdge.double ? 1 : 0),
-                        west: boxAtEdge.east
-                    }
-                );
-                addValueToNestedMap(
-                    coordinatesToIsDouble,
-                    desc.x,
-                    desc.y,
-                    isDouble(desc)
-                );
-                currentEastEdge = {
-                    x: desc.x,
-                    y: desc.y,
-                    double: isDouble(desc)
+                currentBoundingBox = {
+                    north: isDouble(desc)
+                        ? boxAtEdge.north - 1
+                        : boxAtEdge.north + (currentEastEdge.double ? 1 : 0),
+                    east: isDouble(desc)
+                        ? boxAtEdge.east + 2
+                        : boxAtEdge.east + 4,
+                    south: isDouble(desc)
+                        ? boxAtEdge.south + 1
+                        : boxAtEdge.south - (currentEastEdge.double ? 1 : 0),
+                    west: boxAtEdge.east
                 };
+
+                if (!onlyCalculate) {
+                    addValueToNestedMap(
+                        coordinatesToBoundingBoxes,
+                        desc.x,
+                        desc.y,
+                        currentBoundingBox
+                    );
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
+                    );
+                    currentEastEdge = {
+                        x: desc.x,
+                        y: desc.y,
+                        double: isDouble(desc)
+                    };
+                }
             } else if (desc.x < 0) {
                 // adding on west side
                 const boxAtEdge = coordinatesToBoundingBoxes
                     .get(currentWestEdge.x)
                     .get(currentWestEdge.y);
 
-                addValueToNestedMap(
-                    coordinatesToBoundingBoxes,
-                    desc.x,
-                    desc.y,
-                    {
-                        north: isDouble(desc)
-                            ? boxAtEdge.north - 1
-                            : boxAtEdge.north +
-                              (currentWestEdge.double ? 1 : 0),
-                        east: boxAtEdge.west,
-                        south: isDouble(desc)
-                            ? boxAtEdge.south + 1
-                            : boxAtEdge.south -
-                              (currentWestEdge.double ? 1 : 0),
-                        west: isDouble(desc)
-                            ? boxAtEdge.west - 2
-                            : boxAtEdge.west - 4
-                    }
-                );
-                addValueToNestedMap(
-                    coordinatesToIsDouble,
-                    desc.x,
-                    desc.y,
-                    isDouble(desc)
-                );
-                currentWestEdge = {
-                    x: desc.x,
-                    y: desc.y,
-                    double: isDouble(desc)
+                currentBoundingBox = {
+                    north: isDouble(desc)
+                        ? boxAtEdge.north - 1
+                        : boxAtEdge.north + (currentWestEdge.double ? 1 : 0),
+                    east: boxAtEdge.west,
+                    south: isDouble(desc)
+                        ? boxAtEdge.south + 1
+                        : boxAtEdge.south - (currentWestEdge.double ? 1 : 0),
+                    west: isDouble(desc)
+                        ? boxAtEdge.west - 2
+                        : boxAtEdge.west - 4
                 };
+                if (!onlyCalculate) {
+                    addValueToNestedMap(
+                        coordinatesToBoundingBoxes,
+                        desc.x,
+                        desc.y,
+                        currentBoundingBox
+                    );
+                    addValueToNestedMap(
+                        coordinatesToIsDouble,
+                        desc.x,
+                        desc.y,
+                        isDouble(desc)
+                    );
+                    currentWestEdge = {
+                        x: desc.x,
+                        y: desc.y,
+                        double: isDouble(desc)
+                    };
+                }
             }
         }
-
-        const currentBoundingBox = coordinatesToBoundingBoxes
-            .get(desc.x)
-            .get(desc.y);
 
         return {
             ...desc,
@@ -312,7 +335,8 @@ export const Board = (props: IProps) => {
                         Direction.NONE,
                         generateNextTranslatedDominoDescription(
                             descriptions,
-                            mockDominoDescription
+                            mockDominoDescription,
+                            true
                         )
                     );
             });
@@ -326,15 +350,15 @@ export const Board = (props: IProps) => {
                         x: currentEastEdge.x + 1,
                         y: 0
                     };
+                    const desc = generateNextTranslatedDominoDescription(
+                        descriptions,
+                        mockDominoDescription,
+                        true
+                    );
+                    console.log(desc);
                     dropAreaDescriptions
                         .get(isDouble)
-                        .set(
-                            Direction.EAST,
-                            generateNextTranslatedDominoDescription(
-                                descriptions,
-                                mockDominoDescription
-                            )
-                        );
+                        .set(Direction.EAST, desc);
                 }
                 if (currentWestEdge) {
                     const mockDominoDescription = {
@@ -350,7 +374,8 @@ export const Board = (props: IProps) => {
                             Direction.WEST,
                             generateNextTranslatedDominoDescription(
                                 descriptions,
-                                mockDominoDescription
+                                mockDominoDescription,
+                                true
                             )
                         );
                 }
@@ -369,7 +394,8 @@ export const Board = (props: IProps) => {
                             Direction.NORTH,
                             generateNextTranslatedDominoDescription(
                                 descriptions,
-                                mockDominoDescription
+                                mockDominoDescription,
+                                true
                             )
                         );
                 }
@@ -387,7 +413,8 @@ export const Board = (props: IProps) => {
                             Direction.SOUTH,
                             generateNextTranslatedDominoDescription(
                                 descriptions,
-                                mockDominoDescription
+                                mockDominoDescription,
+                                true
                             )
                         );
                 }
@@ -694,13 +721,13 @@ export const Board = (props: IProps) => {
     );
 
     const westBoundary =
-        Math.min(...bentDominoDescriptions.map((desc) => desc.west)) - 2;
+        Math.min(...bentDominoDescriptions.map((desc) => desc.west)) - 4;
     const eastBoundary =
-        Math.max(...bentDominoDescriptions.map((desc) => desc.east)) + 2;
+        Math.max(...bentDominoDescriptions.map((desc) => desc.east)) + 4;
     const northBoundary =
-        Math.min(...bentDominoDescriptions.map((desc) => desc.north)) - 2;
+        Math.min(...bentDominoDescriptions.map((desc) => desc.north)) - 4;
     const southBoundary =
-        Math.max(...bentDominoDescriptions.map((desc) => desc.north)) + 2;
+        Math.max(...bentDominoDescriptions.map((desc) => desc.north)) + 4;
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 
@@ -736,6 +763,20 @@ export const Board = (props: IProps) => {
         };
     });
     console.log(finalDominoDescriptions);
+
+    const getTypeOfDominoAtEdge = (direction: Direction) => {
+        if (direction === Direction.NONE) {
+            return null;
+        } else if (direction === Direction.NORTH) {
+            return currentNorthEdge?.double;
+        } else if (direction === Direction.EAST) {
+            return currentEastEdge?.double;
+        } else if (direction === Direction.SOUTH) {
+            return currentSouthEdge?.double;
+        } else if (direction === Direction.WEST) {
+            return currentWestEdge?.double;
+        }
+    };
 
     return (
         <div
@@ -773,8 +814,12 @@ export const Board = (props: IProps) => {
                     </BoardDomino>
                 );
             })}
-            {Array.from(bentDropAreaDescriptions.get(false).values()).map(
-                (box, i) => {
+            {Array.from(bentDropAreaDescriptions.get(false).keys()).map(
+                (direction, i) => {
+                    const box = bentDropAreaDescriptions
+                        .get(false)
+                        .get(direction);
+                    const edgeType = getTypeOfDominoAtEdge(direction);
                     return (
                         <BoardDominoDropArea
                             north={box.north + northShift}
@@ -786,7 +831,7 @@ export const Board = (props: IProps) => {
                     );
                 }
             )}
-            {Array.from(bentDropAreaDescriptions.get(true).values()).map(
+            {/* {Array.from(bentDropAreaDescriptions.get(true).values()).map(
                 (box, i) => {
                     return (
                         <BoardDominoDropArea
@@ -798,7 +843,7 @@ export const Board = (props: IProps) => {
                         ></BoardDominoDropArea>
                     );
                 }
-            )}
+            )} */}
         </div>
     );
 };
