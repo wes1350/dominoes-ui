@@ -1,30 +1,41 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 import "./Domino.css";
-import { DragItemTypes } from "./Enums";
+import { Direction, DragItemTypes } from "./Enums";
 
 interface IProps {
     north: number;
     east: number;
     south: number;
     west: number;
-    isHighlighted: boolean;
+    isActive: boolean;
+    boardDirection: Direction;
+    onDropDomino: (
+        item: { face1: number; face2: number },
+        direction: Direction
+    ) => void;
 }
 
 export const BoardDominoDropArea = (props: IProps) => {
-    const [{ isOver }, drop] = useDrop(() => ({
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: DragItemTypes.DOMINO,
-        // drop: () => moveKnight(x, y),
+        drop: (item: { face1: number; face2: number }, monitor) =>
+            props.onDropDomino(item, props.boardDirection),
         collect: (monitor) => ({
-            isOver: !!monitor.isOver()
+            isOver: !!monitor.isOver(),
+            canDrop: true
         })
     }));
+
     return (
-        <div
-            style={{
-                gridArea: `${props.north} / ${props.west} / ${props.south} / ${props.east}`,
-                border: props.isHighlighted ? "2px solid red" : undefined
-            }}
-        ></div>
+        props.isActive && (
+            <div
+                ref={drop}
+                style={{
+                    gridArea: `${props.north} / ${props.west} / ${props.south} / ${props.east}`,
+                    border: canDrop ? "2px solid red" : undefined
+                }}
+            ></div>
+        )
     );
 };

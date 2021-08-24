@@ -2,27 +2,16 @@ import React from "react";
 import { Face } from "./Face";
 import "./Domino.css";
 import { isNullOrUndefined } from "./utils";
-import { Direction, DragItemTypes } from "./Enums";
-import { useDrag } from "react-dnd";
+import { Direction } from "./Enums";
 
 interface IProps {
     face1?: number;
     face2?: number;
     direction: Direction;
     size?: number;
-    faded?: boolean;
-    draggable?: boolean;
 }
 
 export const Domino = (props: IProps) => {
-    const [{ isDragging }, drag] = useDrag(() => ({
-        type: DragItemTypes.DOMINO,
-        item: { face1: props.face1, face2: props.face2 },
-        collect: (monitor) => ({
-            isDragging: !!monitor.isDragging()
-        })
-    }));
-
     const hidden =
         isNullOrUndefined(props.face1) && isNullOrUndefined(props.face2);
     if (
@@ -116,10 +105,8 @@ export const Domino = (props: IProps) => {
     return (
         <div
             className={"domino-outer-container"}
-            ref={props.draggable ? drag : null}
             style={{
-                flexDirection: flexDirection,
-                opacity: props.faded || isDragging ? 0.5 : 1
+                flexDirection: flexDirection
             }}
         >
             <div className={"domino-container"} style={style1}>

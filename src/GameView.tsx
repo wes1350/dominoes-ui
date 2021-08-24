@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Board } from "./Board";
 import { GameState } from "./GameState";
 import { MyPlayerView } from "./MyPlayerView";
 import { OpponentPlayerView } from "./OpponentPlayerView";
 import { Player } from "./Player";
 import "./GameView.css";
-import { QueryType } from "./Enums";
+import { Direction, QueryType } from "./Enums";
 import { UserInput } from "./UserInput";
 import { GameLogs } from "./GameLogs";
 import { DndProvider } from "react-dnd";
@@ -17,6 +17,8 @@ interface IProps {
 }
 
 export const GameView = (props: IProps) => {
+    const [dominoBeingDragged, setDominoBeingDragged] = useState(null);
+
     const n_players = props.gameState.N_Players;
     // maps opponent seat number to the display index
     const playerIndices = new Map<number, number>();
@@ -45,7 +47,32 @@ export const GameView = (props: IProps) => {
         <DndProvider backend={HTML5Backend}>
             <div className="game-view">
                 <div className={"board-container"}>
-                    <Board dominoDescriptions={[...props.gameState.Dominos]} />
+                    <Board
+                        dominoDescriptions={[...props.gameState.Dominos]}
+                        onDropDomino={(
+                            domino: { face1: number; face2: number },
+                            direction: Direction
+                        ) => {
+                            const dominoIndex = props.gameState.Players[
+                                props.gameState.CurrentPlayer
+                            ].Hand.findIndex(
+                                (dominoInHand) =>
+                                    dominoInHand.face1 === domino.face1 &&
+                                    dominoInHand.face2 === domino.face2
+                            );
+                            props.respond(props.gameState.CurrentQueryType, {
+                                domino: dominoIndex,
+                                direction: direction
+                            });
+                        }}
+                        dominoBeingDragged={
+                            dominoBeingDragged
+                                ? props.gameState.Players[
+                                      props.gameState.CurrentPlayer
+                                  ].Hand[dominoBeingDragged]
+                                : null
+                        }
+                    />
                 </div>
                 <div className={"player-container"}>
                     {props.gameState.Players.filter(
@@ -68,6 +95,12 @@ export const GameView = (props: IProps) => {
                         current={
                             props.gameState.CurrentPlayer === me.SeatNumber
                         }
+                        onStartDrag={(index: number) => {
+                            setDominoBeingDragged(index);
+                        }}
+                        onStopDrag={() => {
+                            setDominoBeingDragged(null);
+                        }}
                     />
                 </div>
                 <div className={"input-container"}>

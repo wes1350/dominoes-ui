@@ -1,12 +1,15 @@
 import React from "react";
 import { Domino } from "./Domino";
 import { Direction } from "./Enums";
+import { MyHandDomino } from "./MyHandDomino";
 import { Player } from "./Player";
 import "./PlayerView.css";
 
 interface IProps {
     player: Player;
     current: boolean;
+    onStartDrag: (index: number) => void;
+    onStopDrag: () => void;
 }
 
 export const MyPlayerView = (props: IProps) => {
@@ -24,7 +27,21 @@ export const MyPlayerView = (props: IProps) => {
             <div className={"hand-container hand-container-horizontal"}>
                 {props.player.Hand.map((domino, i) => {
                     return (
-                        <div key={i} className={"hand-domino-container"}>
+                        <MyHandDomino
+                            key={i}
+                            face1={domino.face1}
+                            face2={domino.face2}
+                            faded={
+                                playableDominoes === null
+                                    ? true
+                                    : !playableDominoes.includes(i)
+                            }
+                            draggable={props.player.PlayableDominoes?.includes(
+                                i
+                            )}
+                            onStartDrag={() => props.onStartDrag(i)}
+                            onStopDrag={() => props.onStopDrag()}
+                        >
                             <Domino
                                 face1={domino.face1}
                                 face2={domino.face2}
@@ -39,13 +56,8 @@ export const MyPlayerView = (props: IProps) => {
                                             )
                                     )
                                 }
-                                faded={
-                                    playableDominoes === null
-                                        ? true
-                                        : !playableDominoes.includes(i)
-                                }
                             />
-                        </div>
+                        </MyHandDomino>
                     );
                 })}
             </div>

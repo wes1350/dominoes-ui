@@ -31,6 +31,11 @@ interface TranslatedDominoDescription {
 
 interface IProps {
     dominoDescriptions: DominoDescription[];
+    onDropDomino: (
+        dominoFaces: { face1: number; face2: number },
+        direction: Direction
+    ) => void;
+    dominoBeingDragged: DominoDescription;
 }
 
 const addValueToNestedMap = (
@@ -764,20 +769,6 @@ export const Board = (props: IProps) => {
     });
     console.log(finalDominoDescriptions);
 
-    const getTypeOfDominoAtEdge = (direction: Direction) => {
-        if (direction === Direction.NONE) {
-            return null;
-        } else if (direction === Direction.NORTH) {
-            return currentNorthEdge?.double;
-        } else if (direction === Direction.EAST) {
-            return currentEastEdge?.double;
-        } else if (direction === Direction.SOUTH) {
-            return currentSouthEdge?.double;
-        } else if (direction === Direction.WEST) {
-            return currentWestEdge?.double;
-        }
-    };
-
     return (
         <div
             className="board"
@@ -808,8 +799,6 @@ export const Board = (props: IProps) => {
                             face2={d.face2}
                             direction={d.direction}
                             size={gridSizeInPixels * 2}
-                            faded={false}
-                            draggable={false}
                         />
                     </BoardDomino>
                 );
@@ -819,27 +808,43 @@ export const Board = (props: IProps) => {
                     const box = bentDropAreaDescriptions
                         .get(false)
                         .get(direction);
-                    const edgeType = getTypeOfDominoAtEdge(direction);
                     return (
                         <BoardDominoDropArea
+                            key={"false" + direction}
                             north={box.north + northShift}
                             east={box.east + eastShift}
                             south={box.south + southShift}
                             west={box.west + westShift}
-                            isHighlighted={true}
+                            boardDirection={direction}
+                            onDropDomino={props.onDropDomino}
+                            isActive={
+                                props.dominoBeingDragged
+                                    ? !isDouble(props.dominoBeingDragged)
+                                    : false
+                            }
                         ></BoardDominoDropArea>
                     );
                 }
             )}
-            {Array.from(bentDropAreaDescriptions.get(true).values()).map(
-                (box, i) => {
+            {Array.from(bentDropAreaDescriptions.get(true).keys()).map(
+                (direction, i) => {
+                    const box = bentDropAreaDescriptions
+                        .get(true)
+                        .get(direction);
                     return (
                         <BoardDominoDropArea
+                            key={"true" + direction}
                             north={box.north + northShift}
                             east={box.east + eastShift}
                             south={box.south + southShift}
                             west={box.west + westShift}
-                            isHighlighted={true}
+                            boardDirection={direction}
+                            onDropDomino={props.onDropDomino}
+                            isActive={
+                                props.dominoBeingDragged
+                                    ? isDouble(props.dominoBeingDragged)
+                                    : false
+                            }
                         ></BoardDominoDropArea>
                     );
                 }

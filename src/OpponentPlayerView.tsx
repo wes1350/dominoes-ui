@@ -46,7 +46,6 @@ export const OpponentPlayerView = (props: IProps) => {
                                             )
                                     )
                                 }
-                                faded={false}
                             />
                         </div>
                     );
