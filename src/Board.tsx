@@ -831,7 +831,7 @@ export const Board = (props: IProps) => {
                     );
                 }
             )}
-            {/* {Array.from(bentDropAreaDescriptions.get(true).values()).map(
+            {Array.from(bentDropAreaDescriptions.get(true).values()).map(
                 (box, i) => {
                     return (
                         <BoardDominoDropArea
@@ -843,7 +843,7 @@ export const Board = (props: IProps) => {
                         ></BoardDominoDropArea>
                     );
                 }
-            )} */}
+            )}
         </div>
     );
 };
