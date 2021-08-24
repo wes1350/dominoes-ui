@@ -66,7 +66,7 @@ export const GameView = (props: IProps) => {
                             });
                         }}
                         dominoBeingDragged={
-                            dominoBeingDragged
+                            dominoBeingDragged !== null
                                 ? props.gameState.Players[
                                       props.gameState.CurrentPlayer
                                   ].Hand[dominoBeingDragged]
