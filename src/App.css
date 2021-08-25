@@ -1,5 +1,6 @@
 .App {
     font-family: Verdana, Helvetica, sans-serif;
+    box-sizing: border-box;
 }
 
 .game-start-button {

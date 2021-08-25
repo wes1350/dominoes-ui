@@ -1,5 +1,12 @@
 import React from "react";
-import "./Face.css";
+// import "./Face.css";
+import { ReactComponent as ReactFace0 } from "./faces/face0.svg";
+import { ReactComponent as ReactFace1 } from "./faces/face1.svg";
+import { ReactComponent as ReactFace2 } from "./faces/face2.svg";
+import { ReactComponent as ReactFace3 } from "./faces/face3.svg";
+import { ReactComponent as ReactFace4 } from "./faces/face4.svg";
+import { ReactComponent as ReactFace5 } from "./faces/face5.svg";
+import { ReactComponent as ReactFace6 } from "./faces/face6.svg";
 
 interface IProps {
     num?: number;
@@ -7,99 +14,24 @@ interface IProps {
 }
 
 export const Face = (props: IProps) => {
-    // Temporary, just for error checking
-
-    if (![0, 1, 2, 3, 4, 5, 6].includes(props.num) && !!props.num) {
-        return (
-            <div className="face-container">
-                <div className="dot row-1 col-1"></div>
-                <div className="dot row-2 col-1"></div>
-                <div className="dot row-3 col-1"></div>
-                <div className="dot row-1 col-2"></div>
-                <div className="dot row-2 col-2"></div>
-                <div className="dot row-3 col-2"></div>
-                <div className="dot row-1 col-3"></div>
-                <div className="dot row-2 col-3"></div>
-                <div className="dot row-3 col-3"></div>
-            </div>
-        );
-    }
-
-    let dots;
-    if (props.num === 0 || !props.num) {
-        dots = <></>;
-    }
-
-    if (props.num === 1) {
-        dots = (
-            <>
-                <div className="dot row-2 col-2"></div>
-            </>
-        );
-    }
-
-    if (props.num === 2) {
-        dots = (
-            <>
-                <div className="dot row-1 col-1"></div>
-                <div className="dot row-3 col-3"></div>
-            </>
-        );
-    }
-
-    if (props.num === 3) {
-        dots = (
-            <>
-                <div className="dot row-1 col-1"></div>
-                <div className="dot row-2 col-2"></div>
-                <div className="dot row-3 col-3"></div>
-            </>
-        );
-    }
-
-    if (props.num === 4) {
-        dots = (
-            <>
-                <div className="dot row-1 col-1"></div>
-                <div className="dot row-1 col-3"></div>
-                <div className="dot row-3 col-1"></div>
-                <div className="dot row-3 col-3"></div>
-            </>
-        );
-    }
-    if (props.num === 5) {
-        dots = (
-            <>
-                <div className="dot row-1 col-1"></div>
-                <div className="dot row-1 col-3"></div>
-                <div className="dot row-2 col-2"></div>
-                <div className="dot row-3 col-1"></div>
-                <div className="dot row-3 col-3"></div>
-            </>
-        );
-    }
-    if (props.num === 6) {
-        dots = (
-            <>
-                <div className="dot row-1 col-1"></div>
-                <div className="dot row-2 col-1"></div>
-                <div className="dot row-3 col-1"></div>
-                <div className="dot row-1 col-3"></div>
-                <div className="dot row-2 col-3"></div>
-                <div className="dot row-3 col-3"></div>
-            </>
-        );
-    }
+    const faces = [
+        <ReactFace0 />,
+        <ReactFace1 />,
+        <ReactFace2 />,
+        <ReactFace3 />,
+        <ReactFace4 />,
+        <ReactFace5 />,
+        <ReactFace6 />
+    ];
 
     return (
         <div
-            className="face-container"
             style={{
                 width: `${props.size ?? 96}px`,
                 height: `${props.size ?? 96}px`
             }}
         >
-            {dots}
+            {faces[props.num ?? 0]}
         </div>
     );
 };
