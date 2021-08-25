@@ -81,27 +81,19 @@ export const App = (props: IProps) => {
         socket.on(
             MessageType.SCORE,
             (payload: { seat: number; score: number }) => {
-                console.log(renderKey);
-                console.log("Got Score:", payload);
                 gameState.ProcessScore(payload.seat, payload.score);
                 setRenderKey((key: number) => key + 1);
             }
         );
         socket.on(MessageType.HAND, (payload: any) => {
-            console.log(renderKey);
-            console.log("Got Hand:", payload);
             gameState.Me.SetHand(payload);
             setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.PLAYABLE_DOMINOS, (payload: string) => {
-            // console.log(renderKey);
-            console.log("Got Playable dominoes:", payload);
             gameState.Me.SetPlayableDominoes(JSON.parse("[" + payload + "]"));
             setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.DOMINO_PLAYED, (payload: { seat: number }) => {
-            console.log(renderKey);
-            console.log("Removing opponent domino", payload);
             const player = gameState.PlayerAtSeat(payload.seat);
             if (!player.IsMe) {
                 player.RemoveDomino(hiddenDomino());
@@ -109,14 +101,10 @@ export const App = (props: IProps) => {
             setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.CLEAR_BOARD, () => {
-            console.log(renderKey);
-            console.log("Clearing board");
             gameState.ClearBoard();
             setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.PULL, (payload: { seat: number }) => {
-            console.log(renderKey);
-            console.log("Domino pulled:", payload);
             const player = gameState.PlayerAtSeat(payload.seat);
             if (!player.IsMe) {
                 player.AddDomino(hiddenDomino());
@@ -124,27 +112,21 @@ export const App = (props: IProps) => {
             setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.NEW_ROUND, (payload: NewRoundMessage) => {
-            console.log(renderKey);
-            console.log("New round:", payload);
             gameState.SetCurrentPlayer(payload.currentPlayer);
             gameState.SetOpponentHands();
             setRenderKey((key: number) => key + 1);
         });
 
         socket.on(QueryType.MOVE, (message: string) => {
-            console.log("got queried for a move");
-            console.log("message:", message);
             gameState.SetQueryType(QueryType.MOVE);
         });
 
         socket.on(MessageType.GAME_OVER, (winner: number) => {
             gameState.Finish();
-            console.log(`Player ${winner} wins!`);
         });
     };
 
     const respondToQuery = (type: QueryType, value: any) => {
-        console.log("responding with type:", type, "with value:", value);
         socket.emit(type, value);
     };
 
@@ -163,7 +145,6 @@ export const App = (props: IProps) => {
                 <button
                     className={"game-start-button"}
                     onClick={() => {
-                        console.log("starting game");
                         socket?.emit("GAME_START");
                     }}
                 >

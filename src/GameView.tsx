@@ -27,20 +27,14 @@ export const GameView = (props: IProps) => {
     ).SeatNumber;
     if (n_players === 2) {
         playerIndices.set((mySeat + 1) % n_players, 1);
-        console.log(mySeat);
-        console.log(playerIndices.get((mySeat + 1) % n_players));
     } else if (n_players === 3) {
         playerIndices.set((mySeat + 1) % n_players, 2);
         playerIndices.set((mySeat + 2) % n_players, 1);
-        console.log(mySeat);
-        console.log(playerIndices.get((mySeat + 1) % n_players));
-        console.log(playerIndices.get((mySeat + 2) % n_players));
     } else if (n_players === 4) {
         playerIndices.set((mySeat + 1) % n_players, 2);
         playerIndices.set((mySeat + 2) % n_players, 1);
         playerIndices.set((mySeat + 3) % n_players, 3);
     }
-    console.log("in game view");
 
     const me = props.gameState.Players.find((player: Player) => player.IsMe);
     return (

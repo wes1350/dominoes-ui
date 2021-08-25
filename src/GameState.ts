@@ -36,14 +36,11 @@ export class GameState {
     }
 
     public ProcessTurn(seat: number, domino: DominoDescription) {
-        console.log("PROCESSING TURN");
-        console.log(seat, domino);
         if (domino) {
             this._addedDominos = [...this._addedDominos, domino];
         }
 
         this._currentPlayer = (this._currentPlayer + 1) % this.N_Players;
-        console.log(this._addedDominos, this._currentPlayer);
     }
 
     public ProcessScore(seat: number, score: number) {

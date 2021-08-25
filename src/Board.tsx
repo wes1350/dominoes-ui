@@ -360,7 +360,6 @@ export const Board = (props: IProps) => {
                         mockDominoDescription,
                         true
                     );
-                    console.log(desc);
                     dropAreaDescriptions
                         .get(isDouble)
                         .set(Direction.EAST, desc);
@@ -445,8 +444,6 @@ export const Board = (props: IProps) => {
                 generateNextTranslatedDominoDescription(newDescriptions, desc)
             );
         });
-
-        console.log("new:", newDescriptions);
 
         // Now that the descriptions have been translated, determine the possible drop area coordinates
         const dropAreaBoundingBoxes =
@@ -668,7 +665,6 @@ export const Board = (props: IProps) => {
         descriptions.forEach((desc, i) => {
             bentDescriptions.push(generateNextBentDominoDescription(desc));
         });
-        console.log("bent:", bentDescriptions);
 
         // Bend the drop area bounding boxes
 
@@ -720,19 +716,27 @@ export const Board = (props: IProps) => {
     const bentDominoDescriptions = bentDescriptions.descriptions;
     const bentDropAreaDescriptions = bentDescriptions.dropAreaBoundingBoxes;
 
-    console.log(
-        "bentDropAreaDescriptions:",
-        Array.from(bentDropAreaDescriptions.get(false).keys())
-    );
+    let westBoundary;
+    let eastBoundary;
+    let northBoundary;
+    let southBoundary;
 
-    const westBoundary =
-        Math.min(...bentDominoDescriptions.map((desc) => desc.west)) - 4;
-    const eastBoundary =
-        Math.max(...bentDominoDescriptions.map((desc) => desc.east)) + 4;
-    const northBoundary =
-        Math.min(...bentDominoDescriptions.map((desc) => desc.north)) - 4;
-    const southBoundary =
-        Math.max(...bentDominoDescriptions.map((desc) => desc.north)) + 4;
+    if (bentDominoDescriptions.length > 0) {
+        westBoundary =
+            Math.min(...bentDominoDescriptions.map((desc) => desc.west)) - 4;
+        eastBoundary =
+            Math.max(...bentDominoDescriptions.map((desc) => desc.east)) + 4;
+        northBoundary =
+            Math.min(...bentDominoDescriptions.map((desc) => desc.north)) - 4;
+        southBoundary =
+            Math.max(...bentDominoDescriptions.map((desc) => desc.north)) + 4;
+    } else {
+        westBoundary = -10;
+        eastBoundary = 10;
+        northBoundary = -10;
+        southBoundary = 10;
+    }
+
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 

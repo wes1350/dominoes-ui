@@ -10,7 +10,6 @@ export const Face = (props: IProps) => {
     // Temporary, just for error checking
 
     if (![0, 1, 2, 3, 4, 5, 6].includes(props.num) && !!props.num) {
-        console.log("INVALID VALUE FOR FACE NUM!", props.num);
         return (
             <div className="face-container">
                 <div className="dot row-1 col-1"></div>
