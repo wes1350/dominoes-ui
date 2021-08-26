@@ -746,14 +746,16 @@ export const Board = (props: IProps) => {
         availableHeight / minGridHeightInSquares,
         availableWidth / minGridWidthInSquares
     );
-    const gridSizeInPixels = Math.min(2 * Math.floor(limitingRatio / 2), 20);
-    const gridWidthInSquares = availableWidth / gridSizeInPixels;
-    const gridHeightInSquares = availableHeight / gridSizeInPixels;
+    // This will be used to determine how many squares there should be
+    // The final size will be determined dynamically through css grid fractional sizing
+    const gridSizeInPixels = Math.min(limitingRatio, 20);
+    const gridWidthInSquares = Math.floor(availableWidth / gridSizeInPixels);
+    const gridHeightInSquares = Math.floor(availableHeight / gridSizeInPixels);
 
-    const gridHorizontalSquareMargin = Math.round(
+    const gridHorizontalSquareMargin = Math.ceil(
         (gridWidthInSquares - minGridWidthInSquares) / 2
     );
-    const gridVerticalSquareMargin = Math.round(
+    const gridVerticalSquareMargin = Math.ceil(
         (gridHeightInSquares - minGridHeightInSquares) / 2
     );
 
@@ -777,14 +779,10 @@ export const Board = (props: IProps) => {
         <div
             className="board"
             style={{
-                gridTemplateRows: `repeat(${Math.floor(
-                    availableHeight / gridSizeInPixels
-                )}, ${
+                gridTemplateRows: `repeat(${gridHeightInSquares}, ${
                     gridSizeInPixels + 1 // + 1 accounts for borders
                 }px)`,
-                gridTemplateColumns: `repeat(${Math.floor(
-                    availableWidth / gridSizeInPixels
-                )}, ${
+                gridTemplateColumns: `repeat(${gridWidthInSquares}, ${
                     gridSizeInPixels + 1 // + 1 accounts for borders
                 }px)`
             }}
