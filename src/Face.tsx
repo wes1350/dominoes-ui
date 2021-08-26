@@ -1,5 +1,4 @@
 import React from "react";
-// import "./Face.css";
 import { ReactComponent as ReactFace0 } from "./faces/face0.svg";
 import { ReactComponent as ReactFace1 } from "./faces/face1.svg";
 import { ReactComponent as ReactFace2 } from "./faces/face2.svg";
