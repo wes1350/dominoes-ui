@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import "./Board.css";
 import { BoardDomino } from "./BoardDomino";
 import { BoardDominoDropArea } from "./BoardDominoDropArea";
@@ -51,6 +51,15 @@ const addValueToNestedMap = (
 };
 
 export const Board = (props: IProps) => {
+    const boardRef = useRef<HTMLDivElement>(null);
+    const [boardWidth, setBoardWidth] = useState(600);
+    const [boardHeight, setBoardHeight] = useState(400);
+
+    React.useEffect(() => {
+        setBoardWidth(boardRef?.current?.clientWidth);
+        setBoardHeight(boardRef?.current?.clientHeight);
+    });
+
     const coordinatesToBoundingBoxes = new Map<
         number,
         Map<number, BoundingBoxDescription>
@@ -740,8 +749,10 @@ export const Board = (props: IProps) => {
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 
-    const availableHeight = window.innerHeight - 300;
-    const availableWidth = window.innerWidth - 300;
+    // const availableHeight = window.innerHeight - 300;
+    // const availableWidth = window.innerWidth - 300;
+    const availableHeight = boardHeight ?? 400;
+    const availableWidth = boardWidth ?? 600;
     const limitingRatio = Math.min(
         availableHeight / minGridHeightInSquares,
         availableWidth / minGridWidthInSquares
@@ -777,6 +788,7 @@ export const Board = (props: IProps) => {
 
     return (
         <div
+            ref={boardRef}
             className="board"
             style={{
                 gridTemplateRows: `repeat(${gridHeightInSquares}, ${
