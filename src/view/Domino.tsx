@@ -1,26 +1,17 @@
 import React from "react";
 import { Face } from "./Face";
 import "./Domino.css";
-import { isNullOrUndefined } from "./utils";
-import { Direction } from "./Enums";
+import { Direction } from "@root/enums/Direction";
 
 interface IProps {
-    face1?: number;
-    face2?: number;
+    face1: number;
+    face2: number;
     direction: Direction;
     size?: number;
 }
 
 export const Domino = (props: IProps) => {
-    const hidden =
-        isNullOrUndefined(props.face1) && isNullOrUndefined(props.face2);
-    if (
-        !hidden &&
-        (isNullOrUndefined(props.face1) || isNullOrUndefined(props.face2))
-    ) {
-        console.error("Only one face supplied, returning null domino");
-        return null;
-    }
+    const isHiddenDomino = props.face1 === -1 || props.face2 === -1;
 
     let flexDirection: "row" | "column" | "column-reverse" | "row-reverse";
     let borderRadii1: (number | string)[], borderRadii2: (number | string)[];
@@ -36,7 +27,7 @@ export const Domino = (props: IProps) => {
             flexDirection = "column-reverse";
             borderRadii1 = bottomRounded;
             borderRadii2 = topRounded;
-            if (hidden) {
+            if (isHiddenDomino) {
                 blankBorder1 = "border-top-width";
                 blankBorder2 = "border-bottom-width";
             }
@@ -45,7 +36,7 @@ export const Domino = (props: IProps) => {
             flexDirection = "row";
             borderRadii1 = leftRounded;
             borderRadii2 = rightRounded;
-            if (hidden) {
+            if (isHiddenDomino) {
                 blankBorder1 = "borderRightWidth";
                 blankBorder2 = "borderLeftWidth";
             }
@@ -54,7 +45,7 @@ export const Domino = (props: IProps) => {
             flexDirection = "column";
             borderRadii1 = topRounded;
             borderRadii2 = bottomRounded;
-            if (hidden) {
+            if (isHiddenDomino) {
                 blankBorder1 = "borderBottomWidth";
                 blankBorder2 = "borderTopWidth";
             }
@@ -63,7 +54,7 @@ export const Domino = (props: IProps) => {
             flexDirection = "row-reverse";
             borderRadii1 = rightRounded;
             borderRadii2 = leftRounded;
-            if (hidden) {
+            if (isHiddenDomino) {
                 blankBorder1 = "borderLeftWidth";
                 blankBorder2 = "borderRightWidth";
             }
@@ -84,7 +75,7 @@ export const Domino = (props: IProps) => {
             flexDirection = "row";
             borderRadii1 = leftRounded;
             borderRadii2 = rightRounded;
-            if (hidden) {
+            if (isHiddenDomino) {
                 blankBorder1 = "borderRightWidth";
                 blankBorder2 = "borderLeftWidth";
             }

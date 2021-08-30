@@ -8,7 +8,7 @@ import { ReactComponent as ReactFace5 } from "./faces/face5.svg";
 import { ReactComponent as ReactFace6 } from "./faces/face6.svg";
 
 interface IProps {
-    num?: number;
+    num: number;
     size?: number;
 }
 
@@ -30,7 +30,7 @@ export const Face = (props: IProps) => {
                 height: `${props.size ?? 96}px`
             }}
         >
-            {faces[props.num ?? 0]}
+            {props.num > -1 ? faces[props.num] : null}
         </div>
     );
 };

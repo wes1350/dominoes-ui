@@ -1,7 +1,7 @@
 import React from "react";
 import { Domino } from "./Domino";
-import { Direction } from "./Enums";
-import { Player } from "./Player";
+import { Direction } from "@root/enums/Direction";
+// import { Player } from "./Player";
 import "./PlayerView.css";
 
 interface IProps {

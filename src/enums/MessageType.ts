@@ -1,7 +1,3 @@
-export enum QueryType {
-    MOVE = "QUERY_MOVE"
-}
-
 export enum MessageType {
     ADD_DOMINO = "ADD_DOMINO",
     PLAYABLE_DOMINOS = "PLAYABLE_DOMINOS",
@@ -20,15 +16,3 @@ export enum MessageType {
     PLAYER_DOMINOED = "PLAYER_DOMINOED",
     GAME_BLOCKED = "GAME_BLOCKED"
 }
-
-export enum Direction {
-    NORTH = "N",
-    EAST = "E",
-    SOUTH = "S",
-    WEST = "W",
-    NONE = ""
-}
-
-export const DragItemTypes = {
-    DOMINO: "DOMINO"
-};

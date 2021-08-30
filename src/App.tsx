@@ -1,56 +1,60 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
-import { DominoDescription } from "./DominoDescription";
-import { MessageType, QueryType } from "./Enums";
-import { GameState } from "./GameState";
-import { GameView } from "./GameView";
-import { hiddenDomino } from "./HiddenDomino";
+import { MessageType } from "@root/enums/MessageType";
+import { QueryType } from "@root/enums/QueryType";
+import { GameState, IGameState } from "@root/model/GameStateModel";
+import { GameView } from "@root/view/GameView";
 import {
     GameStartMessage,
     GameLogMessage,
     NewRoundMessage
 } from "./MessageTypes";
-import { Player } from "./Player";
-const io = require("socket.io-client");
+import { Player } from "@root/model/PlayerModel";
+import { observer } from "mobx-react-lite";
+import { io } from "socket.io-client";
+import { GameConfig } from "./model/GameConfigModel";
+import { DominoDescription } from "./DominoDescription";
+import { DominoModel } from "./model/DominoModel";
+import { Domino } from "./view/Domino";
+import { Direction } from "./enums/Direction";
 
-interface IProps {}
-
-export const App = (props: IProps) => {
-    const [socket, setSocket] = useState(null);
-    const [renderKey, setRenderKey] = useState(0);
-    const [gameState, setGameState] = useState<GameState>(null);
+export const App = observer(() => {
+    let socket: io.Socket;
+    let gameState: IGameState;
 
     React.useEffect(() => {
-        const newSocket = io("http://localhost:3001");
+        const newSocket = io.Socket("http://localhost:3001");
 
-        setSocket(newSocket);
+        socket = newSocket;
         setUpSocketForGameStart(newSocket);
         return () => newSocket.close();
     }, []);
 
     const setUpSocketForGameStart = (socket: any) => {
         socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
-            console.log(gameDetails);
-            const newGameState = initializeGameState(gameDetails);
-            setGameState(newGameState);
-
-            setUpSocketForGameplay(socket, newGameState);
+            gameState = initializeGameState(gameDetails);
+            setUpSocketForGameplay(socket, gameState);
 
             socket.off(MessageType.GAME_START);
         });
     };
 
     const initializeGameState = (gameDetails: GameStartMessage) => {
-        const newGameState = new GameState(gameDetails.config.n_dominoes);
+        const gameConfig = GameConfig.create({
+            HAND_SIZE: gameDetails.config.n_dominoes,
+            N_PLAYERS: gameDetails.players.length
+        });
+        const newGameState = GameState.create({
+            config: gameConfig
+        });
 
         gameDetails.players.forEach((player) => {
             newGameState.AddPlayer(
-                new Player(
-                    player.seatNumber.toString(),
-                    player.name,
-                    player.isMe,
-                    player.seatNumber
-                )
+                Player.create({
+                    Name: player.name,
+                    SeatNumber: player.seatNumber,
+                    IsMe: player.isMe
+                })
             );
         });
 
@@ -58,63 +62,55 @@ export const App = (props: IProps) => {
         return newGameState;
     };
 
-    const setUpSocketForGameplay = (socket: any, gameState: GameState) => {
+    const setUpSocketForGameplay = (socket: any, gameState: IGameState) => {
         socket.on(MessageType.GAME_LOG, (logDetails: GameLogMessage) => {
             console.log(logDetails);
             gameState.AddLog(logDetails.message);
-            setRenderKey((key: number) => key + 1);
         });
         socket.on(
             MessageType.TURN,
             (turnDescription: { seat: number; domino: DominoDescription }) => {
-                gameState.ProcessTurn(
-                    turnDescription.seat,
-                    turnDescription.domino
-                );
+                const domino = turnDescription.domino
+                    ? DominoModel.create({
+                          Face1: turnDescription.domino.face1,
+                          Face2: turnDescription.domino.face2
+                      })
+                    : null;
 
+                gameState.ProcessTurn(domino);
                 gameState.Me.SetPlayableDominoes(null);
-                if (turnDescription.domino) {
-                    setRenderKey((key: number) => key + 1);
-                }
             }
         );
         socket.on(
             MessageType.SCORE,
             (payload: { seat: number; score: number }) => {
                 gameState.ProcessScore(payload.seat, payload.score);
-                setRenderKey((key: number) => key + 1);
             }
         );
         socket.on(MessageType.HAND, (payload: any) => {
             gameState.Me.SetHand(payload);
-            setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.PLAYABLE_DOMINOS, (payload: string) => {
             gameState.Me.SetPlayableDominoes(JSON.parse("[" + payload + "]"));
-            setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.DOMINO_PLAYED, (payload: { seat: number }) => {
             const player = gameState.PlayerAtSeat(payload.seat);
             if (!player.IsMe) {
-                player.RemoveDomino(hiddenDomino());
+                player.RemoveDomino();
             }
-            setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.CLEAR_BOARD, () => {
             gameState.ClearBoard();
-            setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.PULL, (payload: { seat: number }) => {
             const player = gameState.PlayerAtSeat(payload.seat);
             if (!player.IsMe) {
-                player.AddDomino(hiddenDomino());
+                player.AddDomino(DominoModel.create({ Face1: -1, Face2: -1 }));
             }
-            setRenderKey((key: number) => key + 1);
         });
         socket.on(MessageType.NEW_ROUND, (payload: NewRoundMessage) => {
             gameState.SetCurrentPlayer(payload.currentPlayer);
-            gameState.SetOpponentHands();
-            setRenderKey((key: number) => key + 1);
+            gameState.InitializeOpponentHands();
         });
 
         socket.on(QueryType.MOVE, (message: string) => {
@@ -133,12 +129,8 @@ export const App = (props: IProps) => {
     return (
         <div className="App">
             {gameState ? (
-                // Refactor this: don't want to re-render the whole game view on any change,
-                // need to figure out a way to get individual components to re-render
-                // even though the props currently in use don't force re-renders when they change
                 <GameView
                     gameState={gameState}
-                    key={renderKey}
                     respond={respondToQuery}
                 ></GameView>
             ) : (
@@ -153,4 +145,4 @@ export const App = (props: IProps) => {
             )}
         </div>
     );
-};
+});

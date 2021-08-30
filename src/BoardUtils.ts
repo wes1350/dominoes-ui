@@ -1,4 +1,4 @@
-import { Direction } from "./Enums";
+import { Direction } from "@root/enums/Direction";
 
 export interface CoordinateDescription {
     x: number;
