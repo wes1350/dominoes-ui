@@ -1,25 +1,26 @@
 import React, { useState } from "react";
-import { Board } from "./Board";
-import { GameState } from "./GameState";
+import { BoardView } from "./BoardView";
+import { IGameState } from "@root/model/GameStateModel";
 import { MyPlayerView } from "./MyPlayerView";
 import { OpponentPlayerView } from "./OpponentPlayerView";
-import { Player } from "./Player";
 import "./GameView.css";
-import { Direction, QueryType } from "./Enums";
 import { UserInput } from "./UserInput";
 import { GameLogs } from "./GameLogs";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { QueryType } from "@root/enums/QueryType";
+import { IPlayer } from "@root/model/PlayerModel";
+import { Direction } from "@root/enums/Direction";
 
 interface IProps {
-    gameState: GameState;
+    gameState: IGameState;
     respond: (type: QueryType, value: any) => void;
 }
 
 export const GameView = (props: IProps) => {
     const [dominoBeingDragged, setDominoBeingDragged] = useState(null);
 
-    const n_players = props.gameState.N_Players;
+    const n_players = props.gameState.Config.N_PLAYERS;
     // maps opponent seat number to the display index
     const playerIndices = new Map<number, number>();
     const mySeat = props.gameState.Players.find(
@@ -36,13 +37,13 @@ export const GameView = (props: IProps) => {
         playerIndices.set((mySeat + 3) % n_players, 3);
     }
 
-    const me = props.gameState.Players.find((player: Player) => player.IsMe);
+    const me = props.gameState.Players.find((player: IPlayer) => player.IsMe);
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="game-view">
                 <div className={"board-container"}>
-                    <Board
-                        dominoDescriptions={[...props.gameState.Dominos]}
+                    <BoardView
+                        dominoes={props.gameState.Board.Dominoes}
                         onDropDomino={(
                             domino: { face1: number; face2: number },
                             direction: Direction
@@ -51,27 +52,27 @@ export const GameView = (props: IProps) => {
                                 props.gameState.CurrentPlayer
                             ].Hand.findIndex(
                                 (dominoInHand) =>
-                                    dominoInHand.face1 === domino.face1 &&
-                                    dominoInHand.face2 === domino.face2
+                                    dominoInHand.Face1 === domino.face1 &&
+                                    dominoInHand.Face2 === domino.face2
                             );
                             props.respond(props.gameState.CurrentQueryType, {
                                 domino: dominoIndex,
                                 direction: direction
                             });
                         }}
-                        dominoBeingDragged={
-                            dominoBeingDragged !== null
-                                ? props.gameState.Players[
-                                      props.gameState.CurrentPlayer
-                                  ].Hand[dominoBeingDragged]
-                                : null
-                        }
+                        // dominoBeingDragged={
+                        //     dominoBeingDragged !== null
+                        //         ? props.gameState.Players[
+                        //               props.gameState.CurrentPlayer
+                        //           ].Hand[dominoBeingDragged]
+                        //         : null
+                        // }
                     />
                 </div>
                 <div className={"player-container"}>
                     {props.gameState.Players.filter(
-                        (player: Player) => !player.IsMe
-                    ).map((player: Player, i: number) => {
+                        (player: IPlayer) => !player.IsMe
+                    ).map((player: IPlayer, i: number) => {
                         return (
                             <OpponentPlayerView
                                 key={i}

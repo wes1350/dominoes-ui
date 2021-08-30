@@ -1,22 +1,16 @@
+import { Direction } from "@root/enums/Direction";
+import { IBoardDomino } from "@root/model/BoardDominoModel";
+import { IBoundingBox } from "@root/model/BoundingBoxModel";
 import React, { useRef, useState } from "react";
-import "./Board.css";
+import "./BoardView.css";
 import { BoardDomino } from "./BoardDomino";
 import { BoardDominoDropArea } from "./BoardDominoDropArea";
-import { Domino } from "./Domino";
-import { DominoDescription } from "./DominoDescription";
-import { Direction } from "./Enums";
+import { DominoView } from "./DominoView";
 
 interface CoordinateDescription {
     x: number;
     y: number;
     double: boolean;
-}
-
-interface BoundingBoxDescription {
-    north: number;
-    east: number;
-    south: number;
-    west: number;
 }
 
 interface TranslatedDominoDescription {
@@ -30,12 +24,12 @@ interface TranslatedDominoDescription {
 }
 
 interface IProps {
-    dominoDescriptions: DominoDescription[];
+    dominoes: IBoardDomino[];
     onDropDomino: (
         dominoFaces: { face1: number; face2: number },
         direction: Direction
     ) => void;
-    dominoBeingDragged: DominoDescription;
+    // dominoBeingDragged: IDomino;
 }
 
 const addValueToNestedMap = (
@@ -50,7 +44,7 @@ const addValueToNestedMap = (
     map.get(value1).set(value2, value3);
 };
 
-export const Board = (props: IProps) => {
+export const BoardView = (props: IProps) => {
     const boardRef = useRef<HTMLDivElement>(null);
     const [boardWidth, setBoardWidth] = useState(600);
     const [boardHeight, setBoardHeight] = useState(400);
@@ -62,7 +56,7 @@ export const Board = (props: IProps) => {
 
     const coordinatesToBoundingBoxes = new Map<
         number,
-        Map<number, BoundingBoxDescription>
+        Map<number, IBoundingBox>
     >();
     // double = true, else = false
     const coordinatesToIsDouble = new Map<number, Map<number, boolean>>();
@@ -73,10 +67,6 @@ export const Board = (props: IProps) => {
     let currentEastEdge: CoordinateDescription = null;
     let currentSouthEdge: CoordinateDescription = null;
     let currentWestEdge: CoordinateDescription = null;
-
-    const isDouble = (desc: DominoDescription): boolean => {
-        return desc.face1 === desc.face2;
-    };
 
     const rotateDirection = (direction: Direction) => {
         return direction === Direction.NORTH
@@ -90,13 +80,13 @@ export const Board = (props: IProps) => {
 
     const generateNextTranslatedDominoDescription = (
         existingTranslatedDescriptions: TranslatedDominoDescription[],
-        desc: DominoDescription,
+        domino: IBoardDomino,
         onlyCalculate?: boolean
     ): TranslatedDominoDescription => {
         let currentBoundingBox;
         if (existingTranslatedDescriptions.length === 0) {
             // first domino is always at 0, 0
-            if (isDouble(desc)) {
+            if (domino.IsDouble) {
                 currentBoundingBox = {
                     north: -2,
                     east: 1,
@@ -139,32 +129,32 @@ export const Board = (props: IProps) => {
                 }
             }
         } else {
-            if (isDouble(desc) && !currentNorthEdge) {
+            if (domino.IsDouble && !currentNorthEdge) {
                 if (!onlyCalculate) {
                     // This is the spinner, set the north/south edges properly
-                    currentNorthEdge = { x: desc.x, y: 0, double: true };
-                    currentSouthEdge = { x: desc.x, y: 0, double: true };
+                    currentNorthEdge = { x: domino.X, y: 0, double: true };
+                    currentSouthEdge = { x: domino.X, y: 0, double: true };
                 }
             }
 
-            if (desc.y > 0) {
+            if (domino.Y > 0) {
                 // adding on north side
                 const boxAtEdge = coordinatesToBoundingBoxes
                     .get(currentNorthEdge.x)
                     .get(currentNorthEdge.y);
 
                 currentBoundingBox = {
-                    north: isDouble(desc)
+                    north: domino.IsDouble
                         ? boxAtEdge.north - 2
                         : boxAtEdge.north - 4,
-                    east: isDouble(desc)
+                    east: domino.IsDouble
                         ? boxAtEdge.east + 1
                         : boxAtEdge.east -
                           (currentNorthEdge.double && currentNorthEdge.y !== 0
                               ? 1
                               : 0),
                     south: boxAtEdge.north,
-                    west: isDouble(desc)
+                    west: domino.IsDouble
                         ? boxAtEdge.west - 1
                         : boxAtEdge.west +
                           (currentNorthEdge.double && currentNorthEdge.y !== 0
@@ -175,24 +165,24 @@ export const Board = (props: IProps) => {
                 if (!onlyCalculate) {
                     addValueToNestedMap(
                         coordinatesToBoundingBoxes,
-                        desc.x,
-                        desc.y,
+                        domino.X,
+                        domino.Y,
                         currentBoundingBox
                     );
 
                     addValueToNestedMap(
                         coordinatesToIsDouble,
-                        desc.x,
-                        desc.y,
-                        isDouble(desc)
+                        domino.X,
+                        domino.Y,
+                        domino.IsDouble
                     );
                     currentNorthEdge = {
-                        x: desc.x,
-                        y: desc.y,
-                        double: isDouble(desc)
+                        x: domino.X,
+                        y: domino.Y,
+                        double: domino.IsDouble
                     };
                 }
-            } else if (desc.y < 0) {
+            } else if (domino.Y < 0) {
                 // adding on south side
                 const boxAtEdge = coordinatesToBoundingBoxes
                     .get(currentSouthEdge.x)
@@ -200,16 +190,16 @@ export const Board = (props: IProps) => {
 
                 currentBoundingBox = {
                     north: boxAtEdge.south,
-                    east: isDouble(desc)
+                    east: domino.IsDouble
                         ? boxAtEdge.east + 1
                         : boxAtEdge.east -
                           (currentSouthEdge.double && currentSouthEdge.y !== 0
                               ? 1
                               : 0),
-                    south: isDouble(desc)
+                    south: domino.IsDouble
                         ? boxAtEdge.south + 2
                         : boxAtEdge.south + 4,
-                    west: isDouble(desc)
+                    west: domino.IsDouble
                         ? boxAtEdge.west - 1
                         : boxAtEdge.west +
                           (currentSouthEdge.double && currentSouthEdge.y !== 0
@@ -220,36 +210,36 @@ export const Board = (props: IProps) => {
                 if (!onlyCalculate) {
                     addValueToNestedMap(
                         coordinatesToBoundingBoxes,
-                        desc.x,
-                        desc.y,
+                        domino.X,
+                        domino.Y,
                         currentBoundingBox
                     );
                     addValueToNestedMap(
                         coordinatesToIsDouble,
-                        desc.x,
-                        desc.y,
-                        isDouble(desc)
+                        domino.X,
+                        domino.Y,
+                        domino.IsDouble
                     );
                     currentSouthEdge = {
-                        x: desc.x,
-                        y: desc.y,
-                        double: isDouble(desc)
+                        x: domino.X,
+                        y: domino.Y,
+                        double: domino.IsDouble
                     };
                 }
-            } else if (desc.x > 0) {
+            } else if (domino.X > 0) {
                 // adding on east side
                 const boxAtEdge = coordinatesToBoundingBoxes
                     .get(currentEastEdge.x)
                     .get(currentEastEdge.y);
 
                 currentBoundingBox = {
-                    north: isDouble(desc)
+                    north: domino.IsDouble
                         ? boxAtEdge.north - 1
                         : boxAtEdge.north + (currentEastEdge.double ? 1 : 0),
-                    east: isDouble(desc)
+                    east: domino.IsDouble
                         ? boxAtEdge.east + 2
                         : boxAtEdge.east + 4,
-                    south: isDouble(desc)
+                    south: domino.IsDouble
                         ? boxAtEdge.south + 1
                         : boxAtEdge.south - (currentEastEdge.double ? 1 : 0),
                     west: boxAtEdge.east
@@ -258,64 +248,64 @@ export const Board = (props: IProps) => {
                 if (!onlyCalculate) {
                     addValueToNestedMap(
                         coordinatesToBoundingBoxes,
-                        desc.x,
-                        desc.y,
+                        domino.X,
+                        domino.Y,
                         currentBoundingBox
                     );
                     addValueToNestedMap(
                         coordinatesToIsDouble,
-                        desc.x,
-                        desc.y,
-                        isDouble(desc)
+                        domino.X,
+                        domino.Y,
+                        domino.IsDouble
                     );
                     currentEastEdge = {
-                        x: desc.x,
-                        y: desc.y,
-                        double: isDouble(desc)
+                        x: domino.X,
+                        y: domino.Y,
+                        double: domino.IsDouble
                     };
                 }
-            } else if (desc.x < 0) {
+            } else if (domino.X < 0) {
                 // adding on west side
                 const boxAtEdge = coordinatesToBoundingBoxes
                     .get(currentWestEdge.x)
                     .get(currentWestEdge.y);
 
                 currentBoundingBox = {
-                    north: isDouble(desc)
+                    north: domino.IsDouble
                         ? boxAtEdge.north - 1
                         : boxAtEdge.north + (currentWestEdge.double ? 1 : 0),
                     east: boxAtEdge.west,
-                    south: isDouble(desc)
+                    south: domino.IsDouble
                         ? boxAtEdge.south + 1
                         : boxAtEdge.south - (currentWestEdge.double ? 1 : 0),
-                    west: isDouble(desc)
+                    west: domino.IsDouble
                         ? boxAtEdge.west - 2
                         : boxAtEdge.west - 4
                 };
                 if (!onlyCalculate) {
                     addValueToNestedMap(
                         coordinatesToBoundingBoxes,
-                        desc.x,
-                        desc.y,
+                        domino.X,
+                        domino.Y,
                         currentBoundingBox
                     );
                     addValueToNestedMap(
                         coordinatesToIsDouble,
-                        desc.x,
-                        desc.y,
-                        isDouble(desc)
+                        domino.X,
+                        domino.Y,
+                        domino.IsDouble
                     );
                     currentWestEdge = {
-                        x: desc.x,
-                        y: desc.y,
-                        double: isDouble(desc)
+                        x: domino.X,
+                        y: domino.Y,
+                        double: domino.IsDouble
                     };
                 }
             }
         }
 
         return {
-            ...desc,
+            ...domino,
             north: currentBoundingBox.north,
             east: currentBoundingBox.east,
             south: currentBoundingBox.south,
@@ -329,7 +319,7 @@ export const Board = (props: IProps) => {
         // Mimic domino descriptions for determining drop area bounding boxes
         const dropAreaDescriptions = new Map<
             boolean,
-            Map<Direction, BoundingBoxDescription>
+            Map<Direction, IBoundingBox>
         >();
         dropAreaDescriptions.set(false, new Map());
         dropAreaDescriptions.set(true, new Map());
@@ -441,10 +431,7 @@ export const Board = (props: IProps) => {
         descriptions: DominoDescription[]
     ): {
         descriptions: TranslatedDominoDescription[];
-        dropAreaBoundingBoxes: Map<
-            boolean,
-            Map<Direction, BoundingBoxDescription>
-        >;
+        dropAreaBoundingBoxes: Map<boolean, Map<Direction, IBoundingBox>>;
     } => {
         const newDescriptions: TranslatedDominoDescription[] = [];
 
@@ -537,16 +524,10 @@ export const Board = (props: IProps) => {
 
     const bendDescriptions = (
         descriptions: TranslatedDominoDescription[],
-        dropAreaBoundingBoxes: Map<
-            boolean,
-            Map<Direction, BoundingBoxDescription>
-        >
+        dropAreaBoundingBoxes: Map<boolean, Map<Direction, IBoundingBox>>
     ): {
         descriptions: TranslatedDominoDescription[];
-        dropAreaBoundingBoxes: Map<
-            boolean,
-            Map<Direction, BoundingBoxDescription>
-        >;
+        dropAreaBoundingBoxes: Map<boolean, Map<Direction, IBoundingBox>>;
     } => {
         if (descriptions.length === 0) {
             return {
@@ -679,7 +660,7 @@ export const Board = (props: IProps) => {
 
         const bentDropAreaBoundingBoxes = new Map<
             boolean,
-            Map<Direction, BoundingBoxDescription>
+            Map<Direction, IBoundingBox>
         >();
 
         bentDropAreaBoundingBoxes.set(false, new Map());
@@ -714,7 +695,7 @@ export const Board = (props: IProps) => {
     };
 
     const translatedDescriptions = translateDescriptionsToActualSizes(
-        props.dominoDescriptions
+        props.dominoes
     );
 
     const bentDescriptions = bendDescriptions(
@@ -808,7 +789,7 @@ export const Board = (props: IProps) => {
                         south={d.south}
                         west={d.west}
                     >
-                        <Domino
+                        <DominoView
                             face1={d.face1}
                             face2={d.face2}
                             direction={d.direction}
@@ -833,7 +814,7 @@ export const Board = (props: IProps) => {
                             onDropDomino={props.onDropDomino}
                             isActive={
                                 props.dominoBeingDragged
-                                    ? !isDouble(props.dominoBeingDragged)
+                                    ? !props.dominoBeingDragged.IsDouble
                                     : false
                             }
                         ></BoardDominoDropArea>
@@ -856,7 +837,7 @@ export const Board = (props: IProps) => {
                             onDropDomino={props.onDropDomino}
                             isActive={
                                 props.dominoBeingDragged
-                                    ? isDouble(props.dominoBeingDragged)
+                                    ? props.dominoBeingDragged.IsDouble
                                     : false
                             }
                         ></BoardDominoDropArea>

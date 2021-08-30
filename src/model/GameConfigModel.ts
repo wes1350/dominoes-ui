@@ -7,5 +7,5 @@ export const GameConfigModel = types.model({
 
 export type IGameConfigModel = Instance<typeof GameConfigModel>;
 
-export const GameConfig = GameConfigModel;
+export const GameConfig = GameConfigModel.named("GameConfig");
 export type IGameConfig = Instance<typeof GameConfig>;

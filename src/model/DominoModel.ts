@@ -1,3 +1,4 @@
+import { DominoViewModel } from "@root/viewmodel/DominoViewModel";
 import { Instance, types } from "mobx-state-tree";
 
 export const DominoModel = types.model({
@@ -9,3 +10,6 @@ export const DominoModel = types.model({
 });
 
 export type IDominoModel = Instance<typeof DominoModel>;
+
+export const Domino = DominoModel.views(DominoViewModel).named("Domino");
+export type IDomino = Instance<typeof Domino>;

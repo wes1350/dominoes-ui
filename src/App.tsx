@@ -8,18 +8,18 @@ import {
     GameStartMessage,
     GameLogMessage,
     NewRoundMessage
-} from "./MessageTypes";
+} from "@root/interfaces/Messages";
 import { Player } from "@root/model/PlayerModel";
 import { observer } from "mobx-react-lite";
-import { io } from "socket.io-client";
+const io = require("socket.io-client");
 import { GameConfig } from "./model/GameConfigModel";
-import { DominoDescription } from "./DominoDescription";
-import { DominoModel } from "./model/DominoModel";
-import { Domino } from "./view/Domino";
+import { Domino, IDomino } from "./model/DominoModel";
+import { SnapshotIn } from "mobx-state-tree";
+import { Coordinate } from "./interfaces/Coordinate";
 import { Direction } from "./enums/Direction";
 
 export const App = observer(() => {
-    let socket: io.Socket;
+    let socket: any;
     let gameState: IGameState;
 
     React.useEffect(() => {
@@ -45,7 +45,7 @@ export const App = observer(() => {
             N_PLAYERS: gameDetails.players.length
         });
         const newGameState = GameState.create({
-            config: gameConfig
+            Config: gameConfig
         });
 
         gameDetails.players.forEach((player) => {
@@ -69,15 +69,21 @@ export const App = observer(() => {
         });
         socket.on(
             MessageType.TURN,
-            (turnDescription: { seat: number; domino: DominoDescription }) => {
+            (turnDescription: {
+                seat: number;
+                domino: SnapshotIn<IDomino>;
+                direction: Direction;
+                coordinate: Coordinate;
+            }) => {
                 const domino = turnDescription.domino
-                    ? DominoModel.create({
-                          Face1: turnDescription.domino.face1,
-                          Face2: turnDescription.domino.face2
-                      })
+                    ? Domino.create(turnDescription.domino)
                     : null;
 
-                gameState.ProcessTurn(domino);
+                gameState.ProcessTurn(
+                    domino,
+                    turnDescription.direction,
+                    turnDescription.coordinate
+                );
                 gameState.Me.SetPlayableDominoes(null);
             }
         );
@@ -87,9 +93,12 @@ export const App = observer(() => {
                 gameState.ProcessScore(payload.seat, payload.score);
             }
         );
-        socket.on(MessageType.HAND, (payload: any) => {
-            gameState.Me.SetHand(payload);
-        });
+        socket.on(
+            MessageType.HAND,
+            (payload: { Face1: number; Face2: number }[]) => {
+                gameState.Me.SetHand(payload);
+            }
+        );
         socket.on(MessageType.PLAYABLE_DOMINOS, (payload: string) => {
             gameState.Me.SetPlayableDominoes(JSON.parse("[" + payload + "]"));
         });
@@ -105,7 +114,7 @@ export const App = observer(() => {
         socket.on(MessageType.PULL, (payload: { seat: number }) => {
             const player = gameState.PlayerAtSeat(payload.seat);
             if (!player.IsMe) {
-                player.AddDomino(DominoModel.create({ Face1: -1, Face2: -1 }));
+                player.AddDomino(Domino.create({ Face1: -1, Face2: -1 }));
             }
         });
         socket.on(MessageType.NEW_ROUND, (payload: NewRoundMessage) => {

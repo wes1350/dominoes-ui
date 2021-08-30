@@ -9,7 +9,7 @@ interface IProps {
     children: any;
 }
 
-export const BoardDomino = (props: IProps) => {
+export const BoardDominoView = (props: IProps) => {
     return (
         <div
             style={{

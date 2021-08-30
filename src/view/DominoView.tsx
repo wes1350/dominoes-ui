@@ -1,6 +1,6 @@
 import React from "react";
 import { Face } from "./Face";
-import "./Domino.css";
+import "./DominoView.css";
 import { Direction } from "@root/enums/Direction";
 
 interface IProps {
@@ -10,7 +10,7 @@ interface IProps {
     size?: number;
 }
 
-export const Domino = (props: IProps) => {
+export const DominoView = (props: IProps) => {
     const isHiddenDomino = props.face1 === -1 || props.face2 === -1;
 
     let flexDirection: "row" | "column" | "column-reverse" | "row-reverse";

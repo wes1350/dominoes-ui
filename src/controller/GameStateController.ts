@@ -1,39 +1,42 @@
 import { Direction } from "@root/enums/Direction";
 import { QueryType } from "@root/enums/QueryType";
-import { IBoardDomino } from "@root/model/BoardDominoModel";
-import { DominoModel, IDominoModel } from "@root/model/DominoModel";
+import { Coordinate } from "@root/interfaces/Coordinate";
+import { DominoModel, IDomino } from "@root/model/DominoModel";
 import { IGameState, IGameStateModel } from "@root/model/GameStateModel";
 import { IPlayer } from "@root/model/PlayerModel";
 import _ from "lodash";
-import { cast } from "mobx-state-tree";
 
 export const GameStateController = (model: IGameStateModel) => {
     const gameState = model as IGameState;
 
     return {
         AddPlayer(player: IPlayer) {
-            gameState.players.push(player);
+            gameState.Players.push(player);
         },
 
         Start() {
-            gameState.started = true;
+            gameState.Started = true;
         },
 
         Finish() {
-            gameState.gameOver = true;
+            gameState.GameOver = true;
         },
 
-        ProcessTurn(domino: IDominoModel) {
+        ProcessTurn(
+            domino: IDomino,
+            direction: Direction,
+            coordinate: Coordinate
+        ) {
             if (domino) {
-                gameState.addedDominos.push(domino);
+                gameState.Board.AddDomino(domino, direction, coordinate);
             }
 
-            gameState.currentPlayer =
-                (gameState.currentPlayer + 1) % gameState.config.N_PLAYERS;
+            gameState.CurrentPlayer =
+                (gameState.CurrentPlayer + 1) % gameState.Config.N_PLAYERS;
         },
 
         ProcessScore(seat: number, score: number) {
-            const currentPlayer = gameState.players.find(
+            const currentPlayer = gameState.Players.find(
                 (player) => player.SeatNumber === seat
             );
             currentPlayer.SetScore(score + currentPlayer.Score);
@@ -41,20 +44,20 @@ export const GameStateController = (model: IGameStateModel) => {
 
         SetQueryType(type: QueryType) {
             if (type === QueryType.MOVE) {
-                gameState.currentQueryType = QueryType.MOVE;
+                gameState.CurrentQueryType = QueryType.MOVE;
             } else {
                 throw new Error(`Invalid query type: ${type}`);
             }
         },
 
         SetCurrentPlayer(seat: number) {
-            gameState.currentPlayer = seat;
+            gameState.CurrentPlayer = seat;
         },
 
         InitializeOpponentHands() {
             gameState.Opponents.forEach((player) => {
                 player.SetHand(
-                    _.range(0, gameState.config.HAND_SIZE).map(() =>
+                    _.range(0, gameState.Config.HAND_SIZE).map(() =>
                         DominoModel.create({
                             Face1: -1,
                             Face2: -1
@@ -65,11 +68,11 @@ export const GameStateController = (model: IGameStateModel) => {
         },
 
         ClearBoard(): void {
-            gameState.addedDominos = cast([]);
+            gameState.Board.ClearBoard();
         },
 
         AddLog(log: string): void {
-            gameState.logs.push(log);
+            gameState.Logs.push(log);
         }
     };
 };

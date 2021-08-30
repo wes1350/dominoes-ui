@@ -1,18 +1,19 @@
 import { BoardDominoController } from "@root/controller/BoardDominoController";
 import { Direction } from "@root/enums/Direction";
+import { Coordinate } from "@root/interfaces/Coordinate";
 import { BoardDominoViewModel } from "@root/viewmodel/BoardDominoViewModel";
 import { Instance, types } from "mobx-state-tree";
-import { DominoModel } from "./DominoModel";
+import { BoundingBox } from "./BoundingBoxModel";
+import { Domino } from "./DominoModel";
 
 export const BoardDominoModel = types.model({
-    Domino: types.late(() => DominoModel),
-    X: types.number,
-    Y: types.number,
-    IsSpinner: false,
+    Domino: types.late(() => Domino),
+    Location: types.frozen<Coordinate>(),
     Direction: types.enumeration<Direction>(
         "Direction",
         Object.values(Direction)
-    )
+    ),
+    BoundingBox: types.late(() => BoundingBox)
 });
 
 export type IBoardDominoModel = Instance<typeof BoardDominoModel>;
