@@ -1,12 +1,12 @@
+import { Direction } from "enums/Direction";
+import { IPlayer } from "model/PlayerModel";
 import React from "react";
-import { Domino } from "./Domino";
-import { Direction } from "./Enums";
+import { DominoView } from "./DominoView";
 import { MyHandDomino } from "./MyHandDomino";
-import { Player } from "./Player";
 import "./PlayerView.css";
 
 interface IProps {
-    player: Player;
+    player: IPlayer;
     current: boolean;
     onStartDrag: (index: number) => void;
     onStopDrag: () => void;
@@ -29,8 +29,8 @@ export const MyPlayerView = (props: IProps) => {
                     return (
                         <MyHandDomino
                             key={i}
-                            face1={domino.face1}
-                            face2={domino.face2}
+                            face1={domino.Face1}
+                            face2={domino.Face2}
                             faded={
                                 playableDominoes === null
                                     ? true
@@ -42,9 +42,9 @@ export const MyPlayerView = (props: IProps) => {
                             onStartDrag={() => props.onStartDrag(i)}
                             onStopDrag={() => props.onStopDrag()}
                         >
-                            <Domino
-                                face1={domino.face1}
-                                face2={domino.face2}
+                            <DominoView
+                                face1={domino.Face1}
+                                face2={domino.Face2}
                                 direction={Direction.SOUTH}
                                 size={
                                     2 *

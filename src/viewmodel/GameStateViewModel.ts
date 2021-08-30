@@ -1,20 +1,20 @@
-import { IGameState, IGameStateModel } from "@root/model/GameStateModel";
-import { IPlayer } from "@root/model/PlayerModel";
+import { IGameState, IGameStateModel } from "model/GameStateModel";
+import { IPlayer } from "model/PlayerModel";
 
 export const GameStateViewModel = (model: IGameStateModel) => {
     const gameState = model as IGameState;
 
     return {
         get Me(): IPlayer {
-            return gameState.players.find((player) => player.IsMe);
+            return gameState.Players.find((player) => player.IsMe);
         },
 
         get Opponents(): IPlayer[] {
-            return gameState.players.filter((player) => !player.IsMe);
+            return gameState.Players.filter((player) => !player.IsMe);
         },
 
         PlayerAtSeat(seat: number): IPlayer {
-            return gameState.players.find(
+            return gameState.Players.find(
                 (player) => player.SeatNumber === seat
             );
         }

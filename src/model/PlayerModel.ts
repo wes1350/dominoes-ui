@@ -1,4 +1,4 @@
-import { PlayerController } from "@root/controller/PlayerController";
+import { PlayerController } from "controller/PlayerController";
 import { Instance, types } from "mobx-state-tree";
 import { DominoModel } from "./DominoModel";
 

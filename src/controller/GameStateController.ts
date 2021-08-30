@@ -1,9 +1,9 @@
-import { Direction } from "@root/enums/Direction";
-import { QueryType } from "@root/enums/QueryType";
-import { Coordinate } from "@root/interfaces/Coordinate";
-import { DominoModel, IDomino } from "@root/model/DominoModel";
-import { IGameState, IGameStateModel } from "@root/model/GameStateModel";
-import { IPlayer } from "@root/model/PlayerModel";
+import { Direction } from "enums/Direction";
+import { QueryType } from "enums/QueryType";
+import { Coordinate } from "interfaces/Coordinate";
+import { DominoModel, IDomino } from "model/DominoModel";
+import { IGameState, IGameStateModel } from "model/GameStateModel";
+import { IPlayer } from "model/PlayerModel";
 import _ from "lodash";
 
 export const GameStateController = (model: IGameStateModel) => {

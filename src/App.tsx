@@ -1,36 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
-import { MessageType } from "@root/enums/MessageType";
-import { QueryType } from "@root/enums/QueryType";
-import { GameState, IGameState } from "@root/model/GameStateModel";
-import { GameView } from "@root/view/GameView";
+import { MessageType } from "./enums/MessageType";
+import { QueryType } from "./enums/QueryType";
+import { GameState, IGameState } from "./model/GameStateModel";
+import { GameView } from "./view/GameView";
 import {
     GameStartMessage,
     GameLogMessage,
     NewRoundMessage
-} from "@root/interfaces/Messages";
-import { Player } from "@root/model/PlayerModel";
+} from "./interfaces/Messages";
+import { Player } from "./model/PlayerModel";
 import { observer } from "mobx-react-lite";
-const io = require("socket.io-client");
 import { GameConfig } from "./model/GameConfigModel";
 import { Domino, IDomino } from "./model/DominoModel";
 import { SnapshotIn } from "mobx-state-tree";
 import { Coordinate } from "./interfaces/Coordinate";
 import { Direction } from "./enums/Direction";
+import { Board } from "model/BoardModel";
+const io = require("socket.io-client");
 
 export const App = observer(() => {
-    let socket: any;
+    // let socket: any;
+    const [socket, setSocket] = useState(null);
     let gameState: IGameState;
 
     React.useEffect(() => {
-        const newSocket = io.Socket("http://localhost:3001");
+        const newSocket = io("http://localhost:3001");
 
-        socket = newSocket;
+        // socket = newSocket;
+        setSocket(newSocket);
         setUpSocketForGameStart(newSocket);
         return () => newSocket.close();
     }, []);
 
     const setUpSocketForGameStart = (socket: any) => {
+        console.log(socket);
         socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
             gameState = initializeGameState(gameDetails);
             setUpSocketForGameplay(socket, gameState);
@@ -45,7 +49,8 @@ export const App = observer(() => {
             N_PLAYERS: gameDetails.players.length
         });
         const newGameState = GameState.create({
-            Config: gameConfig
+            Config: gameConfig,
+            Board: Board.create({})
         });
 
         gameDetails.players.forEach((player) => {

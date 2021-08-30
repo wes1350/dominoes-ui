@@ -1,7 +1,8 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 import "./Domino.css";
-import { Direction, DragItemTypes } from "./Enums";
+import { Direction } from "enums/Direction";
+import { DragItemTypes } from "enums/DragItemTypes";
 
 interface IProps {
     north: number;

@@ -1,9 +1,9 @@
-import { BoardDominoController } from "@root/controller/BoardDominoController";
-import { Direction } from "@root/enums/Direction";
-import { Coordinate } from "@root/interfaces/Coordinate";
-import { BoardDominoViewModel } from "@root/viewmodel/BoardDominoViewModel";
+import { BoardDominoController } from "controller/BoardDominoController";
+import { Direction } from "enums/Direction";
+import { BoundingBox } from "interfaces/BoundingBox";
+import { Coordinate } from "interfaces/Coordinate";
+import { BoardDominoViewModel } from "viewmodel/BoardDominoViewModel";
 import { Instance, types } from "mobx-state-tree";
-import { BoundingBox } from "./BoundingBoxModel";
 import { Domino } from "./DominoModel";
 
 export const BoardDominoModel = types.model({
@@ -12,8 +12,8 @@ export const BoardDominoModel = types.model({
     Direction: types.enumeration<Direction>(
         "Direction",
         Object.values(Direction)
-    ),
-    BoundingBox: types.late(() => BoundingBox)
+    ), // This may just be unnecessary now
+    BoundingBox: types.frozen<BoundingBox>()
 });
 
 export type IBoardDominoModel = Instance<typeof BoardDominoModel>;

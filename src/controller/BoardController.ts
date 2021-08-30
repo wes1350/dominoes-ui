@@ -1,22 +1,12 @@
-import { Direction } from "@root/enums/Direction";
-import { Coordinate } from "@root/interfaces/Coordinate";
-import { BoardDomino } from "@root/model/BoardDominoModel";
-import { IBoard, IBoardModel } from "@root/model/BoardModel";
-import { IDomino } from "@root/model/DominoModel";
+import { Direction } from "enums/Direction";
+import { Coordinate } from "interfaces/Coordinate";
+import { BoardDomino } from "model/BoardDominoModel";
+import { IBoard, IBoardModel } from "model/BoardModel";
+import { IDomino } from "model/DominoModel";
 import { cast } from "mobx-state-tree";
 
 export const BoardController = (model: IBoardModel) => {
     const board = model as IBoard;
-
-    const rotateDirection = (direction: Direction) => {
-        return direction === Direction.NORTH
-            ? Direction.EAST
-            : direction === Direction.EAST
-            ? Direction.SOUTH
-            : direction === Direction.SOUTH
-            ? Direction.WEST
-            : Direction.NORTH;
-    };
 
     return {
         AddDomino(
@@ -28,7 +18,7 @@ export const BoardController = (model: IBoardModel) => {
                 Domino: domino,
                 Direction: direction,
                 Location: location,
-                BoundingBox: boundingBox
+                BoundingBox: board.CalculateBoundingBox(domino, location)
             });
 
             board.Dominoes.push(boardDomino);

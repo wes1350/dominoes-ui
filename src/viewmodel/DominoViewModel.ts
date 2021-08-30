@@ -1,4 +1,4 @@
-import { IDomino, IDominoModel } from "@root/model/DominoModel";
+import { IDomino, IDominoModel } from "model/DominoModel";
 
 export const DominoViewModel = (model: IDominoModel) => {
     const domino = model as IDomino;

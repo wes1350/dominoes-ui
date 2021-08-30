@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BoardView } from "./BoardView";
-import { IGameState } from "@root/model/GameStateModel";
+import { IGameState } from "model/GameStateModel";
 import { MyPlayerView } from "./MyPlayerView";
 import { OpponentPlayerView } from "./OpponentPlayerView";
 import "./GameView.css";
@@ -8,9 +8,9 @@ import { UserInput } from "./UserInput";
 import { GameLogs } from "./GameLogs";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { QueryType } from "@root/enums/QueryType";
-import { IPlayer } from "@root/model/PlayerModel";
-import { Direction } from "@root/enums/Direction";
+import { QueryType } from "enums/QueryType";
+import { IPlayer } from "model/PlayerModel";
+import { Direction } from "enums/Direction";
 
 interface IProps {
     gameState: IGameState;
@@ -43,7 +43,7 @@ export const GameView = (props: IProps) => {
             <div className="game-view">
                 <div className={"board-container"}>
                     <BoardView
-                        dominoes={props.gameState.Board.Dominoes}
+                        board={props.gameState.Board}
                         onDropDomino={(
                             domino: { face1: number; face2: number },
                             direction: Direction

@@ -1,5 +1,5 @@
-import { IDominoModel } from "@root/model/DominoModel";
-import { IPlayer, IPlayerModel } from "@root/model/PlayerModel";
+import { IDominoModel } from "model/DominoModel";
+import { IPlayer, IPlayerModel } from "model/PlayerModel";
 import { cast } from "mobx-state-tree";
 
 export const PlayerController = (model: IPlayerModel) => {

@@ -1,5 +1,5 @@
-import { BoardController } from "@root/controller/BoardController";
-import { BoardViewModel } from "@root/viewmodel/BoardViewModel";
+import { BoardController } from "controller/BoardController";
+import { BoardViewModel } from "viewmodel/BoardViewModel";
 import { Instance, types } from "mobx-state-tree";
 import { BoardDomino } from "./BoardDominoModel";
 

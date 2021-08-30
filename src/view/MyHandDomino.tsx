@@ -1,6 +1,6 @@
 import React from "react";
-import "./Domino.css";
-import { DragItemTypes } from "./Enums";
+import "./DominoView.css";
+import { DragItemTypes } from "enums/DragItemTypes";
 import { useDrag } from "react-dnd";
 
 interface IProps {

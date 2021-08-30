@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { QueryType } from "./Enums";
-import { GameState } from "./GameState";
+import { QueryType } from "enums/QueryType";
+import { IGameState } from "model/GameStateModel";
 
 interface IProps {
-    gameState: GameState;
+    gameState: IGameState;
     respond: (type: QueryType, value: any) => void;
 }
 

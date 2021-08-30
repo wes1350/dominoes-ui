@@ -1,4 +1,4 @@
-import { DominoViewModel } from "@root/viewmodel/DominoViewModel";
+import { DominoViewModel } from "viewmodel/DominoViewModel";
 import { Instance, types } from "mobx-state-tree";
 
 export const DominoModel = types.model({

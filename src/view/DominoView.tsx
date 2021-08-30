@@ -1,7 +1,7 @@
 import React from "react";
 import { Face } from "./Face";
 import "./DominoView.css";
-import { Direction } from "@root/enums/Direction";
+import { Direction } from "enums/Direction";
 
 interface IProps {
     face1: number;

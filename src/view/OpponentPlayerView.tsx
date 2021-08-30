@@ -1,12 +1,12 @@
+import { Direction } from "enums/Direction";
+import { IPlayer } from "model/PlayerModel";
 import React from "react";
-import { Domino } from "./Domino";
-import { Direction } from "@root/enums/Direction";
-// import { Player } from "./Player";
+import { DominoView } from "./DominoView";
 import "./PlayerView.css";
 
 interface IProps {
     index: number;
-    player: Player;
+    player: IPlayer;
     current: boolean;
 }
 
@@ -30,7 +30,9 @@ export const OpponentPlayerView = (props: IProps) => {
                 {props.player.Hand.map((domino, i) => {
                     return (
                         <div key={i} className={"hand-domino-container"}>
-                            <Domino
+                            <DominoView
+                                face1={-1}
+                                face2={-1}
                                 direction={
                                     props.index === 1
                                         ? Direction.SOUTH

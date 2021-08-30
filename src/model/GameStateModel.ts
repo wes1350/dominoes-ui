@@ -1,6 +1,6 @@
-import { GameStateController } from "@root/controller/GameStateController";
-import { QueryType } from "@root/enums/QueryType";
-import { GameStateViewModel } from "@root/viewmodel/GameStateViewModel";
+import { GameStateController } from "controller/GameStateController";
+import { QueryType } from "enums/QueryType";
+import { GameStateViewModel } from "viewmodel/GameStateViewModel";
 import { Instance, types } from "mobx-state-tree";
 import { Board } from "./BoardModel";
 import { GameConfig } from "./GameConfigModel";

@@ -1,5 +1,5 @@
 import React from "react";
-import "./Domino.css";
+import "./DominoView.css";
 
 interface IProps {
     north: number;
