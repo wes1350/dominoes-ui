@@ -1,7 +1,7 @@
 import { Direction } from "enums/Direction";
 import { QueryType } from "enums/QueryType";
 import { Coordinate } from "interfaces/Coordinate";
-import { DominoModel, IDomino } from "model/DominoModel";
+import { Domino, IDomino } from "model/DominoModel";
 import { IGameState, IGameStateModel } from "model/GameStateModel";
 import { IPlayer } from "model/PlayerModel";
 import _ from "lodash";
@@ -58,7 +58,7 @@ export const GameStateController = (model: IGameStateModel) => {
             gameState.Opponents.forEach((player) => {
                 player.SetHand(
                     _.range(0, gameState.Config.HAND_SIZE).map(() =>
-                        DominoModel.create({
+                        Domino.create({
                             Face1: -1,
                             Face2: -1
                         })

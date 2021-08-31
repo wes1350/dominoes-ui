@@ -6,9 +6,12 @@ import { BoardDominoView } from "./BoardDominoView";
 // import { BoardDominoDropArea } from "./BoardDominoDropArea";
 import { DominoView } from "./DominoView";
 import { IBoard } from "model/BoardModel";
+import { observer, useLocalObservable } from "mobx-react-lite";
 
 interface IProps {
     board: IBoard;
+    width: number;
+    height: number;
     onDropDomino: (
         dominoFaces: { face1: number; face2: number },
         direction: Direction
@@ -16,15 +19,87 @@ interface IProps {
     // dominoBeingDragged: IDomino;
 }
 
-export const BoardView = (props: IProps) => {
-    const boardRef = useRef<HTMLDivElement>(null);
-    const [boardWidth, setBoardWidth] = useState(600);
-    const [boardHeight, setBoardHeight] = useState(400);
+export const BoardView = observer((props: IProps) => {
+    // const localStore = useLocalObservable(() => ({
+    //     boardWidth: 600,
+    //     boardHeight: 400,
+    //     verticalShift: null,
+    //     horizontalShift: null,
+    //     gridSizeInPixels: 20,
+    //     gridHeightInSquares: 0,
+    //     gridWidthInSquares: 0
+    // }));
 
-    React.useEffect(() => {
-        setBoardWidth(boardRef?.current?.clientWidth);
-        setBoardHeight(boardRef?.current?.clientHeight);
-    });
+    // React.useEffect(() => {
+    //     localStore.boardWidth = boardRef?.current?.clientWidth;
+    //     localStore.boardHeight = boardRef?.current?.clientHeight;
+
+    //     let westBoundary;
+    //     let eastBoundary;
+    //     let northBoundary;
+    //     let southBoundary;
+
+    //     // if (bentDominoDescriptions.length > 0) {
+    //     //     westBoundary =
+    //     //         Math.min(...bentDominoDescriptions.map((desc) => desc.west)) - 4;
+    //     //     eastBoundary =
+    //     //         Math.max(...bentDominoDescriptions.map((desc) => desc.east)) + 4;
+    //     //     northBoundary =
+    //     //         Math.min(...bentDominoDescriptions.map((desc) => desc.north)) - 4;
+    //     //     southBoundary =
+    //     //         Math.max(...bentDominoDescriptions.map((desc) => desc.north)) + 4;
+    //     // } else {
+    //     //     westBoundary = -10;
+    //     //     eastBoundary = 10;
+    //     //     northBoundary = -10;
+    //     //     southBoundary = 10;
+    //     // }
+
+    //     if (props.board.IsEmpty) {
+    //         northBoundary = -10;
+    //         southBoundary = 10;
+    //         eastBoundary = 10;
+    //         westBoundary = -10;
+    //     } else {
+    //         northBoundary = props.board.RenderedNorthBoundary;
+    //         southBoundary = props.board.RenderedSouthBoundary;
+    //         eastBoundary = props.board.RenderedEastBoundary;
+    //         westBoundary = props.board.RenderedWestBoundary;
+    //     }
+
+    //     const minGridWidthInSquares = eastBoundary - westBoundary;
+    //     const minGridHeightInSquares = southBoundary - northBoundary;
+
+    //     // const availableHeight = window.innerHeight - 300;
+    //     // const availableWidth = window.innerWidth - 300;
+    //     const availableHeight = localStore.boardHeight ?? 400;
+    //     const availableWidth = localStore.boardWidth ?? 600;
+    //     const limitingRatio = Math.min(
+    //         availableHeight / minGridHeightInSquares,
+    //         availableWidth / minGridWidthInSquares
+    //     );
+    //     // This will be used to determine how many squares there should be
+    //     // The final size will be determined dynamically through css grid fractional sizing
+    //     localStore.gridSizeInPixels = Math.min(limitingRatio, 20);
+    //     localStore.gridWidthInSquares = Math.floor(
+    //         availableWidth / localStore.gridSizeInPixels
+    //     );
+    //     localStore.gridHeightInSquares = Math.floor(
+    //         availableHeight / localStore.gridSizeInPixels
+    //     );
+
+    //     const gridHorizontalSquareMargin = Math.ceil(
+    //         (localStore.gridWidthInSquares - minGridWidthInSquares) / 2
+    //     );
+    //     const gridVerticalSquareMargin = Math.ceil(
+    //         (localStore.gridHeightInSquares - minGridHeightInSquares) / 2
+    //     );
+
+    //     localStore.verticalShift = gridVerticalSquareMargin - northBoundary;
+    //     localStore.horizontalShift = gridHorizontalSquareMargin - westBoundary;
+    // });
+
+    ///
 
     // const rotateDirection = (direction: Direction) => {
     //     return direction === Direction.NORTH
@@ -329,8 +404,8 @@ export const BoardView = (props: IProps) => {
 
     // const availableHeight = window.innerHeight - 300;
     // const availableWidth = window.innerWidth - 300;
-    const availableHeight = boardHeight ?? 400;
-    const availableWidth = boardWidth ?? 600;
+    const availableHeight = props.height;
+    const availableWidth = props.width;
     const limitingRatio = Math.min(
         availableHeight / minGridHeightInSquares,
         availableWidth / minGridWidthInSquares
@@ -348,10 +423,16 @@ export const BoardView = (props: IProps) => {
         (gridHeightInSquares - minGridHeightInSquares) / 2
     );
 
-    const northShift = gridVerticalSquareMargin - northBoundary;
-    const eastShift = gridHorizontalSquareMargin - westBoundary;
-    const southShift = gridVerticalSquareMargin - northBoundary;
-    const westShift = gridHorizontalSquareMargin - westBoundary;
+    // debugger;
+
+    const verticalShift = gridVerticalSquareMargin - northBoundary;
+    const horizontalShift = gridHorizontalSquareMargin - westBoundary;
+    // const northShift = gridVerticalSquareMargin - northBoundary;
+    // const eastShift = gridHorizontalSquareMargin - westBoundary;
+    // const southShift = gridVerticalSquareMargin - northBoundary;
+    // const westShift = gridHorizontalSquareMargin - westBoundary;
+
+    // console.log("shifts:", northShift, eastShift, southShift, westShift);
 
     // const finalDominoDescriptions = bentDominoDescriptions.map((desc) => {
     //     return {
@@ -366,7 +447,6 @@ export const BoardView = (props: IProps) => {
 
     return (
         <div
-            ref={boardRef}
             className="board"
             style={{
                 gridTemplateRows: `repeat(${gridHeightInSquares}, ${
@@ -381,10 +461,10 @@ export const BoardView = (props: IProps) => {
                 return (
                     <BoardDominoView
                         key={i}
-                        north={domino.BoundingBox.North + northShift}
-                        east={domino.BoundingBox.East + eastShift}
-                        south={domino.BoundingBox.South + southShift}
-                        west={domino.BoundingBox.West + westShift}
+                        north={domino.BoundingBox.North + verticalShift}
+                        east={domino.BoundingBox.East + horizontalShift}
+                        south={domino.BoundingBox.South + verticalShift}
+                        west={domino.BoundingBox.West + horizontalShift}
                     >
                         <DominoView
                             face1={domino.Face1}
@@ -445,4 +525,4 @@ export const BoardView = (props: IProps) => {
             )} */}
         </div>
     );
-};
+});

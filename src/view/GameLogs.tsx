@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React, { useEffect, useRef } from "react";
 import "./GameLogs.css";
 
@@ -5,7 +6,7 @@ interface IProps {
     logs: string[];
 }
 
-export const GameLogs = (props: IProps) => {
+export const GameLogs = observer((props: IProps) => {
     const endOfLogsRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -28,4 +29,4 @@ export const GameLogs = (props: IProps) => {
             <div ref={endOfLogsRef}></div>
         </div>
     );
-};
+});

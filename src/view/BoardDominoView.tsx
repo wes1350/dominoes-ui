@@ -10,6 +10,13 @@ interface IProps {
 }
 
 export const BoardDominoView = (props: IProps) => {
+    console.log(
+        "board domino props:",
+        props.north,
+        props.east,
+        props.south,
+        props.west
+    );
     return (
         <div
             style={{

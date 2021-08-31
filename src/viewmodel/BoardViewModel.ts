@@ -9,6 +9,14 @@ export const BoardViewModel = (model: IBoardModel) => {
     const board = model as IBoard;
 
     return {
+        get Spinner(): IBoardDomino {
+            if (board.SpinnerIndex !== null) {
+                return board.Dominoes[board.SpinnerIndex];
+            } else {
+                return null;
+            }
+        },
+
         get IsEmpty(): boolean {
             return board.Dominoes.length === 0;
         },
@@ -63,28 +71,36 @@ export const BoardViewModel = (model: IBoardModel) => {
             if (board.IsEmpty) {
                 return null;
             }
-            return Math.max(...board.Dominoes.map((domino) => domino.Y));
+            return Math.min(
+                ...board.Dominoes.map((domino) => domino.BoundingBox.North)
+            );
         },
 
         get RenderedSouthBoundary(): number {
             if (board.IsEmpty) {
                 return null;
             }
-            return Math.min(...board.Dominoes.map((domino) => domino.Y));
+            return Math.max(
+                ...board.Dominoes.map((domino) => domino.BoundingBox.South)
+            );
         },
 
         get RenderedEastBoundary(): number {
             if (board.IsEmpty) {
                 return null;
             }
-            return Math.max(...board.Dominoes.map((domino) => domino.X));
+            return Math.max(
+                ...board.Dominoes.map((domino) => domino.BoundingBox.East)
+            );
         },
 
         get RenderedWestBoundary(): number {
             if (board.IsEmpty) {
                 return null;
             }
-            return Math.min(...board.Dominoes.map((domino) => domino.X));
+            return Math.min(
+                ...board.Dominoes.map((domino) => domino.BoundingBox.West)
+            );
         },
 
         DominoAt(location: Coordinate) {

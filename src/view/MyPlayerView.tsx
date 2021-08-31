@@ -1,4 +1,5 @@
 import { Direction } from "enums/Direction";
+import { observer } from "mobx-react-lite";
 import { IPlayer } from "model/PlayerModel";
 import React from "react";
 import { DominoView } from "./DominoView";
@@ -12,8 +13,7 @@ interface IProps {
     onStopDrag: () => void;
 }
 
-export const MyPlayerView = (props: IProps) => {
-    console.log("props.player:", props.player);
+export const MyPlayerView = observer((props: IProps) => {
     const playableDominoes = props.player.PlayableDominoes;
     return (
         <div
@@ -66,4 +66,4 @@ export const MyPlayerView = (props: IProps) => {
             </div>
         </div>
     );
-};
+});

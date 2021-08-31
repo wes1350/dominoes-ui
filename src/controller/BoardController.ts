@@ -24,7 +24,7 @@ export const BoardController = (model: IBoardModel) => {
             board.Dominoes.push(boardDomino);
 
             if (domino.IsDouble && !board.Spinner) {
-                board.Spinner = boardDomino;
+                board.SpinnerIndex = board.Dominoes.length - 1;
             }
         },
 

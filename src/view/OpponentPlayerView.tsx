@@ -1,4 +1,5 @@
 import { Direction } from "enums/Direction";
+import { observer } from "mobx-react-lite";
 import { IPlayer } from "model/PlayerModel";
 import React from "react";
 import { DominoView } from "./DominoView";
@@ -10,7 +11,7 @@ interface IProps {
     current: boolean;
 }
 
-export const OpponentPlayerView = (props: IProps) => {
+export const OpponentPlayerView = observer((props: IProps) => {
     return (
         <div
             className={`player-view player-view-${
@@ -58,4 +59,4 @@ export const OpponentPlayerView = (props: IProps) => {
             </div>
         </div>
     );
-};
+});

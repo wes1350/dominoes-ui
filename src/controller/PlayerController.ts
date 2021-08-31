@@ -1,11 +1,12 @@
-import { IDominoModel } from "model/DominoModel";
+import { IDomino } from "model/DominoModel";
 import { IPlayer, IPlayerModel } from "model/PlayerModel";
 import { cast } from "mobx-state-tree";
 
 export const PlayerController = (model: IPlayerModel) => {
     const player = model as IPlayer;
     return {
-        SetHand(hand: IDominoModel[]) {
+        SetHand(hand: IDomino[]) {
+            console.log("hand:", hand);
             player.Hand = cast(hand);
         },
 
@@ -13,11 +14,11 @@ export const PlayerController = (model: IPlayerModel) => {
             player.PlayableDominoes = cast(playable);
         },
 
-        AddDomino(desc: IDominoModel) {
+        AddDomino(desc: IDomino) {
             model.Hand.push(desc);
         },
 
-        RemoveDomino(desc?: IDominoModel) {
+        RemoveDomino(desc?: IDomino) {
             if (!desc) {
                 model.Hand = cast(model.Hand.slice(1));
             } else {

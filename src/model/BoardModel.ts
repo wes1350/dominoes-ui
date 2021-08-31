@@ -5,7 +5,7 @@ import { BoardDomino } from "./BoardDominoModel";
 
 export const BoardModel = types.model({
     Dominoes: types.array(types.late(() => BoardDomino)),
-    Spinner: types.maybeNull(types.late(() => BoardDomino))
+    SpinnerIndex: types.maybeNull(types.number)
 });
 
 export type IBoardModel = Instance<typeof BoardModel>;

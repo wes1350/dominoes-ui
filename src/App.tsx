@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
 import { MessageType } from "./enums/MessageType";
 import { QueryType } from "./enums/QueryType";
@@ -10,7 +10,7 @@ import {
     NewRoundMessage
 } from "./interfaces/Messages";
 import { Player } from "./model/PlayerModel";
-import { observer } from "mobx-react-lite";
+import { observer, useLocalObservable } from "mobx-react-lite";
 import { GameConfig } from "./model/GameConfigModel";
 import { Domino, IDomino } from "./model/DominoModel";
 import { SnapshotIn } from "mobx-state-tree";
@@ -20,15 +20,15 @@ import { Board } from "model/BoardModel";
 const io = require("socket.io-client");
 
 export const App = observer(() => {
-    // let socket: any;
-    const [socket, setSocket] = useState(null);
-    let gameState: IGameState;
+    const localStore = useLocalObservable(() => ({
+        socket: null,
+        gameState: null
+    }));
 
     React.useEffect(() => {
         const newSocket = io("http://localhost:3001");
 
-        // socket = newSocket;
-        setSocket(newSocket);
+        localStore.socket = newSocket;
         setUpSocketForGameStart(newSocket);
         return () => newSocket.close();
     }, []);
@@ -36,8 +36,9 @@ export const App = observer(() => {
     const setUpSocketForGameStart = (socket: any) => {
         console.log(socket);
         socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
-            gameState = initializeGameState(gameDetails);
-            setUpSocketForGameplay(socket, gameState);
+            console.log("starting game");
+            localStore.gameState = initializeGameState(gameDetails);
+            setUpSocketForGameplay(socket, localStore.gameState);
 
             socket.off(MessageType.GAME_START);
         });
@@ -101,7 +102,7 @@ export const App = observer(() => {
         socket.on(
             MessageType.HAND,
             (payload: { Face1: number; Face2: number }[]) => {
-                gameState.Me.SetHand(payload);
+                gameState.Me.SetHand(payload as IDomino[]);
             }
         );
         socket.on(MessageType.PLAYABLE_DOMINOS, (payload: string) => {
@@ -137,21 +138,21 @@ export const App = observer(() => {
     };
 
     const respondToQuery = (type: QueryType, value: any) => {
-        socket.emit(type, value);
+        localStore.socket.emit(type, value);
     };
 
     return (
         <div className="App">
-            {gameState ? (
+            {localStore.gameState ? (
                 <GameView
-                    gameState={gameState}
+                    gameState={localStore.gameState}
                     respond={respondToQuery}
                 ></GameView>
             ) : (
                 <button
                     className={"game-start-button"}
                     onClick={() => {
-                        socket?.emit("GAME_START");
+                        localStore.socket?.emit("GAME_START");
                     }}
                 >
                     Start

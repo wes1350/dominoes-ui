@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { BoardView } from "./BoardView";
 import { IGameState } from "model/GameStateModel";
 import { MyPlayerView } from "./MyPlayerView";
@@ -11,14 +11,26 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { QueryType } from "enums/QueryType";
 import { IPlayer } from "model/PlayerModel";
 import { Direction } from "enums/Direction";
+import { observer, useLocalObservable } from "mobx-react-lite";
 
 interface IProps {
     gameState: IGameState;
     respond: (type: QueryType, value: any) => void;
 }
 
-export const GameView = (props: IProps) => {
+export const GameView = observer((props: IProps) => {
     const [dominoBeingDragged, setDominoBeingDragged] = useState(null);
+    const boardContainerRef = useRef<HTMLDivElement>(null);
+
+    const localStore = useLocalObservable(() => ({
+        boardWidth: 600,
+        boardHeight: 400
+    }));
+
+    React.useEffect(() => {
+        localStore.boardWidth = boardContainerRef?.current?.clientWidth;
+        localStore.boardHeight = boardContainerRef?.current?.clientHeight;
+    });
 
     const n_players = props.gameState.Config.N_PLAYERS;
     // maps opponent seat number to the display index
@@ -41,9 +53,11 @@ export const GameView = (props: IProps) => {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="game-view">
-                <div className={"board-container"}>
+                <div ref={boardContainerRef} className={"board-container"}>
                     <BoardView
                         board={props.gameState.Board}
+                        width={localStore.boardWidth}
+                        height={localStore.boardHeight}
                         onDropDomino={(
                             domino: { face1: number; face2: number },
                             direction: Direction
@@ -108,4 +122,4 @@ export const GameView = (props: IProps) => {
             </div>
         </DndProvider>
     );
-};
+});

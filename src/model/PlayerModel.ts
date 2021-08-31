@@ -1,11 +1,11 @@
 import { PlayerController } from "controller/PlayerController";
 import { Instance, types } from "mobx-state-tree";
-import { DominoModel } from "./DominoModel";
+import { Domino } from "./DominoModel";
 
 export const PlayerModel = types.model({
     Name: types.string,
     SeatNumber: types.number,
-    Hand: types.array(types.late(() => DominoModel)),
+    Hand: types.array(types.late(() => Domino)),
     PlayableDominoes: types.maybeNull(types.array(types.number)),
     Score: 0,
     IsMe: types.boolean

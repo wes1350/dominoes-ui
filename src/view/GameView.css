@@ -2,4 +2,17 @@
     --player-view-small-side: 80px;
     --player-view-large-side-vertical: 480px;
     --player-view-large-side-horizontal: 580px;
+    --board-margin: 35px;
+}
+
+.board-container {
+    position: absolute;
+    top: calc(var(--player-view-small-side) + var(--board-margin));
+    left: calc(var(--player-view-small-side) + var(--board-margin));
+    height: calc(
+        100% - 2 * var(--player-view-small-side) - 2 * var(--board-margin)
+    );
+    width: calc(
+        100% - 2 * var(--player-view-small-side) - 2 * var(--board-margin)
+    );
 }
