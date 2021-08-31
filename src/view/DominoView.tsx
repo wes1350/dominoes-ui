@@ -2,6 +2,7 @@ import React from "react";
 import { Face } from "./Face";
 import "./DominoView.css";
 import { Direction } from "enums/Direction";
+import { observer } from "mobx-react-lite";
 
 interface IProps {
     face1: number;
@@ -10,7 +11,7 @@ interface IProps {
     size?: number;
 }
 
-export const DominoView = (props: IProps) => {
+export const DominoView = observer((props: IProps) => {
     const isHiddenDomino = props.face1 === -1 || props.face2 === -1;
 
     let flexDirection: "row" | "column" | "column-reverse" | "row-reverse";
@@ -108,4 +109,4 @@ export const DominoView = (props: IProps) => {
             </div>
         </div>
     );
-};
+});

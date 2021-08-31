@@ -312,28 +312,24 @@ export const BoardView = observer((props: IProps) => {
         eastBoundary = 10;
         westBoundary = -10;
     } else {
-        northBoundary = props.board.RenderedNorthBoundary;
-        southBoundary = props.board.RenderedSouthBoundary;
-        eastBoundary = props.board.RenderedEastBoundary;
-        westBoundary = props.board.RenderedWestBoundary;
+        northBoundary = props.board.RenderedNorthBoundary - 4;
+        southBoundary = props.board.RenderedSouthBoundary + 4;
+        eastBoundary = props.board.RenderedEastBoundary + 4;
+        westBoundary = props.board.RenderedWestBoundary - 4;
     }
 
     const minGridWidthInSquares = eastBoundary - westBoundary;
     const minGridHeightInSquares = southBoundary - northBoundary;
 
-    // const availableHeight = window.innerHeight - 300;
-    // const availableWidth = window.innerWidth - 300;
-    const availableHeight = props.height;
-    const availableWidth = props.width;
     const limitingRatio = Math.min(
-        availableHeight / minGridHeightInSquares,
-        availableWidth / minGridWidthInSquares
+        props.height / minGridHeightInSquares,
+        props.width / minGridWidthInSquares
     );
     // This will be used to determine how many squares there should be
     // The final size will be determined dynamically through css grid fractional sizing
     const gridSizeInPixels = Math.min(limitingRatio, 20);
-    const gridWidthInSquares = Math.floor(availableWidth / gridSizeInPixels);
-    const gridHeightInSquares = Math.floor(availableHeight / gridSizeInPixels);
+    const gridWidthInSquares = Math.floor(props.width / gridSizeInPixels);
+    const gridHeightInSquares = Math.floor(props.height / gridSizeInPixels);
 
     const gridHorizontalSquareMargin = Math.ceil(
         (gridWidthInSquares - minGridWidthInSquares) / 2
@@ -341,8 +337,6 @@ export const BoardView = observer((props: IProps) => {
     const gridVerticalSquareMargin = Math.ceil(
         (gridHeightInSquares - minGridHeightInSquares) / 2
     );
-
-    // debugger;
 
     const verticalShift = gridVerticalSquareMargin - northBoundary;
     const horizontalShift = gridHorizontalSquareMargin - westBoundary;

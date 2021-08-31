@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import "./DominoView.css";
 
@@ -9,7 +10,7 @@ interface IProps {
     children: any;
 }
 
-export const BoardDominoView = (props: IProps) => {
+export const BoardDominoView = observer((props: IProps) => {
     console.log(
         "board domino props:",
         props.north,
@@ -26,4 +27,4 @@ export const BoardDominoView = (props: IProps) => {
             {props.children}
         </div>
     );
-};
+});
