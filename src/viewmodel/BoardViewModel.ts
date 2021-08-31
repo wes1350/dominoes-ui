@@ -43,7 +43,7 @@ export const BoardViewModel = (model: IBoardModel) => {
                 const minY = Math.min(
                     ...board.Dominoes.map((domino) => domino.Y)
                 );
-                if (minY > 0) {
+                if (minY < 0) {
                     return board.Dominoes.find((domino) => domino.Y === minY);
                 } else {
                     return board.Spinner;
