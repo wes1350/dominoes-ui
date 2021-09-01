@@ -292,6 +292,9 @@ export const BoardViewModel = (model: IBoardModel) => {
             }
 
             return dropAreaBoundingBoxes;
+        },
+        get BoundingBoxes(): BoundingBox[] {
+            return board.Dominoes.map((domino) => domino.BoundingBox);
         }
     };
 };

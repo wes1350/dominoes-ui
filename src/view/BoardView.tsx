@@ -1,12 +1,13 @@
 import { Direction } from "enums/Direction";
-// import { IBoardDomino } from "model/BoardDominoModel";
-import React, { useRef, useState } from "react";
+import React from "react";
 import "./BoardView.css";
 import { BoardDominoView } from "./BoardDominoView";
 // import { BoardDominoDropArea } from "./BoardDominoDropArea";
 import { DominoView } from "./DominoView";
 import { IBoard } from "model/BoardModel";
-import { observer, useLocalObservable } from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
+import { BoundingBox } from "interfaces/BoundingBox";
+import { IBoardDomino } from "model/BoardDominoModel";
 
 interface IProps {
     board: IBoard;
@@ -20,302 +21,294 @@ interface IProps {
 }
 
 export const BoardView = observer((props: IProps) => {
-    // const rotateDirection = (direction: Direction) => {
-    //     return direction === Direction.NORTH
-    //         ? Direction.EAST
-    //         : direction === Direction.EAST
-    //         ? Direction.SOUTH
-    //         : direction === Direction.SOUTH
-    //         ? Direction.WEST
-    //         : Direction.NORTH;
-    // };
+    const minVerticalBendThreshold = 8;
 
-    // const minVerticalBendThreshold = 8;
-    // const minHorizontalBendThreshold = 20;
+    const minHorizontalBendThreshold = 20;
 
-    // const findNorthBendThreshold = (
-    //     translatedDescriptions: TranslatedDominoDescription[]
-    // ) => {
-    //     const sortedDescriptions = translatedDescriptions
-    //         .filter((desc) => desc.south <= -1 * minVerticalBendThreshold)
-    //         .sort((a, b) => b.north - a.north);
-    //     for (let i = 0; i < sortedDescriptions.length - 1; i++) {
-    //         const desc = sortedDescriptions[i];
-    //         if (i < sortedDescriptions.length - 1) {
-    //             if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
-    //                 return desc.north;
-    //             }
-    //         }
-    //     }
-    //     return -1000;
-    // };
+    const findNorthBendThreshold = () => {
+        const sortedDominoes = props.board.Dominoes.filter(
+            (domino) =>
+                domino.BoundingBox.South <= -1 * minVerticalBendThreshold
+        ).sort((a, b) => b.BoundingBox.North - a.BoundingBox.North);
+        for (let i = 0; i < sortedDominoes.length - 1; i++) {
+            if (i < sortedDominoes.length - 1) {
+                if (
+                    !sortedDominoes[i].IsDouble &&
+                    !sortedDominoes[i + 1].IsDouble
+                ) {
+                    return sortedDominoes[i].BoundingBox.North;
+                }
+            }
+        }
+        return -1000;
+    };
 
-    // const findSouthBendThreshold = (
-    //     translatedDescriptions: TranslatedDominoDescription[]
-    // ) => {
-    //     const sortedDescriptions = translatedDescriptions
-    //         .filter((desc) => desc.north >= minVerticalBendThreshold)
-    //         .sort((a, b) => a.north - b.north);
-    //     for (let i = 0; i < sortedDescriptions.length - 1; i++) {
-    //         const desc = sortedDescriptions[i];
-    //         if (i < sortedDescriptions.length - 1) {
-    //             if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
-    //                 return desc.south;
-    //             }
-    //         }
-    //     }
-    //     return 1000;
-    // };
+    const findSouthBendThreshold = () => {
+        const sortedDominoes = props.board.Dominoes.filter(
+            (domino) => domino.BoundingBox.North >= minVerticalBendThreshold
+        ).sort((a, b) => a.BoundingBox.North - b.BoundingBox.North);
+        for (let i = 0; i < sortedDominoes.length - 1; i++) {
+            if (i < sortedDominoes.length - 1) {
+                if (
+                    !sortedDominoes[i].IsDouble &&
+                    !sortedDominoes[i + 1].IsDouble
+                ) {
+                    return sortedDominoes[i].BoundingBox.South;
+                }
+            }
+        }
+        return 1000;
+    };
 
-    // const findEastBendThreshold = (
-    //     translatedDescriptions: TranslatedDominoDescription[]
-    // ) => {
-    //     const sortedDescriptions = translatedDescriptions
-    //         .filter((desc) => desc.west >= minHorizontalBendThreshold)
-    //         .sort((a, b) => a.east - b.east);
-    //     for (let i = 0; i < sortedDescriptions.length - 1; i++) {
-    //         const desc = sortedDescriptions[i];
-    //         if (i < sortedDescriptions.length - 1) {
-    //             if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
-    //                 return desc.east;
-    //             }
-    //         }
-    //     }
-    //     return 1000;
-    // };
+    const findEastBendThreshold = () => {
+        const sortedDominoes = props.board.Dominoes.filter(
+            (domino) => domino.BoundingBox.West >= minHorizontalBendThreshold
+        ).sort((a, b) => a.BoundingBox.East - b.BoundingBox.East);
+        for (let i = 0; i < sortedDominoes.length - 1; i++) {
+            if (i < sortedDominoes.length - 1) {
+                if (
+                    !sortedDominoes[i].IsDouble &&
+                    !sortedDominoes[i + 1].IsDouble
+                ) {
+                    return sortedDominoes[i].BoundingBox.East;
+                }
+            }
+        }
+        return 1000;
+    };
 
-    // const findWestBendThreshold = (
-    //     translatedDescriptions: TranslatedDominoDescription[]
-    // ) => {
-    //     const sortedDescriptions = translatedDescriptions
-    //         .filter((desc) => desc.east <= -1 * minHorizontalBendThreshold)
-    //         .sort((a, b) => b.east - a.east);
-    //     for (let i = 0; i < sortedDescriptions.length - 1; i++) {
-    //         const desc = sortedDescriptions[i];
-    //         if (i < sortedDescriptions.length - 1) {
-    //             if (!isDouble(desc) && !isDouble(sortedDescriptions[i + 1])) {
-    //                 return desc.west;
-    //             }
-    //         }
-    //     }
-    //     return -1000;
-    // };
+    const findWestBendThreshold = () => {
+        const sortedDominoes = props.board.Dominoes.filter(
+            (domino) =>
+                domino.BoundingBox.East <= -1 * minHorizontalBendThreshold
+        ).sort((a, b) => b.BoundingBox.East - a.BoundingBox.East);
+        for (let i = 0; i < sortedDominoes.length - 1; i++) {
+            if (i < sortedDominoes.length - 1) {
+                if (
+                    !sortedDominoes[i].IsDouble &&
+                    !sortedDominoes[i + 1].IsDouble
+                ) {
+                    return sortedDominoes[i].BoundingBox.West;
+                }
+            }
+        }
+        return -1000;
+    };
 
-    // const bendDescriptions = (
-    //     descriptions: TranslatedDominoDescription[],
-    //     dropAreaBoundingBoxes: Map<boolean, Map<Direction, IBoundingBox>>
-    // ): {
-    //     descriptions: TranslatedDominoDescription[];
-    //     dropAreaBoundingBoxes: Map<boolean, Map<Direction, IBoundingBox>>;
-    // } => {
-    //     if (descriptions.length === 0) {
-    //         return {
-    //             descriptions: [],
-    //             dropAreaBoundingBoxes: dropAreaBoundingBoxes
-    //         };
-    //     }
+    const rotateDirection = (direction: Direction) => {
+        return direction === Direction.NORTH
+            ? Direction.EAST
+            : direction === Direction.EAST
+            ? Direction.SOUTH
+            : direction === Direction.SOUTH
+            ? Direction.WEST
+            : Direction.NORTH;
+    };
 
-    //     const bentDescriptions: TranslatedDominoDescription[] = [];
+    const bendDominoes = (): {
+        bentBoundingBoxes: BoundingBox[];
+        bentDominoDirections: Direction[];
+        dropAreaBoundingBoxes: Map<boolean, Map<Direction, BoundingBox>>;
+    } => {
+        if (props.board.BoundingBoxes.length === 0) {
+            return {
+                bentBoundingBoxes: [],
+                bentDominoDirections: [],
+                dropAreaBoundingBoxes: null
+                // dropAreaBoundingBoxes: dropAreaBoundingBoxes
+            };
+        }
 
-    //     const northBendThreshold = findNorthBendThreshold(descriptions);
-    //     const eastBendThreshold = findEastBendThreshold(descriptions);
-    //     const southBendThreshold = findSouthBendThreshold(descriptions);
-    //     const westBendThreshold = findWestBendThreshold(descriptions);
+        const bentBoundingBoxes: BoundingBox[] = [];
+        const bentDominoDirections: Direction[] = [];
 
-    //     const maxNorthPreBend = Math.max(
-    //         ...descriptions.map((desc) =>
-    //             desc.north <= northBendThreshold ? desc.north : -1000
-    //         )
-    //     );
-    //     const northLimitBoundingBox = descriptions.find(
-    //         (desc) => desc.north === maxNorthPreBend
-    //     );
+        const northBendThreshold = findNorthBendThreshold();
+        const eastBendThreshold = findEastBendThreshold();
+        const southBendThreshold = findSouthBendThreshold();
+        const westBendThreshold = findWestBendThreshold();
 
-    //     const maxEastPreBend = Math.min(
-    //         ...descriptions.map((desc) =>
-    //             desc.east >= eastBendThreshold ? desc.east : 1000
-    //         )
-    //     );
-    //     const eastLimitBoundingBox = descriptions.find(
-    //         (desc) => desc.east === maxEastPreBend
-    //     );
+        const maxNorthPreBend = Math.max(
+            ...props.board.BoundingBoxes.map((box) =>
+                box.North <= northBendThreshold ? box.North : -1000
+            )
+        );
+        const northLimitBoundingBox = props.board.BoundingBoxes.find(
+            (desc) => desc.North === maxNorthPreBend
+        );
 
-    //     const maxSouthPreBend = Math.min(
-    //         ...descriptions.map((desc) =>
-    //             desc.south >= southBendThreshold ? desc.south : 1000
-    //         )
-    //     );
-    //     const southLimitBoundingBox = descriptions.find(
-    //         (desc) => desc.south === maxSouthPreBend
-    //     );
+        const maxEastPreBend = Math.min(
+            ...props.board.BoundingBoxes.map((box) =>
+                box.East >= eastBendThreshold ? box.East : 1000
+            )
+        );
+        const eastLimitBoundingBox = props.board.BoundingBoxes.find(
+            (desc) => desc.East === maxEastPreBend
+        );
 
-    //     const maxWestPreBend = Math.max(
-    //         ...descriptions.map((desc) =>
-    //             desc.west <= westBendThreshold ? desc.west : -1000
-    //         )
-    //     );
-    //     const westLimitBoundingBox = descriptions.find(
-    //         (desc) => desc.west === maxWestPreBend
-    //     );
+        const maxSouthPreBend = Math.min(
+            ...props.board.BoundingBoxes.map((box) =>
+                box.South >= southBendThreshold ? box.South : 1000
+            )
+        );
+        const southLimitBoundingBox = props.board.BoundingBoxes.find(
+            (desc) => desc.South === maxSouthPreBend
+        );
 
-    //     const newNorthOrigin = northLimitBoundingBox
-    //         ? {
-    //               x: northLimitBoundingBox.west,
-    //               y: northLimitBoundingBox.north
-    //           }
-    //         : null;
+        const maxWestPreBend = Math.max(
+            ...props.board.BoundingBoxes.map((box) =>
+                box.West <= westBendThreshold ? box.West : -1000
+            )
+        );
+        const westLimitBoundingBox = props.board.BoundingBoxes.find(
+            (desc) => desc.West === maxWestPreBend
+        );
 
-    //     const newEastOrigin = eastLimitBoundingBox
-    //         ? {
-    //               x: eastLimitBoundingBox.east,
-    //               y: eastLimitBoundingBox.north
-    //           }
-    //         : null;
+        const newNorthOrigin = northLimitBoundingBox
+            ? {
+                  x: northLimitBoundingBox.West,
+                  y: northLimitBoundingBox.North
+              }
+            : null;
 
-    //     const newSouthOrigin = southLimitBoundingBox
-    //         ? {
-    //               x: southLimitBoundingBox.east,
-    //               y: southLimitBoundingBox.south
-    //           }
-    //         : null;
+        const newEastOrigin = eastLimitBoundingBox
+            ? {
+                  x: eastLimitBoundingBox.East,
+                  y: eastLimitBoundingBox.North
+              }
+            : null;
 
-    //     const newWestOrigin = westLimitBoundingBox
-    //         ? {
-    //               x: westLimitBoundingBox.west,
-    //               y: westLimitBoundingBox.south
-    //           }
-    //         : null;
+        const newSouthOrigin = southLimitBoundingBox
+            ? {
+                  x: southLimitBoundingBox.East,
+                  y: southLimitBoundingBox.South
+              }
+            : null;
 
-    //     const generateNextBentDominoDescription = (
-    //         desc: TranslatedDominoDescription
-    //     ) => {
-    //         if (desc.south <= northBendThreshold) {
-    //             return {
-    //                 ...desc,
-    //                 north: newNorthOrigin.y - (desc.east - newNorthOrigin.x),
-    //                 east: newNorthOrigin.x - (desc.north - newNorthOrigin.y),
-    //                 south: newNorthOrigin.y - (desc.west - newNorthOrigin.x),
-    //                 west: newNorthOrigin.x - (desc.south - newNorthOrigin.y),
-    //                 direction: rotateDirection(desc.direction)
-    //             };
-    //         } else if (desc.north >= southBendThreshold) {
-    //             return {
-    //                 ...desc,
-    //                 north: newSouthOrigin.y - (desc.west - newSouthOrigin.x),
-    //                 east: newSouthOrigin.x - (desc.south - newSouthOrigin.y),
-    //                 south: newSouthOrigin.y - (desc.east - newSouthOrigin.x),
-    //                 west: newSouthOrigin.x - (desc.north - newSouthOrigin.y),
-    //                 direction: rotateDirection(desc.direction)
-    //             };
-    //             // Need to ensure we do this only if the spinner has been encountered here
-    //         } else if (desc.west >= eastBendThreshold) {
-    //             return {
-    //                 ...desc,
-    //                 north: newEastOrigin.y + (desc.east - newEastOrigin.x),
-    //                 east: newEastOrigin.x + (desc.north - newEastOrigin.y),
-    //                 south: newEastOrigin.y + (desc.west - newEastOrigin.x),
-    //                 west: newEastOrigin.x + (desc.south - newEastOrigin.y),
-    //                 direction: rotateDirection(desc.direction)
-    //             };
-    //         } else if (desc.east <= westBendThreshold) {
-    //             return {
-    //                 ...desc,
-    //                 north: newWestOrigin.y + (desc.west - newWestOrigin.x),
-    //                 east: newWestOrigin.x + (desc.south - newWestOrigin.y),
-    //                 south: newWestOrigin.y + (desc.east - newWestOrigin.x),
-    //                 west: newWestOrigin.x + (desc.north - newWestOrigin.y),
-    //                 direction: rotateDirection(desc.direction)
-    //             };
-    //         } else {
-    //             return desc;
-    //         }
-    //     };
+        const newWestOrigin = westLimitBoundingBox
+            ? {
+                  x: westLimitBoundingBox.West,
+                  y: westLimitBoundingBox.South
+              }
+            : null;
 
-    //     descriptions.forEach((desc, i) => {
-    //         bentDescriptions.push(generateNextBentDominoDescription(desc));
-    //     });
+        const generateNextBentDominoDescription = (domino: IBoardDomino) => {
+            const box = domino.BoundingBox;
+            if (box.South <= northBendThreshold) {
+                return {
+                    North: newNorthOrigin.y - (box.East - newNorthOrigin.x),
+                    East: newNorthOrigin.x - (box.North - newNorthOrigin.y),
+                    South: newNorthOrigin.y - (box.West - newNorthOrigin.x),
+                    West: newNorthOrigin.x - (box.South - newNorthOrigin.y),
+                    Direction: rotateDirection(domino.Direction)
+                };
+            } else if (box.North >= southBendThreshold) {
+                return {
+                    North: newSouthOrigin.y - (box.West - newSouthOrigin.x),
+                    East: newSouthOrigin.x - (box.South - newSouthOrigin.y),
+                    South: newSouthOrigin.y - (box.East - newSouthOrigin.x),
+                    West: newSouthOrigin.x - (box.North - newSouthOrigin.y),
+                    Direction: rotateDirection(domino.Direction)
+                };
+                // Need to ensure we do this only if the spinner has been encountered here
+            } else if (box.West >= eastBendThreshold) {
+                return {
+                    North: newEastOrigin.y + (box.East - newEastOrigin.x),
+                    East: newEastOrigin.x + (box.North - newEastOrigin.y),
+                    South: newEastOrigin.y + (box.West - newEastOrigin.x),
+                    West: newEastOrigin.x + (box.South - newEastOrigin.y),
+                    Direction: rotateDirection(domino.Direction)
+                };
+            } else if (box.East <= westBendThreshold) {
+                return {
+                    North: newWestOrigin.y + (box.West - newWestOrigin.x),
+                    East: newWestOrigin.x + (box.South - newWestOrigin.y),
+                    South: newWestOrigin.y + (box.East - newWestOrigin.x),
+                    West: newWestOrigin.x + (box.North - newWestOrigin.y),
+                    Direction: rotateDirection(domino.Direction)
+                };
+            } else {
+                return { ...box, Direction: domino.Direction };
+            }
+        };
 
-    //     // Bend the drop area bounding boxes
+        props.board.Dominoes.forEach((domino, i) => {
+            const bentDominoDescription =
+                generateNextBentDominoDescription(domino);
+            bentBoundingBoxes.push({
+                North: bentDominoDescription.North,
+                South: bentDominoDescription.South,
+                East: bentDominoDescription.East,
+                West: bentDominoDescription.West
+            } as BoundingBox);
+            bentDominoDirections.push(bentDominoDescription.Direction);
+        });
 
-    //     const bentDropAreaBoundingBoxes = new Map<
-    //         boolean,
-    //         Map<Direction, IBoundingBox>
-    //     >();
+        // // Bend the drop area bounding boxes
 
-    //     bentDropAreaBoundingBoxes.set(false, new Map());
-    //     bentDropAreaBoundingBoxes.set(true, new Map());
+        // const bentDropAreaBoundingBoxes = new Map<
+        //     boolean,
+        //     Map<Direction, IBoundingBox>
+        // >();
 
-    //     [true, false].forEach((isDouble) => {
-    //         const boundingBoxMap = dropAreaBoundingBoxes.get(isDouble);
-    //         Array.from(boundingBoxMap.keys()).forEach((direction) => {
-    //             const translatedBoundingBox = boundingBoxMap.get(direction);
-    //             const mockDominoDescription = {
-    //                 north: translatedBoundingBox.north,
-    //                 east: translatedBoundingBox.east,
-    //                 south: translatedBoundingBox.south,
-    //                 west: translatedBoundingBox.west,
-    //                 face1: 0,
-    //                 face2: isDouble ? 0 : 1,
-    //                 direction: Direction.NONE // doesn't matter
-    //             };
-    //             bentDropAreaBoundingBoxes
-    //                 .get(isDouble)
-    //                 .set(
-    //                     direction,
-    //                     generateNextBentDominoDescription(mockDominoDescription)
-    //                 );
-    //         });
-    //     });
+        // bentDropAreaBoundingBoxes.set(false, new Map());
+        // bentDropAreaBoundingBoxes.set(true, new Map());
 
-    //     return {
-    //         descriptions: bentDescriptions,
-    //         dropAreaBoundingBoxes: bentDropAreaBoundingBoxes
-    //     };
-    // };
+        // [true, false].forEach((isDouble) => {
+        //     const boundingBoxMap = dropAreaBoundingBoxes.get(isDouble);
+        //     Array.from(boundingBoxMap.keys()).forEach((direction) => {
+        //         const translatedBoundingBox = boundingBoxMap.get(direction);
+        //         const mockDominoDescription = {
+        //             north: translatedBoundingBox.north,
+        //             east: translatedBoundingBox.east,
+        //             south: translatedBoundingBox.south,
+        //             west: translatedBoundingBox.west,
+        //             face1: 0,
+        //             face2: isDouble ? 0 : 1,
+        //             direction: Direction.NONE // doesn't matter
+        //         };
+        //         bentDropAreaBoundingBoxes
+        //             .get(isDouble)
+        //             .set(
+        //                 direction,
+        //                 generateNextBentDominoDescription(mockDominoDescription)
+        //             );
+        //     });
+        // });
 
-    // const translatedDescriptions = translateDescriptionsToActualSizes(
-    //     props.dominoes
-    // );
-
-    // const bentDescriptions = bendDescriptions(
-    //     translatedDescriptions.descriptions,
-    //     translatedDescriptions.dropAreaBoundingBoxes
-    // );
-
-    // const bentDominoDescriptions = bentDescriptions.descriptions;
-    // const bentDropAreaDescriptions = bentDescriptions.dropAreaBoundingBoxes;
+        return {
+            bentBoundingBoxes: bentBoundingBoxes,
+            bentDominoDirections: bentDominoDirections,
+            dropAreaBoundingBoxes: null
+            // dropAreaBoundingBoxes: bentDropAreaBoundingBoxes
+        };
+    };
 
     let westBoundary;
     let eastBoundary;
     let northBoundary;
     let southBoundary;
 
-    // if (bentDominoDescriptions.length > 0) {
-    //     westBoundary =
-    //         Math.min(...bentDominoDescriptions.map((desc) => desc.west)) - 4;
-    //     eastBoundary =
-    //         Math.max(...bentDominoDescriptions.map((desc) => desc.east)) + 4;
-    //     northBoundary =
-    //         Math.min(...bentDominoDescriptions.map((desc) => desc.north)) - 4;
-    //     southBoundary =
-    //         Math.max(...bentDominoDescriptions.map((desc) => desc.north)) + 4;
-    // } else {
-    //     westBoundary = -10;
-    //     eastBoundary = 10;
-    //     northBoundary = -10;
-    //     southBoundary = 10;
-    // }
+    const bentDominoDescriptions = bendDominoes();
 
-    if (props.board.IsEmpty) {
+    const bentBoundingBoxes = bentDominoDescriptions.bentBoundingBoxes;
+    const bentDominoDirections = bentDominoDescriptions.bentDominoDirections;
+    const bentDropAreaDescriptions =
+        bentDominoDescriptions.dropAreaBoundingBoxes;
+
+    if (bentBoundingBoxes.length > 0) {
+        westBoundary =
+            Math.min(...bentBoundingBoxes.map((box) => box.West)) - 4;
+        eastBoundary =
+            Math.max(...bentBoundingBoxes.map((box) => box.East)) + 4;
+        northBoundary =
+            Math.min(...bentBoundingBoxes.map((box) => box.North)) - 4;
+        southBoundary =
+            Math.max(...bentBoundingBoxes.map((box) => box.South)) + 4;
+    } else {
+        westBoundary = -10;
+        eastBoundary = 10;
         northBoundary = -10;
         southBoundary = 10;
-        eastBoundary = 10;
-        westBoundary = -10;
-    } else {
-        northBoundary = props.board.RenderedNorthBoundary - 4;
-        southBoundary = props.board.RenderedSouthBoundary + 4;
-        eastBoundary = props.board.RenderedEastBoundary + 4;
-        westBoundary = props.board.RenderedWestBoundary - 4;
     }
 
     const minGridWidthInSquares = eastBoundary - westBoundary;
@@ -340,23 +333,7 @@ export const BoardView = observer((props: IProps) => {
 
     const verticalShift = gridVerticalSquareMargin - northBoundary;
     const horizontalShift = gridHorizontalSquareMargin - westBoundary;
-    // const northShift = gridVerticalSquareMargin - northBoundary;
-    // const eastShift = gridHorizontalSquareMargin - westBoundary;
-    // const southShift = gridVerticalSquareMargin - northBoundary;
-    // const westShift = gridHorizontalSquareMargin - westBoundary;
-
-    // console.log("shifts:", northShift, eastShift, southShift, westShift);
-
-    // const finalDominoDescriptions = bentDominoDescriptions.map((desc) => {
-    //     return {
-    //         ...desc,
-    //         north: desc.north + northShift,
-    //         east: desc.east + eastShift,
-    //         south: desc.south + southShift,
-    //         west: desc.west + westShift
-    //     };
-    // });
-    // console.log(finalDominoDescriptions);
+    console.log(bentBoundingBoxes);
 
     return (
         <div
@@ -374,15 +351,15 @@ export const BoardView = observer((props: IProps) => {
                 return (
                     <BoardDominoView
                         key={i}
-                        north={domino.BoundingBox.North + verticalShift}
-                        east={domino.BoundingBox.East + horizontalShift}
-                        south={domino.BoundingBox.South + verticalShift}
-                        west={domino.BoundingBox.West + horizontalShift}
+                        north={bentBoundingBoxes[i].North + verticalShift}
+                        east={bentBoundingBoxes[i].East + horizontalShift}
+                        south={bentBoundingBoxes[i].South + verticalShift}
+                        west={bentBoundingBoxes[i].West + horizontalShift}
                     >
                         <DominoView
                             face1={domino.Face1}
                             face2={domino.Face2}
-                            direction={domino.Direction}
+                            direction={bentDominoDirections[i]}
                             size={gridSizeInPixels * 2}
                         />
                     </BoardDominoView>
