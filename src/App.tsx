@@ -17,6 +17,7 @@ import { SnapshotIn } from "mobx-state-tree";
 import { Coordinate } from "./interfaces/Coordinate";
 import { Direction } from "./enums/Direction";
 import { Board } from "model/BoardModel";
+import { runInAction } from "mobx";
 const io = require("socket.io-client");
 
 export const App = observer(() => {
@@ -37,7 +38,9 @@ export const App = observer(() => {
         console.log(socket);
         socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
             console.log("starting game");
-            localStore.gameState = initializeGameState(gameDetails);
+            runInAction(() => {
+                localStore.gameState = initializeGameState(gameDetails);
+            });
             setUpSocketForGameplay(socket, localStore.gameState);
 
             socket.off(MessageType.GAME_START);

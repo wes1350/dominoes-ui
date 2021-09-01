@@ -12,6 +12,7 @@ import { QueryType } from "enums/QueryType";
 import { IPlayer } from "model/PlayerModel";
 import { Direction } from "enums/Direction";
 import { observer, useLocalObservable } from "mobx-react-lite";
+import { runInAction } from "mobx";
 
 interface IProps {
     gameState: IGameState;
@@ -28,8 +29,10 @@ export const GameView = observer((props: IProps) => {
     }));
 
     React.useEffect(() => {
-        localStore.boardWidth = boardContainerRef?.current?.clientWidth;
-        localStore.boardHeight = boardContainerRef?.current?.clientHeight;
+        runInAction(() => {
+            localStore.boardWidth = boardContainerRef?.current?.clientWidth;
+            localStore.boardHeight = boardContainerRef?.current?.clientHeight;
+        });
     });
 
     const n_players = props.gameState.Config.N_PLAYERS;
