@@ -12,6 +12,12 @@ interface IProps {
 }
 
 export const OpponentPlayerView = observer((props: IProps) => {
+    const borderlessProperty =
+        props.index === 1
+            ? "borderTop"
+            : props.index === 2
+            ? "borderLeft"
+            : "borderRight";
     return (
         <div
             className={`player-view player-view-${
@@ -19,6 +25,7 @@ export const OpponentPlayerView = observer((props: IProps) => {
             } opponent opponent-${props.index} ${
                 props.current ? " current" : ""
             }`}
+            style={{ [borderlessProperty]: "0px" }}
         >
             <div className={`player-name player-name-${props.index}`}>
                 {props.player.Name}

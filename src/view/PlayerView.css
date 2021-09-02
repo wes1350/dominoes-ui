@@ -18,6 +18,7 @@
     position: fixed;
     justify-content: space-between;
     padding: 10px 10px 10px 10px;
+    background-color: #cce;
 }
 
 .player-name {
@@ -46,12 +47,12 @@
     transform: translateX(-50%);
     width: var(--player-view-large-side-horizontal);
     height: var(--player-view-small-side);
-    background-color: #edf7f0;
+    /* background-color: #edf7f0; */
     border-radius: 10px 10px 0px 0px;
 }
 
 .opponent {
-    background-color: #f7dfe6;
+    /* background-color: #f7dfe6; */
 }
 
 .opponent-1 {

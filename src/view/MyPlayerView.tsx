@@ -20,6 +20,7 @@ export const MyPlayerView = observer((props: IProps) => {
             className={`player-view player-view-horizontal my-player ${
                 props.current ? " current" : ""
             }`}
+            style={{ borderBottom: "0px" }}
         >
             <div className={"player-name player-name-me"}>
                 {props.player.Name}
