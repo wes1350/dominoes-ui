@@ -318,13 +318,12 @@ export const BoardView = observer((props: IProps) => {
         props.height / minGridHeightInSquares,
         props.width / minGridWidthInSquares
     );
-    // This will be used to determine how many squares there should be
-    // The final size will be determined dynamically through css grid fractional sizing
+
     const gridSizeInPixels = Math.min(limitingRatio, 20);
     const gridWidthInSquares = Math.floor(props.width / gridSizeInPixels);
     const gridHeightInSquares = Math.floor(props.height / gridSizeInPixels);
 
-    const gridHorizontalSquareMargin = Math.ceil(
+    const gridHorizontalSquareMargin = Math.floor(
         (gridWidthInSquares - minGridWidthInSquares) / 2
     );
     const gridVerticalSquareMargin = Math.ceil(
@@ -333,18 +332,13 @@ export const BoardView = observer((props: IProps) => {
 
     const verticalShift = gridVerticalSquareMargin - northBoundary;
     const horizontalShift = gridHorizontalSquareMargin - westBoundary;
-    console.log(bentBoundingBoxes);
 
     return (
         <div
             className="board"
             style={{
-                gridTemplateRows: `repeat(${gridHeightInSquares}, ${
-                    gridSizeInPixels + 1 // + 1 accounts for borders
-                }px)`,
-                gridTemplateColumns: `repeat(${gridWidthInSquares}, ${
-                    gridSizeInPixels + 1 // + 1 accounts for borders
-                }px)`
+                gridTemplateRows: `repeat(${gridHeightInSquares}, ${gridSizeInPixels}px)`,
+                gridTemplateColumns: `repeat(${gridWidthInSquares}, ${gridSizeInPixels}px)`
             }}
         >
             {props.board.Dominoes.map((domino, i) => {
@@ -360,7 +354,7 @@ export const BoardView = observer((props: IProps) => {
                             face1={domino.Face1}
                             face2={domino.Face2}
                             direction={bentDominoDirections[i]}
-                            size={gridSizeInPixels * 2}
+                            size={(gridSizeInPixels - 1) * 2}
                         />
                     </BoardDominoView>
                 );
