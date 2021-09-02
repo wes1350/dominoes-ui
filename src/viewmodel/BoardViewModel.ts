@@ -284,7 +284,7 @@ export const BoardViewModel = (model: IBoardModel) => {
                             Direction.SOUTH,
                             board.CalculateBoundingBox(mockDomino, {
                                 X: board.Spinner.X,
-                                Y: board.SouthEdge.Y + 1
+                                Y: board.SouthEdge.Y - 1
                             })
                         );
                     }

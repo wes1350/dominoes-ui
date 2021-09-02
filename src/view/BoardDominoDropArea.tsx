@@ -1,6 +1,5 @@
 import React from "react";
 import { useDrop } from "react-dnd";
-import "./Domino.css";
 import { Direction } from "enums/Direction";
 import { DragItemTypes } from "enums/DragItemTypes";
 
@@ -34,7 +33,8 @@ export const BoardDominoDropArea = (props: IProps) => {
                 ref={drop}
                 style={{
                     gridArea: `${props.north} / ${props.west} / ${props.south} / ${props.east}`,
-                    border: canDrop ? "2px solid red" : undefined
+                    border: canDrop ? "2px solid red" : undefined,
+                    borderRadius: "12.5%"
                 }}
             ></div>
         )

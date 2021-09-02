@@ -2,12 +2,11 @@ import { Direction } from "enums/Direction";
 import React from "react";
 import "./BoardView.css";
 import { BoardDominoView } from "./BoardDominoView";
-// import { BoardDominoDropArea } from "./BoardDominoDropArea";
+import { BoardDominoDropArea } from "./BoardDominoDropArea";
 import { DominoView } from "./DominoView";
 import { IBoard } from "model/BoardModel";
 import { observer } from "mobx-react-lite";
 import { BoundingBox } from "interfaces/BoundingBox";
-import { IBoardDomino } from "model/BoardDominoModel";
 
 interface IProps {
     board: IBoard;
@@ -114,8 +113,7 @@ export const BoardView = observer((props: IProps) => {
             return {
                 bentBoundingBoxes: [],
                 bentDominoDirections: [],
-                dropAreaBoundingBoxes: null
-                // dropAreaBoundingBoxes: dropAreaBoundingBoxes
+                dropAreaBoundingBoxes: props.board.DropAreaBoundingBoxes()
             };
         }
 
@@ -191,15 +189,17 @@ export const BoardView = observer((props: IProps) => {
               }
             : null;
 
-        const generateNextBentDominoDescription = (domino: IBoardDomino) => {
-            const box = domino.BoundingBox;
+        const generateNextBentDominoDescription = (
+            box: BoundingBox,
+            direction: Direction
+        ) => {
             if (box.South <= northBendThreshold) {
                 return {
                     North: newNorthOrigin.y - (box.East - newNorthOrigin.x),
                     East: newNorthOrigin.x - (box.North - newNorthOrigin.y),
                     South: newNorthOrigin.y - (box.West - newNorthOrigin.x),
                     West: newNorthOrigin.x - (box.South - newNorthOrigin.y),
-                    Direction: rotateDirection(domino.Direction)
+                    Direction: rotateDirection(direction)
                 };
             } else if (box.North >= southBendThreshold) {
                 return {
@@ -207,7 +207,7 @@ export const BoardView = observer((props: IProps) => {
                     East: newSouthOrigin.x - (box.South - newSouthOrigin.y),
                     South: newSouthOrigin.y - (box.East - newSouthOrigin.x),
                     West: newSouthOrigin.x - (box.North - newSouthOrigin.y),
-                    Direction: rotateDirection(domino.Direction)
+                    Direction: rotateDirection(direction)
                 };
                 // Need to ensure we do this only if the spinner has been encountered here
             } else if (box.West >= eastBendThreshold) {
@@ -216,7 +216,7 @@ export const BoardView = observer((props: IProps) => {
                     East: newEastOrigin.x + (box.North - newEastOrigin.y),
                     South: newEastOrigin.y + (box.West - newEastOrigin.x),
                     West: newEastOrigin.x + (box.South - newEastOrigin.y),
-                    Direction: rotateDirection(domino.Direction)
+                    Direction: rotateDirection(direction)
                 };
             } else if (box.East <= westBendThreshold) {
                 return {
@@ -224,16 +224,18 @@ export const BoardView = observer((props: IProps) => {
                     East: newWestOrigin.x + (box.South - newWestOrigin.y),
                     South: newWestOrigin.y + (box.East - newWestOrigin.x),
                     West: newWestOrigin.x + (box.North - newWestOrigin.y),
-                    Direction: rotateDirection(domino.Direction)
+                    Direction: rotateDirection(direction)
                 };
             } else {
-                return { ...box, Direction: domino.Direction };
+                return { ...box, Direction: direction };
             }
         };
 
         props.board.Dominoes.forEach((domino, i) => {
-            const bentDominoDescription =
-                generateNextBentDominoDescription(domino);
+            const bentDominoDescription = generateNextBentDominoDescription(
+                domino.BoundingBox,
+                domino.Direction
+            );
             bentBoundingBoxes.push({
                 North: bentDominoDescription.North,
                 South: bentDominoDescription.South,
@@ -243,43 +245,36 @@ export const BoardView = observer((props: IProps) => {
             bentDominoDirections.push(bentDominoDescription.Direction);
         });
 
-        // // Bend the drop area bounding boxes
+        // Bend the drop area bounding boxes
 
-        // const bentDropAreaBoundingBoxes = new Map<
-        //     boolean,
-        //     Map<Direction, BoundingBox>
-        // >();
+        const dropAreaBoundingBoxes = props.board.DropAreaBoundingBoxes();
+        const bentDropAreaBoundingBoxes = new Map<
+            boolean,
+            Map<Direction, BoundingBox>
+        >();
 
-        // bentDropAreaBoundingBoxes.set(false, new Map());
-        // bentDropAreaBoundingBoxes.set(true, new Map());
+        bentDropAreaBoundingBoxes.set(false, new Map());
+        bentDropAreaBoundingBoxes.set(true, new Map());
 
-        // [true, false].forEach((isDouble) => {
-        //     const boundingBoxMap = dropAreaBoundingBoxes.get(isDouble);
-        //     Array.from(boundingBoxMap.keys()).forEach((direction) => {
-        //         const translatedBoundingBox = boundingBoxMap.get(direction);
-        //         const mockDominoDescription = {
-        //             north: translatedBoundingBox.north,
-        //             east: translatedBoundingBox.east,
-        //             south: translatedBoundingBox.south,
-        //             west: translatedBoundingBox.west,
-        //             face1: 0,
-        //             face2: isDouble ? 0 : 1,
-        //             direction: Direction.NONE // doesn't matter
-        //         };
-        //         bentDropAreaBoundingBoxes
-        //             .get(isDouble)
-        //             .set(
-        //                 direction,
-        //                 generateNextBentDominoDescription(mockDominoDescription)
-        //             );
-        //     });
-        // });
+        [true, false].forEach((isDouble) => {
+            const boundingBoxMap = dropAreaBoundingBoxes.get(isDouble);
+            Array.from(boundingBoxMap.keys()).forEach((direction) => {
+                bentDropAreaBoundingBoxes
+                    .get(isDouble)
+                    .set(
+                        direction,
+                        generateNextBentDominoDescription(
+                            boundingBoxMap.get(direction),
+                            direction
+                        )
+                    );
+            });
+        });
 
         return {
             bentBoundingBoxes: bentBoundingBoxes,
             bentDominoDirections: bentDominoDirections,
-            dropAreaBoundingBoxes: null
-            // dropAreaBoundingBoxes: bentDropAreaBoundingBoxes
+            dropAreaBoundingBoxes: bentDropAreaBoundingBoxes
         };
     };
 
@@ -294,16 +289,17 @@ export const BoardView = observer((props: IProps) => {
     const bentDominoDirections = bentDominoDescriptions.bentDominoDirections;
     const bentDropAreaDescriptions =
         bentDominoDescriptions.dropAreaBoundingBoxes;
+    console.log(bentDropAreaDescriptions);
 
     if (bentBoundingBoxes.length > 0) {
         westBoundary =
-            Math.min(...bentBoundingBoxes.map((box) => box.West)) - 4;
+            Math.min(...bentBoundingBoxes.map((box) => box.West)) - 5;
         eastBoundary =
-            Math.max(...bentBoundingBoxes.map((box) => box.East)) + 4;
+            Math.max(...bentBoundingBoxes.map((box) => box.East)) + 5;
         northBoundary =
-            Math.min(...bentBoundingBoxes.map((box) => box.North)) - 4;
+            Math.min(...bentBoundingBoxes.map((box) => box.North)) - 5;
         southBoundary =
-            Math.max(...bentBoundingBoxes.map((box) => box.South)) + 4;
+            Math.max(...bentBoundingBoxes.map((box) => box.South)) + 5;
     } else {
         westBoundary = -10;
         eastBoundary = 10;
@@ -342,13 +338,14 @@ export const BoardView = observer((props: IProps) => {
             }}
         >
             {props.board.Dominoes.map((domino, i) => {
+                const box = bentBoundingBoxes[i];
                 return (
                     <BoardDominoView
                         key={i}
-                        north={bentBoundingBoxes[i].North + verticalShift}
-                        east={bentBoundingBoxes[i].East + horizontalShift}
-                        south={bentBoundingBoxes[i].South + verticalShift}
-                        west={bentBoundingBoxes[i].West + horizontalShift}
+                        north={box.North + verticalShift}
+                        east={box.East + horizontalShift}
+                        south={box.South + verticalShift}
+                        west={box.West + horizontalShift}
                     >
                         <DominoView
                             face1={domino.Face1}
@@ -359,7 +356,7 @@ export const BoardView = observer((props: IProps) => {
                     </BoardDominoView>
                 );
             })}
-            {/* {Array.from(bentDropAreaDescriptions.get(false).keys()).map(
+            {Array.from(bentDropAreaDescriptions.get(false).keys()).map(
                 (direction, i) => {
                     const box = bentDropAreaDescriptions
                         .get(false)
@@ -367,17 +364,18 @@ export const BoardView = observer((props: IProps) => {
                     return (
                         <BoardDominoDropArea
                             key={"false" + direction}
-                            north={box.north + northShift}
-                            east={box.east + eastShift}
-                            south={box.south + southShift}
-                            west={box.west + westShift}
+                            north={box.North + verticalShift}
+                            east={box.East + horizontalShift}
+                            south={box.South + verticalShift}
+                            west={box.West + horizontalShift}
                             boardDirection={direction}
                             onDropDomino={props.onDropDomino}
                             isActive={
                                 // props.dominoBeingDragged
                                 //     ? !props.dominoBeingDragged.IsDouble
                                 //     : false
-                                false
+                                // false
+                                true
                             }
                         ></BoardDominoDropArea>
                     );
@@ -391,22 +389,23 @@ export const BoardView = observer((props: IProps) => {
                     return (
                         <BoardDominoDropArea
                             key={"true" + direction}
-                            north={box.north + northShift}
-                            east={box.east + eastShift}
-                            south={box.south + southShift}
-                            west={box.west + westShift}
+                            north={box.North + verticalShift}
+                            east={box.East + horizontalShift}
+                            south={box.South + verticalShift}
+                            west={box.West + horizontalShift}
                             boardDirection={direction}
                             onDropDomino={props.onDropDomino}
                             isActive={
                                 // props.dominoBeingDragged
                                 //     ? props.dominoBeingDragged.IsDouble
                                 //     : false
-                                false
+                                // false
+                                true
                             }
                         ></BoardDominoDropArea>
                     );
                 }
-            )} */}
+            )}
         </div>
     );
 });
