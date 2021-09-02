@@ -14,7 +14,6 @@ interface IProps {
 }
 
 export const MyPlayerView = observer((props: IProps) => {
-    const playableDominoes = props.player.PlayableDominoes;
     return (
         <div
             className={`player-view player-view-horizontal my-player ${
@@ -30,14 +29,10 @@ export const MyPlayerView = observer((props: IProps) => {
                     return (
                         <MyHandDomino
                             key={i}
+                            index={i}
                             face1={domino.Face1}
                             face2={domino.Face2}
-                            faded={
-                                playableDominoes === null
-                                    ? true
-                                    : !playableDominoes.includes(i)
-                            }
-                            draggable={props.player.PlayableDominoes?.includes(
+                            playable={props.player.PlayableDominoes?.includes(
                                 i
                             )}
                             onStartDrag={() => props.onStartDrag(i)}

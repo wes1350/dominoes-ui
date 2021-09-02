@@ -62,18 +62,11 @@ export const GameView = observer((props: IProps) => {
                         width={localStore.boardWidth}
                         height={localStore.boardHeight}
                         onDropDomino={(
-                            domino: { face1: number; face2: number },
+                            item: { index: number },
                             direction: Direction
                         ) => {
-                            const dominoIndex = props.gameState.Players[
-                                props.gameState.CurrentPlayer
-                            ].Hand.findIndex(
-                                (dominoInHand) =>
-                                    dominoInHand.Face1 === domino.face1 &&
-                                    dominoInHand.Face2 === domino.face2
-                            );
                             props.respond(props.gameState.CurrentQueryType, {
-                                domino: dominoIndex,
+                                domino: item.index,
                                 direction: direction
                             });
                         }}

@@ -12,10 +12,7 @@ interface IProps {
     board: IBoard;
     width: number;
     height: number;
-    onDropDomino: (
-        dominoFaces: { face1: number; face2: number },
-        direction: Direction
-    ) => void;
+    onDropDomino: (item: { index: number }, direction: Direction) => void;
     // dominoBeingDragged: IDomino;
 }
 

@@ -2,27 +2,31 @@ import React from "react";
 import "./DominoView.css";
 import { DragItemTypes } from "enums/DragItemTypes";
 import { useDrag } from "react-dnd";
+import { observer } from "mobx-react-lite";
 
 interface IProps {
+    index: number;
     face1: number;
     face2: number;
-    draggable?: boolean;
-    faded?: boolean;
+    playable?: boolean;
     children: any;
     onStartDrag: () => void;
     onStopDrag: () => void;
 }
 
-export const MyHandDomino = (props: IProps) => {
+export const MyHandDomino = observer((props: IProps) => {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: DragItemTypes.DOMINO,
         item: () => {
+            console.log("starting drag");
             props.onStartDrag();
-            return { face1: props.face1, face2: props.face2 };
+            return { index: props.index };
         },
-        end: (item, monitor) => {
+        end: () => {
+            console.log("drag over");
             props.onStopDrag();
         },
+        canDrag: () => true, //props.draggable,
         collect: (monitor) => ({
             isDragging: !!monitor.isDragging()
         })
@@ -31,12 +35,12 @@ export const MyHandDomino = (props: IProps) => {
     return (
         <div
             className={"hand-domino-container"}
-            ref={props.draggable ? drag : null}
+            ref={drag}
             style={{
-                opacity: props.faded || isDragging ? 0.5 : 1
+                opacity: !props.playable || isDragging ? 0.5 : 1
             }}
         >
             {props.children}
         </div>
     );
-};
+});

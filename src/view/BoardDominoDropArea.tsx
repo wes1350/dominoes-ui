@@ -2,6 +2,7 @@ import React from "react";
 import { useDrop } from "react-dnd";
 import { Direction } from "enums/Direction";
 import { DragItemTypes } from "enums/DragItemTypes";
+import { observer } from "mobx-react-lite";
 
 interface IProps {
     north: number;
@@ -10,20 +11,18 @@ interface IProps {
     west: number;
     isActive: boolean;
     boardDirection: Direction;
-    onDropDomino: (
-        item: { face1: number; face2: number },
-        direction: Direction
-    ) => void;
+    onDropDomino: (item: { index: number }, direction: Direction) => void;
 }
 
-export const BoardDominoDropArea = (props: IProps) => {
+export const BoardDominoDropArea = observer((props: IProps) => {
     const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: DragItemTypes.DOMINO,
-        drop: (item: { face1: number; face2: number }, monitor) =>
+        drop: (item: { index: number }, monitor) =>
             props.onDropDomino(item, props.boardDirection),
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
             canDrop: true
+            // isDragging: (monitor as any).internalMonitor.isDragging()
         })
     }));
 
@@ -39,4 +38,4 @@ export const BoardDominoDropArea = (props: IProps) => {
             ></div>
         )
     );
-};
+});
