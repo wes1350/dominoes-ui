@@ -23,7 +23,7 @@ interface IProps {
 export const BoardView = observer((props: IProps) => {
     const minVerticalBendThreshold = 8;
 
-    const minHorizontalBendThreshold = 20;
+    const minHorizontalBendThreshold = 14;
 
     const findNorthBendThreshold = () => {
         const sortedDominoes = props.board.Dominoes.filter(
@@ -247,7 +247,7 @@ export const BoardView = observer((props: IProps) => {
 
         // const bentDropAreaBoundingBoxes = new Map<
         //     boolean,
-        //     Map<Direction, IBoundingBox>
+        //     Map<Direction, BoundingBox>
         // >();
 
         // bentDropAreaBoundingBoxes.set(false, new Map());
@@ -323,7 +323,7 @@ export const BoardView = observer((props: IProps) => {
     const gridWidthInSquares = Math.floor(props.width / gridSizeInPixels);
     const gridHeightInSquares = Math.floor(props.height / gridSizeInPixels);
 
-    const gridHorizontalSquareMargin = Math.floor(
+    const gridHorizontalSquareMargin = Math.ceil(
         (gridWidthInSquares - minGridWidthInSquares) / 2
     );
     const gridVerticalSquareMargin = Math.ceil(
