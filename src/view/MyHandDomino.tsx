@@ -26,7 +26,11 @@ export const MyHandDomino = observer((props: IProps) => {
             console.log("drag over");
             props.onStopDrag();
         },
-        canDrag: () => true, //props.draggable,
+        // Doesn't work, seems it's not detecting props.playable properly
+        // canDrag: () => {
+        //     console.log("can drag:", props.playable);
+        //     return props.playable;
+        // },
         collect: (monitor) => ({
             isDragging: !!monitor.isDragging()
         })
@@ -39,6 +43,7 @@ export const MyHandDomino = observer((props: IProps) => {
             style={{
                 opacity: !props.playable || isDragging ? 0.5 : 1
             }}
+            draggable={props.playable}
         >
             {props.children}
         </div>
