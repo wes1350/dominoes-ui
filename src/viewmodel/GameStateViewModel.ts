@@ -13,6 +13,10 @@ export const GameStateViewModel = (model: IGameStateModel) => {
             return gameState.Players.filter((player) => !player.IsMe);
         },
 
+        get CurrentPlayer(): IPlayer {
+            return gameState.Players[gameState.CurrentPlayerIndex];
+        },
+
         PlayerAtSeat(seat: number): IPlayer {
             return gameState.Players.find(
                 (player) => player.SeatNumber === seat

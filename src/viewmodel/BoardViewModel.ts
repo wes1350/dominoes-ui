@@ -9,6 +9,10 @@ export const BoardViewModel = (model: IBoardModel) => {
     const board = model as IBoard;
 
     return {
+        get IsEmpty(): boolean {
+            return board.Dominoes.length === 0;
+        },
+
         get Spinner(): IBoardDomino {
             if (board.SpinnerIndex !== null) {
                 return board.Dominoes[board.SpinnerIndex];
@@ -17,8 +21,12 @@ export const BoardViewModel = (model: IBoardModel) => {
             }
         },
 
-        get IsEmpty(): boolean {
-            return board.Dominoes.length === 0;
+        get CanPlayVertically(): boolean {
+            return (
+                !!board.Spinner &&
+                board.WestEdge.X < board.Spinner.X &&
+                board.Spinner.X < board.EastEdge.X
+            );
         },
 
         get NorthEdge(): IBoardDomino {
@@ -101,6 +109,38 @@ export const BoardViewModel = (model: IBoardModel) => {
             return Math.min(
                 ...board.Dominoes.map((domino) => domino.BoundingBox.West)
             );
+        },
+
+        get NorthExposedFace(): number {
+            const domino = board.NorthEdge;
+            if (domino.IsDouble || domino.Direction === Direction.SOUTH) {
+                return domino.Face1;
+            }
+            return domino.Face2;
+        },
+
+        get SouthExposedFace(): number {
+            const domino = board.SouthEdge;
+            if (domino.IsDouble || domino.Direction === Direction.NORTH) {
+                return domino.Face1;
+            }
+            return domino.Face2;
+        },
+
+        get EastExposedFace(): number {
+            const domino = board.EastEdge;
+            if (domino.IsDouble || domino.Direction === Direction.WEST) {
+                return domino.Face1;
+            }
+            return domino.Face2;
+        },
+
+        get WestExposedFace(): number {
+            const domino = board.WestEdge;
+            if (domino.IsDouble || domino.Direction === Direction.EAST) {
+                return domino.Face1;
+            }
+            return domino.Face2;
         },
 
         DominoAt(location: Coordinate) {

@@ -31,8 +31,8 @@ export const GameStateController = (model: IGameStateModel) => {
                 gameState.Board.AddDomino(domino, direction, coordinate);
             }
 
-            gameState.CurrentPlayer =
-                (gameState.CurrentPlayer + 1) % gameState.Config.N_PLAYERS;
+            gameState.CurrentPlayerIndex =
+                (gameState.CurrentPlayerIndex + 1) % gameState.Config.N_PLAYERS;
         },
 
         ProcessScore(seat: number, score: number) {
@@ -50,8 +50,8 @@ export const GameStateController = (model: IGameStateModel) => {
             }
         },
 
-        SetCurrentPlayer(seat: number) {
-            gameState.CurrentPlayer = seat;
+        SetCurrentPlayerIndex(seat: number) {
+            gameState.CurrentPlayerIndex = seat;
         },
 
         InitializeOpponentHands() {

@@ -22,6 +22,10 @@ export const BoardDominoViewModel = (model: IBoardDominoModel) => {
 
         get Y(): number {
             return domino.Location.Y;
+        },
+
+        ContainsNumber(number: number) {
+            return domino.Domino.ContainsNumber(number);
         }
     };
 };

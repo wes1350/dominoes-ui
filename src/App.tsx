@@ -127,7 +127,7 @@ export const App = observer(() => {
             }
         });
         socket.on(MessageType.NEW_ROUND, (payload: NewRoundMessage) => {
-            gameState.SetCurrentPlayer(payload.currentPlayer);
+            gameState.SetCurrentPlayerIndex(payload.currentPlayer);
             gameState.InitializeOpponentHands();
         });
 

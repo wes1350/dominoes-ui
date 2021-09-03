@@ -7,13 +7,14 @@ import { DominoView } from "./DominoView";
 import { IBoard } from "model/BoardModel";
 import { observer } from "mobx-react-lite";
 import { BoundingBox } from "interfaces/BoundingBox";
+import { IBoardDomino } from "model/BoardDominoModel";
 
 interface IProps {
     board: IBoard;
     width: number;
     height: number;
     onDropDomino: (item: { index: number }, direction: Direction) => void;
-    // dominoBeingDragged: IDomino;
+    dominoBeingDragged: IBoardDomino;
 }
 
 export const BoardView = observer((props: IProps) => {
@@ -326,6 +327,40 @@ export const BoardView = observer((props: IProps) => {
     const verticalShift = gridVerticalSquareMargin - northBoundary;
     const horizontalShift = gridHorizontalSquareMargin - westBoundary;
 
+    const dropAreaShouldShow = (
+        dropAreaIsDouble: boolean,
+        direction: Direction
+    ): boolean => {
+        const exposedFace =
+            direction === Direction.NORTH
+                ? props.board.NorthExposedFace
+                : direction === Direction.EAST
+                ? props.board.EastExposedFace
+                : direction === Direction.SOUTH
+                ? props.board.SouthExposedFace
+                : direction === Direction.WEST
+                ? props.board.WestExposedFace
+                : null;
+
+        const isCorrectDominoType =
+            props.dominoBeingDragged?.IsDouble === dropAreaIsDouble;
+        const matchesDominoAtEnd =
+            props.dominoBeingDragged?.ContainsNumber(exposedFace) ||
+            exposedFace === null;
+        const isAllowedIfVertical = [Direction.NORTH, Direction.SOUTH].includes(
+            direction
+        )
+            ? props.board.CanPlayVertically
+            : true;
+
+        return (
+            !!props.dominoBeingDragged &&
+            isCorrectDominoType &&
+            matchesDominoAtEnd &&
+            isAllowedIfVertical
+        );
+    };
+
     return (
         <div
             className="board"
@@ -358,22 +393,17 @@ export const BoardView = observer((props: IProps) => {
                     const box = bentDropAreaDescriptions
                         .get(false)
                         .get(direction);
+
                     return (
                         <BoardDominoDropArea
-                            key={"false" + direction}
+                            key={"false " + direction}
                             north={box.North + verticalShift}
                             east={box.East + horizontalShift}
                             south={box.South + verticalShift}
                             west={box.West + horizontalShift}
                             boardDirection={direction}
                             onDropDomino={props.onDropDomino}
-                            isActive={
-                                // props.dominoBeingDragged
-                                //     ? !props.dominoBeingDragged.IsDouble
-                                //     : false
-                                // false
-                                true
-                            }
+                            isActive={dropAreaShouldShow(false, direction)}
                         ></BoardDominoDropArea>
                     );
                 }
@@ -383,22 +413,26 @@ export const BoardView = observer((props: IProps) => {
                     const box = bentDropAreaDescriptions
                         .get(true)
                         .get(direction);
+                    const exposedFace =
+                        direction === Direction.NORTH
+                            ? props.board.NorthExposedFace
+                            : direction === Direction.EAST
+                            ? props.board.EastExposedFace
+                            : direction === Direction.SOUTH
+                            ? props.board.SouthExposedFace
+                            : direction === Direction.WEST
+                            ? props.board.WestExposedFace
+                            : null;
                     return (
                         <BoardDominoDropArea
-                            key={"true" + direction}
+                            key={"true " + direction}
                             north={box.North + verticalShift}
                             east={box.East + horizontalShift}
                             south={box.South + verticalShift}
                             west={box.West + horizontalShift}
                             boardDirection={direction}
                             onDropDomino={props.onDropDomino}
-                            isActive={
-                                // props.dominoBeingDragged
-                                //     ? props.dominoBeingDragged.IsDouble
-                                //     : false
-                                // false
-                                true
-                            }
+                            isActive={dropAreaShouldShow(true, direction)}
                         ></BoardDominoDropArea>
                     );
                 }

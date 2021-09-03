@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { BoardView } from "./BoardView";
 import { IGameState } from "model/GameStateModel";
 import { MyPlayerView } from "./MyPlayerView";
@@ -20,12 +20,12 @@ interface IProps {
 }
 
 export const GameView = observer((props: IProps) => {
-    const [dominoBeingDragged, setDominoBeingDragged] = useState(null);
     const boardContainerRef = useRef<HTMLDivElement>(null);
 
     const localStore = useLocalObservable(() => ({
         boardWidth: 600,
-        boardHeight: 400
+        boardHeight: 400,
+        dominoBeingDragged: null
     }));
 
     React.useEffect(() => {
@@ -70,13 +70,7 @@ export const GameView = observer((props: IProps) => {
                                 direction: direction
                             });
                         }}
-                        // dominoBeingDragged={
-                        //     dominoBeingDragged !== null
-                        //         ? props.gameState.Players[
-                        //               props.gameState.CurrentPlayer
-                        //           ].Hand[dominoBeingDragged]
-                        //         : null
-                        // }
+                        dominoBeingDragged={localStore.dominoBeingDragged}
                     />
                 </div>
                 <div className={"player-container"}>
@@ -89,7 +83,7 @@ export const GameView = observer((props: IProps) => {
                                 index={playerIndices.get(player.SeatNumber)}
                                 player={player}
                                 current={
-                                    props.gameState.CurrentPlayer ===
+                                    props.gameState.CurrentPlayerIndex ===
                                     player.SeatNumber
                                 }
                             />
@@ -98,13 +92,18 @@ export const GameView = observer((props: IProps) => {
                     <MyPlayerView
                         player={me}
                         current={
-                            props.gameState.CurrentPlayer === me.SeatNumber
+                            props.gameState.CurrentPlayerIndex === me.SeatNumber
                         }
                         onStartDrag={(index: number) => {
-                            setDominoBeingDragged(index);
+                            runInAction(() => {
+                                localStore.dominoBeingDragged =
+                                    props.gameState.CurrentPlayer.Hand[index];
+                            });
                         }}
                         onStopDrag={() => {
-                            setDominoBeingDragged(null);
+                            runInAction(() => {
+                                localStore.dominoBeingDragged = null;
+                            });
                         }}
                     />
                 </div>
