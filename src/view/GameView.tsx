@@ -12,7 +12,8 @@ import { QueryType } from "enums/QueryType";
 import { IPlayer } from "model/PlayerModel";
 import { Direction } from "enums/Direction";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { runInAction } from "mobx";
+import { action, runInAction } from "mobx";
+import { GameEventRenderer } from "./GameEventRenderer";
 
 interface IProps {
     gameState: IGameState;
@@ -34,23 +35,6 @@ export const GameView = observer((props: IProps) => {
             localStore.boardHeight = boardContainerRef?.current?.clientHeight;
         });
     });
-
-    const n_players = props.gameState.Config.N_PLAYERS;
-    // maps opponent seat number to the display index
-    const playerIndices = new Map<number, number>();
-    const mySeat = props.gameState.Players.find(
-        (player) => player.IsMe
-    ).SeatNumber;
-    if (n_players === 2) {
-        playerIndices.set((mySeat + 1) % n_players, 1);
-    } else if (n_players === 3) {
-        playerIndices.set((mySeat + 1) % n_players, 2);
-        playerIndices.set((mySeat + 2) % n_players, 1);
-    } else if (n_players === 4) {
-        playerIndices.set((mySeat + 1) % n_players, 2);
-        playerIndices.set((mySeat + 2) % n_players, 1);
-        playerIndices.set((mySeat + 3) % n_players, 3);
-    }
 
     const me = props.gameState.Players.find((player: IPlayer) => player.IsMe);
     return (
@@ -80,7 +64,9 @@ export const GameView = observer((props: IProps) => {
                         return (
                             <OpponentPlayerView
                                 key={i}
-                                index={playerIndices.get(player.SeatNumber)}
+                                index={props.gameState.SeatToPositionMapping.get(
+                                    player.SeatNumber
+                                )}
                                 player={player}
                                 current={
                                     props.gameState.CurrentPlayerIndex ===
@@ -114,6 +100,17 @@ export const GameView = observer((props: IProps) => {
                     />
                 </div>
                 <GameLogs logs={props.gameState.Logs} />
+                <GameEventRenderer
+                    event={props.gameState.CurrentEvent}
+                    index={
+                        props.gameState.SeatToPositionMapping.get(
+                            props.gameState.CurrentEvent?.Seat
+                        ) ?? null
+                    }
+                    clearEvent={action(() => {
+                        props.gameState.ClearEvent();
+                    })}
+                />
             </div>
         </DndProvider>
     );

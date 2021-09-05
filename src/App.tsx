@@ -17,7 +17,8 @@ import { SnapshotIn } from "mobx-state-tree";
 import { Coordinate } from "./interfaces/Coordinate";
 import { Direction } from "./enums/Direction";
 import { Board } from "model/BoardModel";
-import { runInAction } from "mobx";
+import { reaction, runInAction, when } from "mobx";
+import { GameEventType } from "enums/GameEventType";
 const io = require("socket.io-client");
 
 export const App = observer(() => {
@@ -99,7 +100,19 @@ export const App = observer(() => {
         socket.on(
             MessageType.SCORE,
             (payload: { seat: number; score: number }) => {
-                gameState.ProcessScore(payload.seat, payload.score);
+                gameState.AddEvent({
+                    Type: GameEventType.SCORE,
+                    Duration: 1000,
+                    Seat: payload.seat,
+                    Score: payload.score
+                });
+
+                when(
+                    () => gameState.Events.length === 0,
+                    () => {
+                        gameState.ProcessScore(payload.seat, payload.score);
+                    }
+                );
             }
         );
         socket.on(

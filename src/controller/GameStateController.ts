@@ -5,6 +5,8 @@ import { Domino, IDomino } from "model/DominoModel";
 import { IGameState, IGameStateModel } from "model/GameStateModel";
 import { IPlayer } from "model/PlayerModel";
 import _ from "lodash";
+import { cast } from "mobx-state-tree";
+import { GameEvent } from "interfaces/GameEvent";
 
 export const GameStateController = (model: IGameStateModel) => {
     const gameState = model as IGameState;
@@ -73,6 +75,18 @@ export const GameStateController = (model: IGameStateModel) => {
 
         AddLog(log: string): void {
             gameState.Logs.push(log);
+        },
+
+        AddEvent(event: GameEvent): void {
+            gameState.Events = cast([...gameState.Events, event]);
+            // gameState.Events.push(event);
+            console.log("n events:", gameState.Events.length);
+        },
+
+        ClearEvent(): void {
+            if (gameState.Events.length > 0) {
+                gameState.Events = cast(gameState.Events.slice(1));
+            }
         }
     };
 };

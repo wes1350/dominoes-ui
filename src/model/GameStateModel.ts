@@ -5,6 +5,7 @@ import { Instance, types } from "mobx-state-tree";
 import { Board } from "./BoardModel";
 import { GameConfig } from "./GameConfigModel";
 import { Player } from "./PlayerModel";
+import { GameEvent } from "interfaces/GameEvent";
 
 export const GameStateModel = types.model({
     Config: types.late(() => GameConfig),
@@ -16,7 +17,8 @@ export const GameStateModel = types.model({
     Board: types.late(() => Board),
     CurrentQueryType: types.maybeNull(
         types.enumeration<QueryType>("QueryType", Object.values(QueryType))
-    )
+    ),
+    Events: types.array(types.frozen<GameEvent>())
 });
 
 export type IGameStateModel = Instance<typeof GameStateModel>;
