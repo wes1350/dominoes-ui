@@ -20,6 +20,7 @@ import { Board } from "model/BoardModel";
 import { reaction, runInAction, when } from "mobx";
 import { GameEventType } from "enums/GameEventType";
 import { generateId } from "utils/utils";
+import { GameStartPage } from "view/GameStartPage";
 const io = require("socket.io-client");
 
 export const App = observer(() => {
@@ -194,14 +195,7 @@ export const App = observer(() => {
                     respond={respondToQuery}
                 ></GameView>
             ) : (
-                <button
-                    className={"game-start-button"}
-                    onClick={() => {
-                        localStore.socket?.emit("GAME_START");
-                    }}
-                >
-                    Start
-                </button>
+                <GameStartPage socket={localStore.socket} />
             )}
         </div>
     );
