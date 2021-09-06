@@ -18,12 +18,10 @@ export const MyHandDomino = observer((props: IProps) => {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: DragItemTypes.DOMINO,
         item: () => {
-            console.log("starting drag");
             props.onStartDrag();
             return { index: props.index };
         },
         end: () => {
-            console.log("drag over");
             props.onStopDrag();
         },
         // Doesn't work, seems it's not detecting props.playable properly

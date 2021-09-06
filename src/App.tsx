@@ -19,6 +19,7 @@ import { Direction } from "./enums/Direction";
 import { Board } from "model/BoardModel";
 import { reaction, runInAction, when } from "mobx";
 import { GameEventType } from "enums/GameEventType";
+import { generateId } from "utils/utils";
 const io = require("socket.io-client");
 
 export const App = observer(() => {
@@ -95,24 +96,34 @@ export const App = observer(() => {
                     turnDescription.coordinate
                 );
                 gameState.Me.SetPlayableDominoes(null);
+
+                if (!domino) {
+                    gameState.AddEvent({
+                        Id: Math.floor(Math.random() * 10000000),
+                        Type: GameEventType.PASS,
+                        Duration: 1000,
+                        Seat: turnDescription.seat
+                    });
+                }
             }
         );
         socket.on(
             MessageType.SCORE,
             (payload: { seat: number; score: number }) => {
                 gameState.AddEvent({
+                    Id: Math.floor(Math.random() * 10000000),
                     Type: GameEventType.SCORE,
                     Duration: 1000,
                     Seat: payload.seat,
                     Score: payload.score
                 });
 
-                when(
-                    () => gameState.Events.length === 0,
-                    () => {
-                        gameState.ProcessScore(payload.seat, payload.score);
-                    }
-                );
+                // when(
+                //     () => gameState.Events.length === 0,
+                //     () => {
+                gameState.ProcessScore(payload.seat, payload.score);
+                //     }
+                // );
             }
         );
         socket.on(
@@ -131,7 +142,12 @@ export const App = observer(() => {
             }
         });
         socket.on(MessageType.CLEAR_BOARD, () => {
-            gameState.ClearBoard();
+            when(
+                () => gameState.Events.length === 0,
+                () => {
+                    gameState.ClearBoard();
+                }
+            );
         });
         socket.on(MessageType.PULL, (payload: { seat: number }) => {
             const player = gameState.PlayerAtSeat(payload.seat);
@@ -140,8 +156,13 @@ export const App = observer(() => {
             }
         });
         socket.on(MessageType.NEW_ROUND, (payload: NewRoundMessage) => {
-            gameState.SetCurrentPlayerIndex(payload.currentPlayer);
-            gameState.InitializeOpponentHands();
+            when(
+                () => gameState.Events.length === 0,
+                () => {
+                    gameState.SetCurrentPlayerIndex(payload.currentPlayer);
+                    gameState.InitializeOpponentHands();
+                }
+            );
         });
 
         socket.on(QueryType.MOVE, (message: string) => {
@@ -150,6 +171,14 @@ export const App = observer(() => {
 
         socket.on(MessageType.GAME_OVER, (winner: number) => {
             gameState.Finish();
+        });
+
+        socket.on(MessageType.GAME_BLOCKED, () => {
+            gameState.AddEvent({
+                Id: generateId(),
+                Type: GameEventType.BLOCKED,
+                Duration: 2000
+            });
         });
     };
 

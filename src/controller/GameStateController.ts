@@ -79,8 +79,6 @@ export const GameStateController = (model: IGameStateModel) => {
 
         AddEvent(event: GameEvent): void {
             gameState.Events = cast([...gameState.Events, event]);
-            // gameState.Events.push(event);
-            console.log("n events:", gameState.Events.length);
         },
 
         ClearEvent(): void {

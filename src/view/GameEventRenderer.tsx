@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { GameEvent } from "interfaces/GameEvent";
 import "./GameEventRenderer.css";
+import { GameEventType } from "enums/GameEventType";
 
 interface IProps {
     event?: GameEvent;
@@ -13,11 +14,10 @@ export const GameEventRenderer = observer((props: IProps) => {
     React.useEffect(() => {
         if (props.event) {
             setTimeout(() => {
-                console.log("clearingEvent");
                 props.clearEvent();
             }, props.event.Duration);
         }
-    });
+    }, [props.event?.Id]);
 
     const gameEventClass =
         props.index === null
@@ -26,16 +26,24 @@ export const GameEventRenderer = observer((props: IProps) => {
             ? " game-event-me"
             : ` game-event-opponent-${props.index}`;
 
+    const eventType = props.event?.Type;
+
+    const gameEventText =
+        eventType === GameEventType.SCORE
+            ? `+ ${props.event.Score}`
+            : eventType === GameEventType.PASS
+            ? "Pass"
+            : eventType === GameEventType.BLOCKED
+            ? "Board blocked"
+            : props.event?.Type;
+
     return (
         <div className="game-event-renderer">
             {!!props.event && (
-                // need to figure out a better way to map seats
-
                 <div className={`game-event${gameEventClass}`}>
-                    {props.event.Type}
+                    {gameEventText}
                 </div>
             )}
-            {/* {!props.event && <div className={"game-event"}>not rendered</div>} */}
         </div>
     );
 });

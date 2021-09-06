@@ -6,7 +6,6 @@ export const PlayerController = (model: IPlayerModel) => {
     const player = model as IPlayer;
     return {
         SetHand(hand: IDomino[]) {
-            console.log("hand:", hand);
             player.Hand = cast(hand);
         },
 
