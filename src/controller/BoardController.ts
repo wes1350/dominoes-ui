@@ -30,6 +30,7 @@ export const BoardController = (model: IBoardModel) => {
 
         ClearBoard() {
             board.Dominoes = cast([]);
+            board.SpinnerIndex = null;
         }
     };
 };
