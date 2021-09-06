@@ -81,7 +81,7 @@ export const GameStartPage = observer((props: IProps) => {
                     </label>
                 </div>
                 <div className={"game-config-submit-button"}>
-                    <input type="submit" value="Submit" />
+                    <button type="submit">Start Game</button>
                 </div>
             </form>
         </div>
