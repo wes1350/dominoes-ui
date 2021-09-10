@@ -30,10 +30,12 @@ export const GameView = observer((props: IProps) => {
     }));
 
     React.useEffect(() => {
-        runInAction(() => {
+        const handleWindowResizeForBoard = action(() => {
             localStore.boardWidth = boardContainerRef?.current?.clientWidth;
             localStore.boardHeight = boardContainerRef?.current?.clientHeight;
         });
+
+        window.addEventListener("resize", handleWindowResizeForBoard);
     });
 
     const me = props.gameState.Players.find((player: IPlayer) => player.IsMe);

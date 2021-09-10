@@ -8,15 +8,24 @@ import { Coordinate } from "interfaces/Coordinate";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import "./BoardViewTest.css";
+import { action } from "mobx";
 
 interface IProps {}
 
 export const BoardViewTest = observer((props: IProps) => {
-    // const localStore = useLocalObservable(() => ({
-    //     handSize: "7",
-    //     check5Doubles: "Yes",
-    //     winThreshold: "150"
-    // }));
+    const localStore = useLocalObservable(() => ({
+        width: window.innerWidth,
+        height: window.innerHeight
+    }));
+
+    React.useEffect(() => {
+        const handleWindowResizeForBoard = action(() => {
+            localStore.width = window.innerWidth;
+            localStore.height = window.innerHeight;
+        });
+
+        window.addEventListener("resize", handleWindowResizeForBoard);
+    });
 
     const board = Board.create({});
 
@@ -63,8 +72,8 @@ export const BoardViewTest = observer((props: IProps) => {
             <div className={"board-view-test"}>
                 <div className={"board-view-test-board-container"}>
                     <BoardView
-                        height={600}
-                        width={900}
+                        height={localStore.height}
+                        width={localStore.width}
                         onDropDomino={() => {}}
                         dominoBeingDragged={null}
                         board={board}
