@@ -24,7 +24,7 @@ export const BoardViewTest = observer((props: IProps) => {
         { Face1: 6, Face2: 6, X: 0, Y: 0, Direction: Direction.NONE },
         { Face1: 6, Face2: 3, X: 1, Y: 0, Direction: Direction.EAST },
         { Face1: 3, Face2: 1, X: 2, Y: 0, Direction: Direction.EAST },
-        { Face1: 1, Face2: 1, X: 3, Y: 0, Direction: Direction.NORTH },
+        { Face1: 1, Face2: 1, X: 3, Y: 0, Direction: Direction.SOUTH },
         { Face1: 1, Face2: 4, X: 4, Y: 0, Direction: Direction.EAST },
         { Face1: 6, Face2: 5, X: -1, Y: 0, Direction: Direction.WEST },
         { Face1: 5, Face2: 2, X: -2, Y: 0, Direction: Direction.WEST },
@@ -32,20 +32,22 @@ export const BoardViewTest = observer((props: IProps) => {
         { Face1: 3, Face2: 0, X: -4, Y: 0, Direction: Direction.EAST },
         { Face1: 6, Face2: 3, X: 0, Y: -1, Direction: Direction.SOUTH },
         { Face1: 6, Face2: 4, X: 0, Y: 1, Direction: Direction.NORTH },
-        { Face1: 4, Face2: 4, X: 0, Y: 2, Direction: Direction.WEST },
+        { Face1: 4, Face2: 4, X: 0, Y: 2, Direction: Direction.EAST },
         { Face1: 4, Face2: 5, X: 0, Y: 3, Direction: Direction.NORTH },
         { Face1: 4, Face2: 2, X: 5, Y: 0, Direction: Direction.EAST },
         { Face1: 2, Face2: 1, X: 6, Y: 0, Direction: Direction.EAST },
         { Face1: 1, Face2: 1, X: 7, Y: 0, Direction: Direction.SOUTH },
         { Face1: 1, Face2: 5, X: 8, Y: 0, Direction: Direction.EAST },
-        { Face1: 5, Face2: 5, X: 9, Y: 0, Direction: Direction.NORTH },
+        { Face1: 5, Face2: 5, X: 9, Y: 0, Direction: Direction.SOUTH },
         { Face1: 3, Face2: 0, X: 0, Y: -2, Direction: Direction.SOUTH },
         { Face1: 5, Face2: 5, X: 0, Y: 4, Direction: Direction.EAST },
         { Face1: 6, Face2: 5, X: 0, Y: 5, Direction: Direction.SOUTH },
         { Face1: 5, Face2: 2, X: 10, Y: 0, Direction: Direction.EAST },
         { Face1: 2, Face2: 1, X: 11, Y: 0, Direction: Direction.EAST },
         { Face1: 1, Face2: 0, X: 12, Y: 0, Direction: Direction.EAST },
-        { Face1: 0, Face2: 0, X: 13, Y: 0, Direction: Direction.SOUTH }
+        { Face1: 0, Face2: 0, X: 13, Y: 0, Direction: Direction.SOUTH },
+        { Face1: 4, Face2: 0, X: 0, Y: -3, Direction: Direction.NORTH },
+        { Face1: 4, Face2: 4, X: 0, Y: -4, Direction: Direction.EAST }
     ];
 
     addedDominoesSpec.forEach((desc) => {
