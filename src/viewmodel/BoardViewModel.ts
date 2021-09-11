@@ -113,6 +113,9 @@ export const BoardViewModel = (model: IBoardModel) => {
 
         get NorthExposedFace(): number {
             const domino = board.NorthEdge;
+            if (!domino) {
+                return null;
+            }
             if (domino.IsDouble || domino.Direction === Direction.SOUTH) {
                 return domino.Face1;
             }
@@ -121,6 +124,9 @@ export const BoardViewModel = (model: IBoardModel) => {
 
         get SouthExposedFace(): number {
             const domino = board.SouthEdge;
+            if (!domino) {
+                return null;
+            }
             if (domino.IsDouble || domino.Direction === Direction.NORTH) {
                 return domino.Face1;
             }
@@ -129,6 +135,9 @@ export const BoardViewModel = (model: IBoardModel) => {
 
         get EastExposedFace(): number {
             const domino = board.EastEdge;
+            if (!domino) {
+                return null;
+            }
             if (domino.IsDouble || domino.Direction === Direction.WEST) {
                 return domino.Face1;
             }
@@ -137,6 +146,9 @@ export const BoardViewModel = (model: IBoardModel) => {
 
         get WestExposedFace(): number {
             const domino = board.WestEdge;
+            if (!domino) {
+                return null;
+            }
             if (domino.IsDouble || domino.Direction === Direction.EAST) {
                 return domino.Face1;
             }

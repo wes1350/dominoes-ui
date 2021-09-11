@@ -12,7 +12,7 @@ export const BoardDominoModel = types.model({
     Direction: types.enumeration<Direction>(
         "Direction",
         Object.values(Direction)
-    ), // This may just be unnecessary now
+    ),
     BoundingBox: types.frozen<BoundingBox>()
 });
 

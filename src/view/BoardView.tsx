@@ -3,12 +3,15 @@ import React from "react";
 import "./BoardView.css";
 import { BoardDominoView } from "./BoardDominoView";
 import { DominoView } from "./DominoView";
-import { IBoard } from "model/BoardModel";
+import { Board, IBoard } from "model/BoardModel";
 import { observer } from "mobx-react-lite";
 import { BoundingBox } from "interfaces/BoundingBox";
 import { IBoardDomino } from "model/BoardDominoModel";
 import { rotateDirectionClockwise } from "utils/utils";
 import _ from "lodash";
+import { useDrop } from "react-dnd";
+import { DragItemTypes } from "enums/DragItemTypes";
+import { getSnapshot } from "mobx-state-tree";
 
 interface IProps {
     board: IBoard;
@@ -19,6 +22,17 @@ interface IProps {
 }
 
 export const BoardView = observer((props: IProps) => {
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
+        accept: DragItemTypes.DOMINO,
+        drop: (item: { index: number }, monitor) =>
+            props.onDropDomino(item, Direction.NONE),
+        collect: (monitor) => ({
+            isOver: !!monitor.isOver(),
+            canDrop: props.board.Dominoes.length === 0
+            // isDragging: (monitor as any).internalMonitor.isDragging()
+        })
+    }));
+
     // Have some condition to not render the board or something if the screen is too small
     // Can we just arbitrarily scale everything though?
 
@@ -514,11 +528,31 @@ export const BoardView = observer((props: IProps) => {
     const dominoOrientationDirections =
         gridDescription.dominoOrientationDirections;
 
-    console.log(gridDescription);
+    const isDroppable = (domino: IBoardDomino) => {
+        return (
+            (domino === props.board.NorthEdge &&
+                props.dominoBeingDragged?.ContainsNumber(
+                    props.board.NorthExposedFace
+                )) ||
+            (domino === props.board.EastEdge &&
+                props.dominoBeingDragged?.ContainsNumber(
+                    props.board.EastExposedFace
+                )) ||
+            (domino === props.board.SouthEdge &&
+                props.dominoBeingDragged?.ContainsNumber(
+                    props.board.SouthExposedFace
+                )) ||
+            (domino === props.board.WestEdge &&
+                props.dominoBeingDragged?.ContainsNumber(
+                    props.board.WestExposedFace
+                ))
+        );
+    };
 
     return (
         <div
             className="board"
+            ref={drop}
             style={{
                 gridTemplateRows: `repeat(${gridHeightInSquares}, ${gridSquarePixelSize}px)`,
                 gridTemplateColumns: `repeat(${gridWidthInSquares}, ${gridSquarePixelSize}px)`
@@ -533,6 +567,22 @@ export const BoardView = observer((props: IProps) => {
                         east={box.East + 1}
                         south={box.South + 1}
                         west={box.West + 1}
+                        droppable={isDroppable(domino)}
+                        onDropDomino={(item: { index: number }) => {
+                            const direction =
+                                props.board.NorthEdge === domino &&
+                                props.board.CanPlayVertically
+                                    ? Direction.NORTH
+                                    : props.board.SouthEdge === domino &&
+                                      props.board.CanPlayVertically
+                                    ? Direction.SOUTH
+                                    : props.board.EastEdge === domino
+                                    ? Direction.EAST
+                                    : props.board.WestEdge === domino
+                                    ? Direction.WEST
+                                    : Direction.NONE;
+                            props.onDropDomino(item, direction);
+                        }}
                     >
                         <DominoView
                             face1={domino.Face1}
