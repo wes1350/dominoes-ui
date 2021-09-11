@@ -3,7 +3,7 @@ import React from "react";
 import "./BoardView.css";
 import { BoardDominoView } from "./BoardDominoView";
 import { DominoView } from "./DominoView";
-import { Board, IBoard } from "model/BoardModel";
+import { IBoard } from "model/BoardModel";
 import { observer } from "mobx-react-lite";
 import { BoundingBox } from "interfaces/BoundingBox";
 import { IBoardDomino } from "model/BoardDominoModel";
@@ -11,7 +11,6 @@ import { rotateDirectionClockwise } from "utils/utils";
 import _ from "lodash";
 import { useDrop } from "react-dnd";
 import { DragItemTypes } from "enums/DragItemTypes";
-import { getSnapshot } from "mobx-state-tree";
 
 interface IProps {
     board: IBoard;
@@ -24,8 +23,11 @@ interface IProps {
 export const BoardView = observer((props: IProps) => {
     const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: DragItemTypes.DOMINO,
-        drop: (item: { index: number }, monitor) =>
-            props.onDropDomino(item, Direction.NONE),
+        drop: (item: { index: number }, monitor) => {
+            if (props.board.Dominoes.length === 0) {
+                props.onDropDomino(item, Direction.NONE);
+            }
+        },
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
             canDrop: props.board.Dominoes.length === 0
@@ -549,6 +551,18 @@ export const BoardView = observer((props: IProps) => {
         );
     };
 
+    const determineDropDirectionForDomino = (domino: IBoardDomino) => {
+        return props.board.NorthEdge === domino && props.board.CanPlayVertically
+            ? Direction.NORTH
+            : props.board.SouthEdge === domino && props.board.CanPlayVertically
+            ? Direction.SOUTH
+            : props.board.EastEdge === domino
+            ? Direction.EAST
+            : props.board.WestEdge === domino
+            ? Direction.WEST
+            : null;
+    };
+
     return (
         <div
             className="board"
@@ -569,19 +583,10 @@ export const BoardView = observer((props: IProps) => {
                         west={box.West + 1}
                         droppable={isDroppable(domino)}
                         onDropDomino={(item: { index: number }) => {
-                            const direction =
-                                props.board.NorthEdge === domino &&
-                                props.board.CanPlayVertically
-                                    ? Direction.NORTH
-                                    : props.board.SouthEdge === domino &&
-                                      props.board.CanPlayVertically
-                                    ? Direction.SOUTH
-                                    : props.board.EastEdge === domino
-                                    ? Direction.EAST
-                                    : props.board.WestEdge === domino
-                                    ? Direction.WEST
-                                    : Direction.NONE;
-                            props.onDropDomino(item, direction);
+                            props.onDropDomino(
+                                item,
+                                determineDropDirectionForDomino(domino)
+                            );
                         }}
                     >
                         <DominoView
