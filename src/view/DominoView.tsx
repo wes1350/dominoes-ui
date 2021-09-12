@@ -16,7 +16,7 @@ export const DominoView = observer((props: IProps) => {
     const dominoBackgroundFill = "#F7EEE1";
     const dominoFeatureFill = "#000";
     const shrinkFactor = 0.975;
-    const highlightOverflowFactor = 1.1;
+    const highlightOverflowFactor = 1.2;
 
     const getFaceCircles = (number: number, face: "face1" | "face2") => {
         const offset = face === "face1" ? 0 : 50;
@@ -114,10 +114,11 @@ export const DominoView = observer((props: IProps) => {
                         className="domino-drop-highlight"
                         style={{
                             position: "absolute",
-                            backgroundColor: "red",
+                            backgroundColor: "#9d4",
                             width: highlightOverflowFactor * props.size,
                             height: highlightOverflowFactor * 2 * props.size,
                             zIndex: 0,
+                            borderRadius: "10%",
                             transform: highlightTransform
                         }}
                     ></div>
