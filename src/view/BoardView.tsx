@@ -35,6 +35,10 @@ export const BoardView = observer((props: IProps) => {
         })
     }));
 
+    if (!props.width || !props.height) {
+        return null;
+    }
+
     // Have some condition to not render the board or something if the screen is too small
     // Can we just arbitrarily scale everything though?
 

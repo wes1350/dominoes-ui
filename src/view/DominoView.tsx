@@ -16,6 +16,7 @@ export const DominoView = observer((props: IProps) => {
     const dominoBackgroundFill = "#F7EEE1";
     const dominoFeatureFill = "#000";
     const shrinkFactor = 0.975;
+    const highlightOverflowFactor = 1.1;
 
     const getFaceCircles = (number: number, face: "face1" | "face2") => {
         const offset = face === "face1" ? 0 : 50;
@@ -54,67 +55,111 @@ export const DominoView = observer((props: IProps) => {
     };
 
     // Default direction is going from North -> South
-    const getDominoStyle = () => {
-        const baseStyle = {
-            width: props.size,
-            height: 2 * props.size
-        };
-        if (props.direction === Direction.NORTH) {
-            return {
-                ...baseStyle,
-                transform: "rotate(180deg)"
-            };
-        } else if (props.direction === Direction.SOUTH) {
-            return baseStyle;
-        } else if (props.direction === Direction.EAST) {
-            return {
-                ...baseStyle,
-                transform: "rotate(270deg) translate(50%, 25%)"
-            };
-        } else if (props.direction === Direction.WEST) {
-            return {
-                ...baseStyle,
-                transform: "rotate(90deg) translate(-50%, -25%)"
-            };
-        } else {
-            return baseStyle;
-        }
+    let dominoStyle;
+    const baseStyle = {
+        width: props.size,
+        height: 2 * props.size
     };
+    if (props.direction === Direction.NORTH) {
+        dominoStyle = {
+            ...baseStyle,
+            transform: "rotate(180deg)"
+        };
+    } else if (props.direction === Direction.SOUTH) {
+        dominoStyle = baseStyle;
+    } else if (props.direction === Direction.EAST) {
+        dominoStyle = {
+            ...baseStyle,
+            transform: "rotate(270deg) translate(50%, 25%)"
+        };
+    } else if (props.direction === Direction.WEST) {
+        dominoStyle = {
+            ...baseStyle,
+            transform: "rotate(90deg) translate(-50%, -25%)"
+        };
+    } else {
+        dominoStyle = baseStyle;
+    }
+
+    let highlightTransform;
+    if (props.direction === Direction.NORTH) {
+        highlightTransform = `rotate(180deg) translate(${
+            50 * (highlightOverflowFactor - 1)
+        }%, ${50 * (highlightOverflowFactor - 1)}%)`;
+    } else if (props.direction === Direction.SOUTH) {
+        highlightTransform = `translate(-${
+            50 * (highlightOverflowFactor - 1)
+        }%, -${50 * (highlightOverflowFactor - 1)}%)`;
+    } else if (props.direction === Direction.EAST) {
+        highlightTransform = `rotate(270deg) translate(${
+            50 * highlightOverflowFactor
+        }%, ${
+            25 * highlightOverflowFactor - 75 * (highlightOverflowFactor - 1)
+        }%)`;
+    } else if (props.direction === Direction.WEST) {
+        highlightTransform = `rotate(90deg) translate(-${
+            50 * highlightOverflowFactor
+        }%, -${
+            25 * highlightOverflowFactor - 75 * (highlightOverflowFactor - 1)
+        }%)`;
+    } else {
+        highlightTransform = null;
+    }
 
     return (
-        <div className={"domino-outer-container"} style={getDominoStyle()}>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={"100%"}
-                height={"100%"}
-                version="1.1"
-            >
-                <rect
-                    x={`${(100 * (1 - shrinkFactor)) / 2}%`}
-                    y={`${(100 * (1 - shrinkFactor)) / 2}%`}
-                    width={`${100 * shrinkFactor}%`}
-                    height={`${100 * shrinkFactor}%`}
-                    rx="10%"
-                    fill={dominoBackgroundFill}
-                />
-
-                {!isHiddenDomino && (
-                    <>
-                        {getFaceCircles(props.face1, "face1")}
-
-                        <line
-                            x1="5%"
-                            y1="50%"
-                            x2="95%"
-                            y2="50%"
-                            stroke={dominoFeatureFill}
-                            strokeWidth="1.5%"
+        <>
+            <div className={"domino-outer-container"}>
+                {props.highlight && (
+                    <div
+                        className="domino-drop-highlight"
+                        style={{
+                            position: "absolute",
+                            backgroundColor: "red",
+                            width: highlightOverflowFactor * props.size,
+                            height: highlightOverflowFactor * 2 * props.size,
+                            zIndex: 0,
+                            transform: highlightTransform
+                        }}
+                    ></div>
+                )}
+                <div
+                    className={"domino-svg-container"}
+                    style={{ ...dominoStyle, zIndex: 1 }}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={"100%"}
+                        height={"100%"}
+                        version="1.1"
+                    >
+                        <rect
+                            x={`${(100 * (1 - shrinkFactor)) / 2}%`}
+                            y={`${(100 * (1 - shrinkFactor)) / 2}%`}
+                            width={`${100 * shrinkFactor}%`}
+                            height={`${100 * shrinkFactor}%`}
+                            rx="10%"
+                            fill={dominoBackgroundFill}
                         />
 
-                        {getFaceCircles(props.face2, "face2")}
-                    </>
-                )}
-            </svg>
-        </div>
+                        {!isHiddenDomino && (
+                            <>
+                                {getFaceCircles(props.face1, "face1")}
+
+                                <line
+                                    x1="5%"
+                                    y1="50%"
+                                    x2="95%"
+                                    y2="50%"
+                                    stroke={dominoFeatureFill}
+                                    strokeWidth="1.5%"
+                                />
+
+                                {getFaceCircles(props.face2, "face2")}
+                            </>
+                        )}
+                    </svg>
+                </div>
+            </div>
+        </>
     );
 });

@@ -24,12 +24,22 @@ export const GameView = observer((props: IProps) => {
     const boardContainerRef = useRef<HTMLDivElement>(null);
 
     const localStore = useLocalObservable(() => ({
-        boardWidth: 600,
-        boardHeight: 400,
+        boardWidth: null,
+        boardHeight: null,
         dominoBeingDragged: null
     }));
 
     React.useEffect(() => {
+        const boardWidth = boardContainerRef?.current?.clientWidth;
+        const boardHeight = boardContainerRef?.current?.clientHeight;
+
+        if (!localStore.boardWidth || !localStore.boardHeight) {
+            runInAction(() => {
+                localStore.boardWidth = boardWidth;
+                localStore.boardHeight = boardHeight;
+            });
+        }
+
         const handleWindowResizeForBoard = action(() => {
             localStore.boardWidth = boardContainerRef?.current?.clientWidth;
             localStore.boardHeight = boardContainerRef?.current?.clientHeight;

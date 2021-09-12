@@ -117,18 +117,18 @@ export const RoomView = observer(() => {
                     Score: payload.score
                 });
 
-                // when(
-                //     () => gameState.Events.length === 0,
-                //     () => {
                 gameState.ProcessScore(payload.seat, payload.score);
-                //     }
-                // );
             }
         );
         socket.on(
             MessageType.HAND,
             (payload: { Face1: number; Face2: number }[]) => {
-                gameState.Me.SetHand(payload as IDomino[]);
+                when(
+                    () => gameState.Events.length === 0,
+                    () => {
+                        gameState.Me.SetHand(payload as IDomino[]);
+                    }
+                );
             }
         );
         socket.on(MessageType.PLAYABLE_DOMINOS, (payload: string) => {
