@@ -581,7 +581,6 @@ export const BoardView = observer((props: IProps) => {
                         east={box.East + 1}
                         south={box.South + 1}
                         west={box.West + 1}
-                        droppable={isDroppable(domino)}
                         onDropDomino={(item: { index: number }) => {
                             props.onDropDomino(
                                 item,
@@ -593,7 +592,8 @@ export const BoardView = observer((props: IProps) => {
                             face1={domino.Face1}
                             face2={domino.Face2}
                             direction={dominoOrientationDirections[i]}
-                            size={(gridSquarePixelSize - 1) * 2}
+                            size={gridSquarePixelSize * 2}
+                            highlight={isDroppable(domino)}
                         />
                     </BoardDominoView>
                 );

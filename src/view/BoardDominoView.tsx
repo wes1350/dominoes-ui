@@ -11,7 +11,6 @@ interface IProps {
     south: number;
     west: number;
     children: any;
-    droppable: boolean;
     onDropDomino: (item: { index: number }) => void;
 }
 
@@ -32,8 +31,7 @@ export const BoardDominoView = observer((props: IProps) => {
         <div
             ref={drop}
             style={{
-                gridArea: `${props.north} / ${props.west} / ${props.south} / ${props.east}`,
-                border: props.droppable ? "2px solid red" : ""
+                gridArea: `${props.north} / ${props.west} / ${props.south} / ${props.east}`
             }}
         >
             {props.children}
