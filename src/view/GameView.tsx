@@ -4,7 +4,6 @@ import { IGameState } from "model/GameStateModel";
 import { MyPlayerView } from "./MyPlayerView";
 import { OpponentPlayerView } from "./OpponentPlayerView";
 import "./GameView.css";
-import { UserInput } from "./UserInput";
 import { GameLogs } from "./GameLogs";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -103,12 +102,6 @@ export const GameView = observer((props: IProps) => {
                                 localStore.dominoBeingDragged = null;
                             });
                         }}
-                    />
-                </div>
-                <div className={"input-container"}>
-                    <UserInput
-                        gameState={props.gameState}
-                        respond={props.respond}
                     />
                 </div>
                 <GameLogs logs={props.gameState.Logs} />

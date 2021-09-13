@@ -1,5 +1,4 @@
 import React from "react";
-import "./DominoView.css";
 import { DragItemTypes } from "enums/DragItemTypes";
 import { useDrag } from "react-dnd";
 import { observer } from "mobx-react-lite";
@@ -15,7 +14,7 @@ interface IProps {
 }
 
 export const MyHandDomino = observer((props: IProps) => {
-    const [{ isDragging }, drag] = useDrag(() => ({
+    const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: DragItemTypes.DOMINO,
         item: () => {
             props.onStartDrag();
