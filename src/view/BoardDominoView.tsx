@@ -1,8 +1,10 @@
 import { Direction } from "enums/Direction";
 import { DragItemTypes } from "enums/DragItemTypes";
-import { observer } from "mobx-react-lite";
-import React from "react";
+import { action, runInAction } from "mobx";
+import { observer, useLocalObservable } from "mobx-react-lite";
+import React, { useRef } from "react";
 import { useDrop } from "react-dnd";
+import { DominoView } from "./DominoView";
 import "./DominoView.css";
 
 interface IProps {
@@ -10,7 +12,10 @@ interface IProps {
     east: number;
     south: number;
     west: number;
-    children: any;
+    face1: number;
+    face2: number;
+    direction: Direction;
+    highlight?: boolean;
     onDropDomino: (item: { index: number }) => void;
 }
 
@@ -27,14 +32,55 @@ export const BoardDominoView = observer((props: IProps) => {
         })
     }));
 
+    // const boardDominoRef = useRef<HTMLDivElement>(null);
+
+    // const localStore = useLocalObservable(() => ({
+    //     width: null,
+    //     height: null
+    // }));
+
+    // const isVertical = [Direction.NORTH, Direction.SOUTH].includes(
+    //     props.direction
+    // );
+
+    // React.useEffect(() => {
+    //     const containerWidth = boardDominoRef?.current?.clientWidth;
+    //     const containerHeight = boardDominoRef?.current?.clientHeight;
+
+    //     if (!localStore.width || !localStore.height) {
+    //         runInAction(() => {
+    //             localStore.width = containerWidth;
+    //             localStore.height = containerHeight;
+    //         });
+    //     }
+
+    //     const handleWindowResizeForContainer = action(() => {
+    //         localStore.width = boardDominoRef?.current?.clientWidth;
+    //         localStore.height = boardDominoRef?.current?.clientHeight;
+    //     });
+
+    //     window.addEventListener("resize", handleWindowResizeForContainer);
+    // });
+
     return (
         <div
+            className="board-domino-view"
             ref={drop}
             style={{
                 gridArea: `${props.north} / ${props.west} / ${props.south} / ${props.east}`
             }}
         >
-            {props.children}
+            {/* <div ref={boardDominoRef} className="board-domino-wrapper"> */}
+            <div className="board-domino-wrapper">
+                <DominoView
+                    face1={props.face1}
+                    face2={props.face2}
+                    direction={props.direction}
+                    highlight={props.highlight}
+                    // width={localStore.width}
+                    // height={localStore.height}
+                />
+            </div>
         </div>
     );
 });

@@ -30,7 +30,7 @@ export const BoardViewTest = observer((props: IProps) => {
     const board = Board.create({});
 
     const addedDominoesSpec = [
-        { Face1: 6, Face2: 6, X: 0, Y: 0, Direction: Direction.NONE },
+        { Face1: 6, Face2: 6, X: 0, Y: 0, Direction: Direction.SOUTH },
         { Face1: 6, Face2: 3, X: 1, Y: 0, Direction: Direction.EAST },
         { Face1: 3, Face2: 1, X: 2, Y: 0, Direction: Direction.EAST },
         { Face1: 1, Face2: 1, X: 3, Y: 0, Direction: Direction.SOUTH },

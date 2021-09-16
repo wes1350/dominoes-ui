@@ -1,10 +1,3 @@
-.player-view {
-    display: flex;
-    position: fixed;
-    justify-content: space-between;
-    padding: 10px 10px 10px 10px;
-}
-
 .player-view-horizontal {
     flex-direction: row;
 }
@@ -16,37 +9,27 @@
 .player-view {
     display: flex;
     position: fixed;
-    justify-content: space-between;
-    padding: 10px 10px 10px 10px;
     background-color: #ccc;
 }
 
-.player-name {
-    /* position: absolute; */
-}
-
-.player-score {
-    /* position: absolute; */
-}
-
-.player-score-me,
-.player-score-1 {
-    right: 0%;
-    margin-right: 10px;
-}
-
-.player-score-2,
-.player-score-3 {
-    bottom: 0%;
-    margin-bottom: 10px;
+.player-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    left: 80%;
+    width: 20%;
+    height: 100%;
+    background-color: hsl(0, 15%, 90%);
 }
 
 .my-player {
     left: 50%;
     bottom: 0%;
     transform: translateX(-50%);
-    width: var(--player-view-large-side-horizontal);
-    height: var(--player-view-small-side);
+    width: var(--my-player-view-large-side-horizontal);
+    height: var(--my-player-view-small-side);
     /* background-color: #edf7f0; */
     border-radius: 10px 10px 0px 0px;
 }
@@ -59,8 +42,8 @@
     top: 0%;
     left: 50%;
     transform: translateX(-50%);
-    width: var(--player-view-large-side-horizontal);
-    height: var(--player-view-small-side);
+    width: var(--opponent-player-view-large-side-horizontal);
+    height: var(--opponent-player-view-small-side);
     border-radius: 0px 0px 10px 10px;
 }
 
@@ -69,7 +52,7 @@
     top: 50%;
     transform: translateY(-50%);
     width: var(--player-view-small-side);
-    height: var(--player-view-large-side-vertical);
+    height: var(--opponent-player-view-large-side-vertical);
     border-radius: 0px 10px 10px 0px;
 }
 
@@ -78,25 +61,35 @@
     right: 0%;
     transform: translateY(-50%);
     width: var(--player-view-small-side);
-    height: var(--player-view-large-side-vertical);
+    height: var(--opponent-player-view-large-side-vertical);
     border-radius: 10px 0px 0px 10px;
 }
 
 .hand-container {
     display: flex;
-    justify-content: flex-start;
+    position: fixed;
+    left: 2.5%;
+    justify-content: space-around;
+}
+
+.hand-wrapper {
+    display: flex;
+    flex: 0 0 auto;
 }
 
 .hand-container-vertical {
     flex-direction: column;
 }
-
 .hand-container-horizontal {
+    flex: 1;
+    height: 100%;
     flex-direction: row;
+    width: 75%;
+    overflow: scroll;
 }
 
 .hand-domino-container {
-    margin: 1px;
+    display: flex;
 }
 
 .current {

@@ -1,9 +1,10 @@
 import { Direction } from "enums/Direction";
-import { observer } from "mobx-react-lite";
+import { action, runInAction } from "mobx";
+import { observer, useLocalObservable } from "mobx-react-lite";
 import { IPlayer } from "model/PlayerModel";
-import React from "react";
+import React, { useRef } from "react";
 import { DominoView } from "./DominoView";
-import { MyHandDomino } from "./MyHandDomino";
+import { MyHandDominoView } from "./MyHandDominoView";
 import "./PlayerView.css";
 
 interface IProps {
@@ -14,6 +15,28 @@ interface IProps {
 }
 
 export const MyPlayerView = observer((props: IProps) => {
+    const handRef = useRef<HTMLDivElement>(null);
+
+    const localStore = useLocalObservable(() => ({
+        handHeight: window.innerHeight * 0.15
+    }));
+
+    React.useEffect(() => {
+        const handHeight = handRef?.current?.clientHeight;
+
+        if (!localStore.handHeight) {
+            runInAction(() => {
+                localStore.handHeight = handHeight;
+            });
+        }
+
+        const handleWindowResizeForDomino = action(() => {
+            localStore.handHeight = handRef?.current?.clientHeight;
+        });
+
+        window.addEventListener("resize", handleWindowResizeForDomino);
+    });
+
     return (
         <div
             className={`player-view player-view-horizontal my-player ${
@@ -21,44 +44,42 @@ export const MyPlayerView = observer((props: IProps) => {
             }`}
             style={{ borderBottom: "0px" }}
         >
-            <div className={"player-name player-name-me"}>
-                {props.player.Name}
-            </div>
-            <div className={"hand-container hand-container-horizontal"}>
-                {props.player.Hand.map((domino, i) => {
-                    return (
-                        <MyHandDomino
-                            key={i}
-                            index={i}
-                            face1={domino.Face1}
-                            face2={domino.Face2}
-                            playable={props.player.PlayableDominoes?.includes(
-                                i
-                            )}
-                            onStartDrag={() => props.onStartDrag(i)}
-                            onStopDrag={() => props.onStopDrag()}
-                        >
-                            <DominoView
+            <div
+                ref={handRef}
+                className={"hand-container hand-container-horizontal"}
+            >
+                <div className="hand-wrapper">
+                    {props.player.Hand.map((domino, i) => {
+                        return (
+                            <MyHandDominoView
+                                key={i}
+                                index={i}
                                 face1={domino.Face1}
                                 face2={domino.Face2}
-                                direction={Direction.SOUTH}
-                                size={
-                                    2 *
-                                    Math.floor(
-                                        0.5 *
-                                            Math.min(
-                                                36,
-                                                300 / props.player.Hand.length
-                                            )
-                                    )
-                                }
-                            />
-                        </MyHandDomino>
-                    );
-                })}
+                                playable={props.player.PlayableDominoes?.includes(
+                                    i
+                                )}
+                                height={localStore.handHeight}
+                                onStartDrag={() => props.onStartDrag(i)}
+                                onStopDrag={props.onStopDrag}
+                            >
+                                <DominoView
+                                    face1={domino.Face1}
+                                    face2={domino.Face2}
+                                    direction={Direction.SOUTH}
+                                />
+                            </MyHandDominoView>
+                        );
+                    })}
+                </div>
             </div>
-            <div className={"player-score player-score-me"}>
-                Score: {props.player.Score}
+            <div className={"player-details player-details-me"}>
+                <div className={"player-name player-name-me"}>
+                    {props.player.Name}
+                </div>
+                <div className={"player-score player-score-me"}>
+                    Score: {props.player.Score}
+                </div>
             </div>
         </div>
     );

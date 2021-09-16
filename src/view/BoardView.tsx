@@ -591,15 +591,11 @@ export const BoardView = observer((props: IProps) => {
                                 determineDropDirectionForDomino(domino)
                             );
                         }}
-                    >
-                        <DominoView
-                            face1={domino.Face1}
-                            face2={domino.Face2}
-                            direction={dominoOrientationDirections[i]}
-                            size={gridSquarePixelSize * 2}
-                            highlight={isDroppable(domino)}
-                        />
-                    </BoardDominoView>
+                        face1={domino.Face1}
+                        face2={domino.Face2}
+                        direction={dominoOrientationDirections[i]}
+                        highlight={isDroppable(domino)}
+                    ></BoardDominoView>
                 );
             })}
         </div>

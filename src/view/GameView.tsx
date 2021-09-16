@@ -4,7 +4,6 @@ import { IGameState } from "model/GameStateModel";
 import { MyPlayerView } from "./MyPlayerView";
 import { OpponentPlayerView } from "./OpponentPlayerView";
 import "./GameView.css";
-import { GameLogs } from "./GameLogs";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { QueryType } from "enums/QueryType";
@@ -104,7 +103,6 @@ export const GameView = observer((props: IProps) => {
                         }}
                     />
                 </div>
-                <GameLogs logs={props.gameState.Logs} />
                 <GameEventRenderer
                     event={props.gameState.CurrentEvent}
                     index={

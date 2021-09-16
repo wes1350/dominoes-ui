@@ -8,13 +8,14 @@ interface IProps {
     face1: number;
     face2: number;
     playable?: boolean;
+    height: number;
     children: any;
     onStartDrag: () => void;
     onStopDrag: () => void;
 }
 
-export const MyHandDomino = observer((props: IProps) => {
-    const [{ isDragging }, drag, preview] = useDrag(() => ({
+export const MyHandDominoView = observer((props: IProps) => {
+    const [{ isDragging }, drag] = useDrag(() => ({
         type: DragItemTypes.DOMINO,
         item: () => {
             props.onStartDrag();
@@ -33,12 +34,21 @@ export const MyHandDomino = observer((props: IProps) => {
         })
     }));
 
+    if (!props.height) {
+        return null;
+    }
+
+    const margin = 3;
+
     return (
         <div
             className={"hand-domino-container"}
             ref={drag}
             style={{
-                opacity: !props.playable || isDragging ? 0.5 : 1
+                margin: `${margin}px`,
+                opacity: !props.playable || isDragging ? 0.5 : 1,
+                height: props.height - 2 * margin,
+                width: 0.5 * props.height - margin
             }}
             draggable={props.playable}
         >

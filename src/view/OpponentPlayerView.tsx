@@ -1,8 +1,8 @@
-import { Direction } from "enums/Direction";
-import { observer } from "mobx-react-lite";
+import React, { useRef } from "react";
+import { OpponentHandDominoView } from "./OpponentHandDominoView";
+import { action, runInAction } from "mobx";
+import { observer, useLocalObservable } from "mobx-react-lite";
 import { IPlayer } from "model/PlayerModel";
-import React from "react";
-import { DominoView } from "./DominoView";
 import "./PlayerView.css";
 
 interface IProps {
@@ -12,6 +12,28 @@ interface IProps {
 }
 
 export const OpponentPlayerView = observer((props: IProps) => {
+    const handRef = useRef<HTMLDivElement>(null);
+
+    const localStore = useLocalObservable(() => ({
+        handHeight: window.innerHeight * 0.1
+    }));
+
+    React.useEffect(() => {
+        const handHeight = handRef?.current?.clientHeight;
+
+        if (!localStore.handHeight) {
+            runInAction(() => {
+                localStore.handHeight = handHeight;
+            });
+        }
+
+        const handleWindowResizeForDomino = action(() => {
+            localStore.handHeight = handRef?.current?.clientHeight;
+        });
+
+        window.addEventListener("resize", handleWindowResizeForDomino);
+    });
+
     const borderlessProperty =
         props.index === 1
             ? "borderTop"
@@ -27,42 +49,33 @@ export const OpponentPlayerView = observer((props: IProps) => {
             }`}
             style={{ [borderlessProperty]: "0px" }}
         >
-            <div className={`player-name player-name-${props.index}`}>
-                {props.player.Name}
-            </div>
             <div
+                ref={handRef}
                 className={`hand-container hand-container-${
                     props.index === 1 ? "horizontal" : "vertical"
                 }`}
             >
-                {props.player.Hand.map((domino, i) => {
-                    return (
-                        <div key={i} className={"hand-domino-container"}>
-                            <DominoView
-                                face1={-1}
-                                face2={-1}
-                                direction={
-                                    props.index === 1
-                                        ? Direction.SOUTH
-                                        : Direction.EAST
-                                }
-                                size={
-                                    2 *
-                                    Math.floor(
-                                        0.5 *
-                                            Math.min(
-                                                36,
-                                                300 / props.player.Hand.length
-                                            )
-                                    )
-                                }
-                            />
-                        </div>
-                    );
-                })}
+                <div className="hand-wrapper">
+                    {props.player.Hand.map((domino, i) => {
+                        return (
+                            <div key={i} className={"hand-domino-container"}>
+                                <OpponentHandDominoView
+                                    playerIndex={props.index}
+                                    height={localStore.handHeight}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
-            <div className={`player-score player-score-${props.index}`}>
-                Score: {props.player.Score}
+
+            <div className={`player-details player-details-${props.index}`}>
+                <div className={`player-name player-name-${props.index}`}>
+                    {props.player.Name}
+                </div>
+                <div className={`player-score player-score-${props.index}`}>
+                    Score: {props.player.Score}
+                </div>
             </div>
         </div>
     );

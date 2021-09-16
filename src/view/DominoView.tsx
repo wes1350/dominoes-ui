@@ -1,17 +1,49 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./DominoView.css";
 import { Direction } from "enums/Direction";
-import { observer } from "mobx-react-lite";
+import { observer, useLocalObservable } from "mobx-react-lite";
+import { action, runInAction } from "mobx";
 
 interface IProps {
     face1: number;
     face2: number;
     direction: Direction;
-    size?: number;
     highlight?: boolean;
+    // width?: number;
+    // height?: number;
 }
 
 export const DominoView = observer((props: IProps) => {
+    const dominoContainerRef = useRef<HTMLDivElement>(null);
+
+    const localStore = useLocalObservable(() => ({
+        width: null,
+        height: null
+    }));
+
+    const isVertical = [Direction.NORTH, Direction.SOUTH].includes(
+        props.direction
+    );
+
+    React.useEffect(() => {
+        const containerWidth = dominoContainerRef?.current?.clientWidth;
+        const containerHeight = dominoContainerRef?.current?.clientHeight;
+
+        // if (!localStore.width || !localStore.height) {
+        runInAction(() => {
+            localStore.width = containerWidth;
+            localStore.height = containerHeight;
+        });
+        // }
+
+        const handleWindowResizeForContainer = action(() => {
+            localStore.width = dominoContainerRef?.current?.clientWidth;
+            localStore.height = dominoContainerRef?.current?.clientHeight;
+        });
+
+        window.addEventListener("resize", handleWindowResizeForContainer);
+    });
+
     const isHiddenDomino = props.face1 === -1 || props.face2 === -1;
     const dominoBackgroundFill = "#F7EEE1";
     const dominoFeatureFill = "#000";
@@ -54,11 +86,16 @@ export const DominoView = observer((props: IProps) => {
         return circles;
     };
 
+    const baseWidth = isVertical ? localStore.width : localStore.height;
+    const baseHeight = isVertical ? localStore.height : localStore.width;
+
     // Default direction is going from North -> South
     let dominoStyle;
     const baseStyle = {
-        width: props.size,
-        height: 2 * props.size
+        // width: localStore.width,
+        // height: localStore.height
+        width: baseWidth,
+        height: baseHeight
     };
     if (props.direction === Direction.NORTH) {
         dominoStyle = {
@@ -108,15 +145,17 @@ export const DominoView = observer((props: IProps) => {
 
     return (
         <>
-            <div className={"domino-outer-container"}>
+            <div ref={dominoContainerRef} className={"domino-outer-container"}>
                 {props.highlight && (
                     <div
                         className="domino-drop-highlight"
                         style={{
                             position: "absolute",
                             backgroundColor: "#9d4",
-                            width: highlightOverflowFactor * props.size,
-                            height: highlightOverflowFactor * 2 * props.size,
+                            width: highlightOverflowFactor * baseWidth,
+                            height: highlightOverflowFactor * baseHeight,
+                            // width: highlightOverflowFactor * localStore.width,
+                            // height: highlightOverflowFactor * localStore.height,
                             zIndex: 0,
                             borderRadius: "10%",
                             transform: highlightTransform
@@ -125,7 +164,7 @@ export const DominoView = observer((props: IProps) => {
                 )}
                 <div
                     className={"domino-svg-container"}
-                    style={{ ...dominoStyle, zIndex: 1 }}
+                    style={{ ...dominoStyle, zIndex: 1, position: "relative" }}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
