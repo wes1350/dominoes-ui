@@ -61,7 +61,7 @@ export const OpponentPlayerView = observer((props: IProps) => {
                             <div key={i} className={"hand-domino-container"}>
                                 <OpponentHandDominoView
                                     playerIndex={props.index}
-                                    height={localStore.handHeight}
+                                    longSideSize={localStore.handHeight}
                                 />
                             </div>
                         );

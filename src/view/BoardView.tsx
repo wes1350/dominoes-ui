@@ -2,7 +2,6 @@ import { Direction } from "enums/Direction";
 import React from "react";
 import "./BoardView.css";
 import { BoardDominoView } from "./BoardDominoView";
-import { DominoView } from "./DominoView";
 import { IBoard } from "model/BoardModel";
 import { observer } from "mobx-react-lite";
 import { BoundingBox } from "interfaces/BoundingBox";
@@ -585,6 +584,7 @@ export const BoardView = observer((props: IProps) => {
                         east={box.East + 1}
                         south={box.South + 1}
                         west={box.West + 1}
+                        gridSize={gridSquarePixelSize}
                         onDropDomino={(item: { index: number }) => {
                             props.onDropDomino(
                                 item,

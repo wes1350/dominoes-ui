@@ -32,8 +32,6 @@ export const GameStateViewModel = (model: IGameStateModel) => {
             if (seat !== gameState.CurrentPlayerIndex) {
                 return null;
             }
-
-            const player = gameState.PlayerAtSeat(seat);
         },
 
         get SeatToPositionMapping(): Map<number, number> {

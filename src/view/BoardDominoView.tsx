@@ -16,6 +16,7 @@ interface IProps {
     face2: number;
     direction: Direction;
     highlight?: boolean;
+    gridSize: number;
     onDropDomino: (item: { index: number }) => void;
 }
 
@@ -32,35 +33,29 @@ export const BoardDominoView = observer((props: IProps) => {
         })
     }));
 
-    // const boardDominoRef = useRef<HTMLDivElement>(null);
+    const boardDominoRef = useRef<HTMLDivElement>(null);
 
-    // const localStore = useLocalObservable(() => ({
-    //     width: null,
-    //     height: null
-    // }));
+    const localStore = useLocalObservable(() => ({
+        width: null,
+        height: null
+    }));
 
-    // const isVertical = [Direction.NORTH, Direction.SOUTH].includes(
-    //     props.direction
-    // );
+    React.useEffect(() => {
+        const containerWidth = boardDominoRef?.current?.clientWidth;
+        const containerHeight = boardDominoRef?.current?.clientHeight;
 
-    // React.useEffect(() => {
-    //     const containerWidth = boardDominoRef?.current?.clientWidth;
-    //     const containerHeight = boardDominoRef?.current?.clientHeight;
+        runInAction(() => {
+            localStore.width = containerWidth;
+            localStore.height = containerHeight;
+        });
 
-    //     if (!localStore.width || !localStore.height) {
-    //         runInAction(() => {
-    //             localStore.width = containerWidth;
-    //             localStore.height = containerHeight;
-    //         });
-    //     }
+        const handleWindowResizeForContainer = action(() => {
+            localStore.width = boardDominoRef?.current?.clientWidth;
+            localStore.height = boardDominoRef?.current?.clientHeight;
+        });
 
-    //     const handleWindowResizeForContainer = action(() => {
-    //         localStore.width = boardDominoRef?.current?.clientWidth;
-    //         localStore.height = boardDominoRef?.current?.clientHeight;
-    //     });
-
-    //     window.addEventListener("resize", handleWindowResizeForContainer);
-    // });
+        window.addEventListener("resize", handleWindowResizeForContainer);
+    });
 
     return (
         <div
@@ -70,15 +65,14 @@ export const BoardDominoView = observer((props: IProps) => {
                 gridArea: `${props.north} / ${props.west} / ${props.south} / ${props.east}`
             }}
         >
-            {/* <div ref={boardDominoRef} className="board-domino-wrapper"> */}
-            <div className="board-domino-wrapper">
+            <div ref={boardDominoRef} className="board-domino-wrapper">
                 <DominoView
                     face1={props.face1}
                     face2={props.face2}
                     direction={props.direction}
                     highlight={props.highlight}
-                    // width={localStore.width}
-                    // height={localStore.height}
+                    width={localStore.width}
+                    height={localStore.height}
                 />
             </div>
         </div>

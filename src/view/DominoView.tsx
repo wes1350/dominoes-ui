@@ -1,63 +1,50 @@
 import React, { useRef } from "react";
 import "./DominoView.css";
 import { Direction } from "enums/Direction";
-import { observer, useLocalObservable } from "mobx-react-lite";
-import { action, runInAction } from "mobx";
+import { observer } from "mobx-react-lite";
 
 interface IProps {
     face1: number;
     face2: number;
     direction: Direction;
+    width: number;
+    height: number;
     highlight?: boolean;
-    // width?: number;
-    // height?: number;
 }
 
 export const DominoView = observer((props: IProps) => {
     const dominoContainerRef = useRef<HTMLDivElement>(null);
 
-    const localStore = useLocalObservable(() => ({
-        width: null,
-        height: null
-    }));
-
-    const isVertical = [Direction.NORTH, Direction.SOUTH].includes(
-        props.direction
-    );
-
-    React.useEffect(() => {
-        const containerWidth = dominoContainerRef?.current?.clientWidth;
-        const containerHeight = dominoContainerRef?.current?.clientHeight;
-
-        // if (!localStore.width || !localStore.height) {
-        runInAction(() => {
-            localStore.width = containerWidth;
-            localStore.height = containerHeight;
-        });
-        // }
-
-        const handleWindowResizeForContainer = action(() => {
-            localStore.width = dominoContainerRef?.current?.clientWidth;
-            localStore.height = dominoContainerRef?.current?.clientHeight;
-        });
-
-        window.addEventListener("resize", handleWindowResizeForContainer);
-    });
-
+    const isReversed =
+        props.direction === Direction.WEST ||
+        props.direction === Direction.NORTH;
+    const isVertical =
+        props.direction === Direction.NORTH ||
+        props.direction === Direction.SOUTH;
     const isHiddenDomino = props.face1 === -1 || props.face2 === -1;
     const dominoBackgroundFill = "#F7EEE1";
     const dominoFeatureFill = "#000";
     const shrinkFactor = 0.975;
     const highlightOverflowFactor = 1.2;
 
-    const getFaceCircles = (number: number, face: "face1" | "face2") => {
-        const offset = face === "face1" ? 0 : 50;
-        const x1 = "25%";
-        const x2 = "50%";
-        const x3 = "75%";
-        const y1 = `${12.5 + offset}%`;
-        const y2 = `${25 + offset}%`;
-        const y3 = `${37.5 + offset}%`;
+    const getFaceCircles = (number: number, addOffset: boolean) => {
+        const offset = addOffset ? 50 : 0;
+        let x1, x2, x3, y1, y2, y3;
+        if (isVertical) {
+            x1 = "25%";
+            x2 = "50%";
+            x3 = "75%";
+            y1 = `${12.5 + offset}%`;
+            y2 = `${25 + offset}%`;
+            y3 = `${37.5 + offset}%`;
+        } else {
+            y1 = "25%";
+            y2 = "50%";
+            y3 = "75%";
+            x1 = `${12.5 + offset}%`;
+            x2 = `${25 + offset}%`;
+            x3 = `${37.5 + offset}%`;
+        }
         const r = "5%";
         const fill = "#000";
 
@@ -86,61 +73,12 @@ export const DominoView = observer((props: IProps) => {
         return circles;
     };
 
-    const baseWidth = isVertical ? localStore.width : localStore.height;
-    const baseHeight = isVertical ? localStore.height : localStore.width;
-
-    // Default direction is going from North -> South
-    let dominoStyle;
-    const baseStyle = {
-        // width: localStore.width,
-        // height: localStore.height
-        width: baseWidth,
-        height: baseHeight
-    };
-    if (props.direction === Direction.NORTH) {
-        dominoStyle = {
-            ...baseStyle,
-            transform: "rotate(180deg)"
-        };
-    } else if (props.direction === Direction.SOUTH) {
-        dominoStyle = baseStyle;
-    } else if (props.direction === Direction.EAST) {
-        dominoStyle = {
-            ...baseStyle,
-            transform: "rotate(270deg) translate(50%, 25%)"
-        };
-    } else if (props.direction === Direction.WEST) {
-        dominoStyle = {
-            ...baseStyle,
-            transform: "rotate(90deg) translate(-50%, -25%)"
-        };
-    } else {
-        dominoStyle = baseStyle;
-    }
-
     let highlightTransform;
-    if (props.direction === Direction.NORTH) {
-        highlightTransform = `rotate(180deg) translate(${
-            50 * (highlightOverflowFactor - 1)
-        }%, ${50 * (highlightOverflowFactor - 1)}%)`;
-    } else if (props.direction === Direction.SOUTH) {
-        highlightTransform = `translate(-${
-            50 * (highlightOverflowFactor - 1)
-        }%, -${50 * (highlightOverflowFactor - 1)}%)`;
-    } else if (props.direction === Direction.EAST) {
-        highlightTransform = `rotate(270deg) translate(${
-            50 * highlightOverflowFactor
-        }%, ${
-            25 * highlightOverflowFactor - 75 * (highlightOverflowFactor - 1)
-        }%)`;
-    } else if (props.direction === Direction.WEST) {
-        highlightTransform = `rotate(90deg) translate(-${
-            50 * highlightOverflowFactor
-        }%, -${
-            25 * highlightOverflowFactor - 75 * (highlightOverflowFactor - 1)
-        }%)`;
+    const shift = 50 * (highlightOverflowFactor - 1);
+    if (isVertical) {
+        highlightTransform = `translate(-${shift}%,-${shift / 2}%)`;
     } else {
-        highlightTransform = null;
+        highlightTransform = `translate(-${shift / 2}%,-${shift}%)`;
     }
 
     return (
@@ -152,20 +90,21 @@ export const DominoView = observer((props: IProps) => {
                         style={{
                             position: "absolute",
                             backgroundColor: "#9d4",
-                            width: highlightOverflowFactor * baseWidth,
-                            height: highlightOverflowFactor * baseHeight,
-                            // width: highlightOverflowFactor * localStore.width,
-                            // height: highlightOverflowFactor * localStore.height,
+                            width: isVertical
+                                ? highlightOverflowFactor * props.width
+                                : ((1 + highlightOverflowFactor) / 2) *
+                                  props.width,
+                            height: isVertical
+                                ? ((1 + highlightOverflowFactor) / 2) *
+                                  props.height
+                                : highlightOverflowFactor * props.height,
                             zIndex: 0,
                             borderRadius: "10%",
                             transform: highlightTransform
                         }}
                     ></div>
                 )}
-                <div
-                    className={"domino-svg-container"}
-                    style={{ ...dominoStyle, zIndex: 1, position: "relative" }}
-                >
+                <div className={"domino-svg-container"}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width={"100%"}
@@ -177,24 +116,40 @@ export const DominoView = observer((props: IProps) => {
                             y={`${(100 * (1 - shrinkFactor)) / 2}%`}
                             width={`${100 * shrinkFactor}%`}
                             height={`${100 * shrinkFactor}%`}
-                            rx="10%"
+                            rx={isVertical ? "10%" : "5%"}
                             fill={dominoBackgroundFill}
                         />
 
                         {!isHiddenDomino && (
                             <>
-                                {getFaceCircles(props.face1, "face1")}
+                                {getFaceCircles(
+                                    isReversed ? props.face2 : props.face1,
+                                    false
+                                )}
 
-                                <line
-                                    x1="5%"
-                                    y1="50%"
-                                    x2="95%"
-                                    y2="50%"
-                                    stroke={dominoFeatureFill}
-                                    strokeWidth="1.5%"
-                                />
-
-                                {getFaceCircles(props.face2, "face2")}
+                                {isVertical ? (
+                                    <line
+                                        x1="5%"
+                                        y1="50%"
+                                        x2="95%"
+                                        y2="50%"
+                                        stroke={dominoFeatureFill}
+                                        strokeWidth="1.5%"
+                                    />
+                                ) : (
+                                    <line
+                                        y1="5%"
+                                        x1="50%"
+                                        y2="95%"
+                                        x2="50%"
+                                        stroke={dominoFeatureFill}
+                                        strokeWidth="1.5%"
+                                    />
+                                )}
+                                {getFaceCircles(
+                                    isReversed ? props.face1 : props.face2,
+                                    true
+                                )}
                             </>
                         )}
                     </svg>

@@ -66,6 +66,8 @@ export const MyPlayerView = observer((props: IProps) => {
                                 <DominoView
                                     face1={domino.Face1}
                                     face2={domino.Face2}
+                                    height={localStore.handHeight}
+                                    width={0.5 * localStore.handHeight}
                                     direction={Direction.SOUTH}
                                 />
                             </MyHandDominoView>

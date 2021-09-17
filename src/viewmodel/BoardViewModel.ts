@@ -3,7 +3,7 @@ import { BoundingBox } from "interfaces/BoundingBox";
 import { Coordinate } from "interfaces/Coordinate";
 import { IBoardDomino } from "model/BoardDominoModel";
 import { IBoard, IBoardModel } from "model/BoardModel";
-import { Domino, IDomino } from "model/DominoModel";
+import { IDomino } from "model/DominoModel";
 
 export const BoardViewModel = (model: IBoardModel) => {
     const board = model as IBoard;
