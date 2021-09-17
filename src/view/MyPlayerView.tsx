@@ -75,7 +75,11 @@ export const MyPlayerView = observer((props: IProps) => {
                     })}
                 </div>
             </div>
-            <div className={"player-details player-details-me"}>
+            <div
+                className={
+                    "player-details player-details-horizontal player-details-me"
+                }
+            >
                 <div className={"player-name player-name-me"}>
                     {props.player.Name}
                 </div>

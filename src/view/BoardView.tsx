@@ -571,6 +571,8 @@ export const BoardView = observer((props: IProps) => {
             className="board"
             ref={drop}
             style={{
+                width: props.width,
+                height: props.height,
                 gridTemplateRows: `repeat(${gridHeightInSquares}, ${gridSquarePixelSize}px)`,
                 gridTemplateColumns: `repeat(${gridWidthInSquares}, ${gridSquarePixelSize}px)`
             }}

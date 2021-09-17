@@ -1,23 +1,10 @@
 .game-view {
-    --opponent-player-view-small-side: 10%;
     --my-player-view-small-side: 15%;
-    --player-view-large-side-vertical: 480px;
+    --opponent-player-view-large-side-vertical: 70%;
     --my-player-view-large-side-horizontal: 60%;
     --opponent-player-view-large-side-horizontal: 40%;
-    /* --player-view-large-side-horizontal: 580px; */
-    --board-margin: 35px;
 }
 
 .board-container {
     position: absolute;
-    top: calc(var(--opponent-player-view-small-side) + var(--board-margin));
-    left: calc(var(--opponent-player-view-small-side) + var(--board-margin));
-    height: calc(
-        100% - var(--my-player-view-small-side) -
-            var(--opponent-player-view-small-side) - 2 * var(--board-margin)
-    );
-    width: calc(
-        100% - 2 * var(--opponent-player-view-small-side) - 2 *
-            var(--board-margin)
-    );
 }

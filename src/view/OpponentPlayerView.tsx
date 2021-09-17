@@ -9,25 +9,31 @@ interface IProps {
     index: number;
     player: IPlayer;
     current: boolean;
+    windowWidth: number;
+    windowHeight: number;
 }
 
 export const OpponentPlayerView = observer((props: IProps) => {
     const handRef = useRef<HTMLDivElement>(null);
 
     const localStore = useLocalObservable(() => ({
-        handHeight: window.innerHeight * 0.1
+        handWidth: 0,
+        handHeight: 0
     }));
 
     React.useEffect(() => {
+        const handWidth = handRef?.current?.clientWidth;
         const handHeight = handRef?.current?.clientHeight;
 
-        if (!localStore.handHeight) {
+        if (!localStore.handHeight || !localStore.handWidth) {
             runInAction(() => {
+                localStore.handWidth = handWidth;
                 localStore.handHeight = handHeight;
             });
         }
 
         const handleWindowResizeForDomino = action(() => {
+            localStore.handWidth = handRef?.current?.clientWidth;
             localStore.handHeight = handRef?.current?.clientHeight;
         });
 
@@ -40,28 +46,36 @@ export const OpponentPlayerView = observer((props: IProps) => {
             : props.index === 2
             ? "borderLeft"
             : "borderRight";
+
+    const layoutType = props.index === 1 ? "horizontal" : "vertical";
+
+    const smallSideSize = Math.min(props.windowWidth, props.windowHeight) * 0.1;
+    const smallSideStyle = {
+        [props.index === 1 ? "height" : "width"]: `${smallSideSize}px`
+    };
+
     return (
         <div
-            className={`player-view player-view-${
-                props.index === 1 ? "horizontal" : "vertical"
-            } opponent opponent-${props.index} ${
-                props.current ? " current" : ""
-            }`}
-            style={{ [borderlessProperty]: "0px" }}
+            className={`player-view player-view-${layoutType} opponent opponent-${
+                props.index
+            } ${props.current ? " current" : ""}`}
+            style={{ [borderlessProperty]: "0px", ...smallSideStyle }}
         >
             <div
                 ref={handRef}
-                className={`hand-container hand-container-${
-                    props.index === 1 ? "horizontal" : "vertical"
-                }`}
+                className={`hand-container hand-container-${layoutType}`}
             >
-                <div className="hand-wrapper">
+                <div className={`hand-wrapper hand-wrapper-${layoutType}`}>
                     {props.player.Hand.map((domino, i) => {
                         return (
                             <div key={i} className={"hand-domino-container"}>
                                 <OpponentHandDominoView
                                     playerIndex={props.index}
-                                    longSideSize={localStore.handHeight}
+                                    longSideSize={
+                                        props.index === 1
+                                            ? localStore.handHeight
+                                            : localStore.handWidth
+                                    }
                                 />
                             </div>
                         );
@@ -69,7 +83,9 @@ export const OpponentPlayerView = observer((props: IProps) => {
                 </div>
             </div>
 
-            <div className={`player-details player-details-${props.index}`}>
+            <div
+                className={`player-details player-details-${layoutType} player-details-${props.index}`}
+            >
                 <div className={`player-name player-name-${props.index}`}>
                     {props.player.Name}
                 </div>

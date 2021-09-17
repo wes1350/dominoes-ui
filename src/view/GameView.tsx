@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { BoardView } from "./BoardView";
 import { IGameState } from "model/GameStateModel";
 import { MyPlayerView } from "./MyPlayerView";
@@ -19,28 +19,16 @@ interface IProps {
 }
 
 export const GameView = observer((props: IProps) => {
-    const boardContainerRef = useRef<HTMLDivElement>(null);
-
     const localStore = useLocalObservable(() => ({
-        boardWidth: null,
-        boardHeight: null,
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight,
         dominoBeingDragged: null
     }));
 
     React.useEffect(() => {
-        const boardWidth = boardContainerRef?.current?.clientWidth;
-        const boardHeight = boardContainerRef?.current?.clientHeight;
-
-        if (!localStore.boardWidth || !localStore.boardHeight) {
-            runInAction(() => {
-                localStore.boardWidth = boardWidth;
-                localStore.boardHeight = boardHeight;
-            });
-        }
-
         const handleWindowResizeForBoard = action(() => {
-            localStore.boardWidth = boardContainerRef?.current?.clientWidth;
-            localStore.boardHeight = boardContainerRef?.current?.clientHeight;
+            localStore.windowWidth = window.innerWidth;
+            localStore.windowHeight = window.innerHeight;
         });
 
         window.addEventListener("resize", handleWindowResizeForBoard);
@@ -50,11 +38,17 @@ export const GameView = observer((props: IProps) => {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="game-view">
-                <div ref={boardContainerRef} className={"board-container"}>
+                <div
+                    className={"board-container"}
+                    style={{
+                        top: localStore.windowWidth * 0.15,
+                        left: localStore.windowHeight * 0.15
+                    }}
+                >
                     <BoardView
                         board={props.gameState.Board}
-                        width={localStore.boardWidth}
-                        height={localStore.boardHeight}
+                        width={localStore.windowWidth * 0.7}
+                        height={localStore.windowHeight * 0.7}
                         onDropDomino={(
                             item: { index: number },
                             direction: Direction
@@ -82,6 +76,8 @@ export const GameView = observer((props: IProps) => {
                                     props.gameState.CurrentPlayerIndex ===
                                     player.SeatNumber
                                 }
+                                windowWidth={localStore.windowWidth}
+                                windowHeight={localStore.windowHeight}
                             />
                         );
                     })}
