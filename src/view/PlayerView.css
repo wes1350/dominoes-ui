@@ -1,15 +1,19 @@
+.player-view {
+    display: flex;
+    position: fixed;
+    background-color: #ccc;
+    --my-player-view-small-side: 15%;
+    --opponent-player-view-large-side-vertical: 70%;
+    --my-player-view-large-side-horizontal: 60%;
+    --opponent-player-view-large-side-horizontal: 60%;
+}
+
 .player-view-horizontal {
     flex-direction: row;
 }
 
 .player-view-vertical {
     flex-direction: column;
-}
-
-.player-view {
-    display: flex;
-    position: fixed;
-    background-color: #ccc;
 }
 
 .player-details {
