@@ -145,7 +145,7 @@ export const RoomView = observer((props: IProps) => {
                 );
             }
         );
-        socket.on(MessageType.PLAYABLE_DOMINOS, (payload: string) => {
+        socket.on(MessageType.PLAYABLE_DOMINOES, (payload: string) => {
             gameState.Me.SetPlayableDominoes(JSON.parse("[" + payload + "]"));
         });
         socket.on(MessageType.DOMINO_PLAYED, (payload: { seat: number }) => {
