@@ -5,6 +5,7 @@ import { MessageType } from "enums/MessageType";
 import "./GameStartPage.css";
 
 interface IProps {
+    roomId: string;
     socket: any;
 }
 
@@ -23,7 +24,7 @@ export const GameStartPage = observer((props: IProps) => {
             Check_5_Doubles: localStore.check5Doubles === "Yes"
         } as GameConfigDescription;
         console.log(config);
-        props.socket?.emit(MessageType.GAME_START, config);
+        props.socket?.emit(MessageType.GAME_START, props.roomId, config);
     };
 
     const onChangeHandSize = (e: any) => {

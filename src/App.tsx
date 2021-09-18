@@ -5,14 +5,26 @@ import { AboutPage } from "view/AboutPage";
 import { RoomView } from "view/RoomView";
 import { HomePage } from "view/HomePage";
 import { BoardViewTest } from "test/BoardViewTest";
+import { observer, useLocalObservable } from "mobx-react-lite";
+const io = require("socket.io-client");
 
-export const App = () => {
+export const App = observer(() => {
+    const localStore = useLocalObservable(() => ({
+        socket: null
+    }));
+
+    React.useEffect(() => {
+        localStore.socket = io("http://localhost:3001");
+        console.log(localStore.socket);
+        return () => localStore.socket.close();
+    }, []);
+
     return (
         <Router>
             <div className="App">
                 <Switch>
-                    <Route path="/room/:id">
-                        <RoomView />
+                    <Route path="/room/:roomId">
+                        <RoomView socket={localStore.socket} />
                     </Route>
                     <Route path="/about">
                         <AboutPage />
@@ -27,4 +39,4 @@ export const App = () => {
             </div>
         </Router>
     );
-};
+});

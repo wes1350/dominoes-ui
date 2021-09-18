@@ -17,35 +17,49 @@ import { GameConfig } from "model/GameConfigModel";
 import { GameState, IGameState } from "model/GameStateModel";
 import { Player } from "model/PlayerModel";
 import React from "react";
+import { useParams } from "react-router-dom";
 import { generateId } from "utils/utils";
 import { GameStartPage } from "./GameStartPage";
 import { GameView } from "./GameView";
-const io = require("socket.io-client");
 
-export const RoomView = observer(() => {
+interface IProps {
+    socket: any;
+}
+
+type RoomParams = {
+    roomId: string;
+};
+
+export const RoomView = observer((props: IProps) => {
+    const { roomId } = useParams<RoomParams>();
+
     const localStore = useLocalObservable(() => ({
-        socket: null,
         gameState: null
     }));
 
     React.useEffect(() => {
-        const newSocket = io("http://localhost:3001");
+        props.socket?.emit(MessageType.JOIN_ROOM, roomId, { name: "username" });
+        setUpSocketForGameStart();
+    }, [props.socket]);
 
-        localStore.socket = newSocket;
-        setUpSocketForGameStart(localStore.socket);
-        return () => localStore.socket.close();
-    }, []);
+    const setUpSocketForGameStart = () => {
+        if (!props.socket) {
+            return;
+        }
 
-    const setUpSocketForGameStart = (socket: any) => {
-        socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
-            console.log("starting game");
-            runInAction(() => {
-                localStore.gameState = initializeGameState(gameDetails);
-            });
-            setUpSocketForGameplay(socket, localStore.gameState);
+        // Might need to add some sort of socket.offAll() in case of reconnects
+        props.socket.on(
+            MessageType.GAME_START,
+            (gameDetails: GameStartMessage) => {
+                console.log("starting game");
+                runInAction(() => {
+                    localStore.gameState = initializeGameState(gameDetails);
+                });
+                setUpSocketForGameplay(props.socket, localStore.gameState);
 
-            socket.off(MessageType.GAME_START);
-        });
+                props.socket.off(MessageType.GAME_START);
+            }
+        );
     };
 
     const initializeGameState = (gameDetails: GameStartMessage) => {
@@ -182,7 +196,7 @@ export const RoomView = observer(() => {
     };
 
     const respondToQuery = (type: QueryType, value: any) => {
-        localStore.socket.emit(type, value);
+        props.socket.emit(type, value);
     };
 
     return localStore.gameState ? (
@@ -191,6 +205,6 @@ export const RoomView = observer(() => {
             respond={respondToQuery}
         ></GameView>
     ) : (
-        <GameStartPage socket={localStore.socket} />
+        <GameStartPage roomId={roomId} socket={props.socket} />
     );
 });
