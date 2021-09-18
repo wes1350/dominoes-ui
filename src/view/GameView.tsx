@@ -41,8 +41,8 @@ export const GameView = observer((props: IProps) => {
                 <div
                     className={"board-container"}
                     style={{
-                        top: localStore.windowWidth * 0.15,
-                        left: localStore.windowHeight * 0.15
+                        top: localStore.windowHeight * 0.125,
+                        left: localStore.windowWidth * 0.15
                     }}
                 >
                     <BoardView
