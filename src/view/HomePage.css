@@ -1,0 +1,65 @@
+.home-page {
+}
+
+.rooms {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.rooms-title {
+    font-size: larger;
+    padding: 10px;
+    text-align: center;
+}
+
+.rooms-table {
+    display: grid;
+    grid-template-columns: 100px 100px 100px;
+    grid-auto-rows: 1fr;
+    /* row-gap: 10px; */
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    overflow: scroll;
+    /* align-items: center; */
+}
+
+.room-details-row-header-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    place-items: center stretch;
+    text-align: center;
+    background-color: #eee;
+    margin-bottom: 10px;
+}
+
+.room-table-element-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+    padding: 10px 5px;
+}
+
+.room-table-element-container:nth-child(6n + 1),
+.room-table-element-container:nth-child(6n + 2),
+.room-table-element-container:nth-child(6n + 3) {
+    background-color: aliceblue;
+}
+
+.room-title {
+}
+
+.room-n-players {
+}
+
+.join-room-button {
+    color: black;
+    font-family: Verdana, Helvetica, sans-serif;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+}

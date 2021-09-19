@@ -33,7 +33,7 @@ export const App = observer(() => {
                         <BoardViewTest />
                     </Route>
                     <Route path="/">
-                        <HomePage />
+                        <HomePage socket={localStore.socket} />
                     </Route>
                 </Switch>
             </div>
