@@ -18,20 +18,26 @@ export const HomePage = observer((props: IProps) => {
 
     React.useEffect(() => {
         if (props.socket) {
-            WebUtils.MakeGetRequest("http://localhost:3001/rooms").then(
-                (res) => {
+            WebUtils.MakeGetRequest("http://localhost:3001/rooms")
+                .then((res) => {
                     console.log(res);
                     runInAction(() => {
-                        localStore.rooms = res;
+                        if (res.rooms) {
+                            localStore.rooms = res.rooms;
+                        }
                     });
-                }
-            );
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
             setInterval(() => {
                 WebUtils.MakeGetRequest("http://localhost:3001/rooms").then(
                     (res) => {
                         console.log(res);
                         runInAction(() => {
-                            localStore.rooms = res;
+                            if (res.rooms) {
+                                localStore.rooms = res.rooms;
+                            }
                         });
                     }
                 );
@@ -73,7 +79,7 @@ export const HomePage = observer((props: IProps) => {
                     {localStore.rooms.map(
                         (room: { id: string; nPlayers: number }, i) => {
                             return (
-                                <>
+                                <React.Fragment key={i}>
                                     {/* just use id for now  */}
                                     <div className="room-table-element-container room-title">
                                         {room.id}
@@ -91,7 +97,7 @@ export const HomePage = observer((props: IProps) => {
                                             Join
                                         </button>
                                     </div>
-                                </>
+                                </React.Fragment>
                             );
                         }
                     )}

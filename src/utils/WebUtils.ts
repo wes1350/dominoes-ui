@@ -2,10 +2,12 @@ export class WebUtils {
     public static MakeGetRequest(url: string): Promise<any> {
         return fetch(url, {
             method: "GET",
-            cache: "no-store",
-            mode: "cors"
+            // cache: "no-store",
+            mode: "cors",
+            credentials: "include"
         })
             .then((res) => {
+                console.log(res);
                 // console.log(res.json());
                 return res.json();
             })
