@@ -16,13 +16,6 @@ export const HomePage = observer((props: IProps) => {
         rooms: []
     }));
 
-    const history = useHistory();
-
-    const onEnterRoom = (roomId: string) => {
-        props.socket.emit(MessageType.JOIN_ROOM, roomId, { name: "username" });
-        history.push(`/room/${roomId}`);
-    };
-
     React.useEffect(() => {
         if (props.socket) {
             WebUtils.MakeGetRequest("http://localhost:3001/rooms").then(
@@ -46,12 +39,31 @@ export const HomePage = observer((props: IProps) => {
         }
     }, [props.socket]);
 
+    const history = useHistory();
+
+    const onEnterRoom = (roomId: string) => {
+        props.socket.emit(MessageType.JOIN_ROOM, roomId, { name: "username" });
+        history.push(`/room/${roomId}`);
+    };
+
+    const onCreateRoom = () => {
+        // props.socket.emit(MessageType.CREATE_ROOM, { name: "username" });
+        WebUtils.MakeGetRequest("http://localhost:3001/createRoom").then(
+            (res) => {
+                console.log(res);
+                runInAction(() => {
+                    onEnterRoom(res.id);
+                });
+            }
+        );
+    };
+
     return (
         <div className="home-page">
             <NavBar></NavBar>
-            {/* <span>Home page</span> */}
-            {/* <button onClick={() => {}}>Create room</button> */}
-            {/* <button onClick={onEnterRoom}>Enter test room</button> */}
+            <div className="create-room-button-container">
+                <button onClick={onCreateRoom}>Create room</button>
+            </div>
             <div className="rooms">
                 <div className="rooms-title">Available Rooms</div>
                 <div className="rooms-table">
@@ -76,7 +88,7 @@ export const HomePage = observer((props: IProps) => {
                                                 onEnterRoom(room.id);
                                             }}
                                         >
-                                            Join Room
+                                            Join
                                         </button>
                                     </div>
                                 </>

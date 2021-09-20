@@ -3,6 +3,7 @@ import { observer, useLocalObservable } from "mobx-react-lite";
 import { GameConfigDescription } from "interfaces/GameConfigDescription";
 import { MessageType } from "enums/MessageType";
 import "./GameStartPage.css";
+import { useHistory } from "react-router-dom";
 
 interface IProps {
     roomId: string;
@@ -38,8 +39,20 @@ export const GameStartPage = observer((props: IProps) => {
         localStore.check5Doubles = e.currentTarget.checked;
     };
 
+    const history = useHistory();
+
+    const onLeaveRoom = () => {
+        props.socket.emit(MessageType.LEAVE_ROOM, props.roomId, {
+            name: "username"
+        });
+        history.push("/");
+    };
+
     return (
         <div className={"game-start-form"}>
+            <div className="leave-room-button-container">
+                <button onClick={onLeaveRoom}>Leave Room</button>
+            </div>
             <form onSubmit={onSubmit}>
                 <div className={"game-config-dropdown-container"}>
                     <label>

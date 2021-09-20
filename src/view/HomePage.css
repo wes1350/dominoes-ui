@@ -1,3 +1,11 @@
+button {
+    color: black;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-family: Verdana, Helvetica, sans-serif;
+}
+
 .home-page {
 }
 
@@ -56,10 +64,9 @@
 .room-n-players {
 }
 
-.join-room-button {
-    color: black;
-    font-family: Verdana, Helvetica, sans-serif;
-    background-color: white;
-    padding: 5px;
-    border-radius: 5px;
+.create-room-button-container {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
