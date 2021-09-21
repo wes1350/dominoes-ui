@@ -20,7 +20,6 @@ export const HomePage = observer((props: IProps) => {
         if (props.socket) {
             WebUtils.MakeGetRequest("http://localhost:3001/rooms")
                 .then((res) => {
-                    console.log(res);
                     runInAction(() => {
                         if (res.rooms) {
                             localStore.rooms = res.rooms;
@@ -33,7 +32,6 @@ export const HomePage = observer((props: IProps) => {
             setInterval(() => {
                 WebUtils.MakeGetRequest("http://localhost:3001/rooms").then(
                     (res) => {
-                        console.log(res);
                         runInAction(() => {
                             if (res.rooms) {
                                 localStore.rooms = res.rooms;
@@ -48,7 +46,7 @@ export const HomePage = observer((props: IProps) => {
     const history = useHistory();
 
     const onEnterRoom = (roomId: string) => {
-        props.socket.emit(MessageType.JOIN_ROOM, roomId, { name: "username" });
+        console.log("entering room");
         history.push(`/room/${roomId}`);
     };
 
@@ -56,7 +54,6 @@ export const HomePage = observer((props: IProps) => {
         // props.socket.emit(MessageType.CREATE_ROOM, { name: "username" });
         WebUtils.MakeGetRequest("http://localhost:3001/createRoom").then(
             (res) => {
-                console.log(res);
                 runInAction(() => {
                     onEnterRoom(res.id);
                 });

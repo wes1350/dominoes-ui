@@ -49,55 +49,57 @@ export const GameStartPage = observer((props: IProps) => {
     };
 
     return (
-        <div className={"game-start-form"}>
+        <div className="game-start-page">
             <div className="leave-room-button-container">
                 <button onClick={onLeaveRoom}>Leave Room</button>
             </div>
-            <form onSubmit={onSubmit}>
-                <div className={"game-config-dropdown-container"}>
-                    <label>
-                        Hand size:
-                        <select
-                            value={localStore.handSize}
-                            onChange={onChangeHandSize}
-                        >
-                            <option value="5">5</option>
-                            <option value="7">7</option>
-                            <option value="9">9</option>
-                        </select>
-                    </label>
-                </div>
-                <div className={"game-config-dropdown-container"}>
-                    <label>
-                        Win threshold:
-                        <select
-                            value={localStore.winThreshold}
-                            onChange={onChangeWinThreshold}
-                        >
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="150">150</option>
-                            <option value="200">200</option>
-                            <option value="250">250</option>
-                        </select>
-                    </label>
-                </div>
-                <div className={"game-config-dropdown-container"}>
-                    <label>
-                        Disallow 5 doubles:
-                        <select
-                            value={localStore.check5Doubles}
-                            onChange={onChange5DoublesSetting}
-                        >
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </label>
-                </div>
-                <div className={"game-config-submit-button"}>
-                    <button type="submit">Start Game</button>
-                </div>
-            </form>
+            <div className={"game-start-form"}>
+                <form onSubmit={onSubmit}>
+                    <div className={"game-config-dropdown-container"}>
+                        <label>
+                            Hand size:
+                            <select
+                                value={localStore.handSize}
+                                onChange={onChangeHandSize}
+                            >
+                                <option value="5">5</option>
+                                <option value="7">7</option>
+                                <option value="9">9</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div className={"game-config-dropdown-container"}>
+                        <label>
+                            Win threshold:
+                            <select
+                                value={localStore.winThreshold}
+                                onChange={onChangeWinThreshold}
+                            >
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="150">150</option>
+                                <option value="200">200</option>
+                                <option value="250">250</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div className={"game-config-dropdown-container"}>
+                        <label>
+                            Disallow 5 doubles:
+                            <select
+                                value={localStore.check5Doubles}
+                                onChange={onChange5DoublesSetting}
+                            >
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div className={"game-config-submit-button"}>
+                        <button type="submit">Start Game</button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 });

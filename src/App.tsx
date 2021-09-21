@@ -15,7 +15,6 @@ export const App = observer(() => {
 
     React.useEffect(() => {
         localStore.socket = io("http://localhost:3001");
-        console.log(localStore.socket);
         return () => localStore.socket.close();
     }, []);
 
