@@ -6,6 +6,7 @@ import { WebUtils } from "utils/WebUtils";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { runInAction } from "mobx";
 import "./HomePage.css";
+import { BackendGateway } from "io/BackendGateway";
 
 interface IProps {
     socket: any;
@@ -18,28 +19,18 @@ export const HomePage = observer((props: IProps) => {
 
     React.useEffect(() => {
         if (props.socket) {
-            WebUtils.MakeGetRequest("http://localhost:3001/rooms")
-                .then((res) => {
-                    runInAction(() => {
-                        if (res.rooms) {
-                            localStore.rooms = res.rooms;
-                        }
-                    });
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-            setInterval(() => {
-                WebUtils.MakeGetRequest("http://localhost:3001/rooms").then(
-                    (res) => {
+            const getRooms = () => {
+                BackendGateway.GetCurrentRooms().then((rooms) => {
+                    if (rooms) {
                         runInAction(() => {
-                            if (res.rooms) {
-                                localStore.rooms = res.rooms;
-                            }
+                            localStore.rooms = rooms;
                         });
                     }
-                );
-            }, ROOM_REFRESH_INTERVAL);
+                });
+            };
+
+            getRooms();
+            setInterval(getRooms, ROOM_REFRESH_INTERVAL);
         }
     }, [props.socket]);
 

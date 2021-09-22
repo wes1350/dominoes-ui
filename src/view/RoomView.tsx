@@ -38,15 +38,15 @@ export const RoomView = observer((props: IProps) => {
     }));
 
     React.useEffect(() => {
-        props.socket?.emit(MessageType.JOIN_ROOM, roomId, { name: "username" });
-        setUpSocketForGameStart();
+        if (props.socket) {
+            props.socket.emit(MessageType.JOIN_ROOM, roomId, {
+                name: "username"
+            });
+            setUpSocketForGameStart();
+        }
     }, [props.socket]);
 
     const setUpSocketForGameStart = () => {
-        if (!props.socket) {
-            return;
-        }
-
         // Might need to add some sort of socket.offAll() in case of reconnects
         props.socket.on(
             MessageType.GAME_START,
