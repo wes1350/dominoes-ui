@@ -1,8 +1,6 @@
 import React from "react";
 import { NavBar } from "./NavBar";
 import { useHistory } from "react-router-dom";
-import { MessageType } from "enums/MessageType";
-import { WebUtils } from "utils/WebUtils";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { runInAction } from "mobx";
 import "./HomePage.css";
@@ -42,14 +40,9 @@ export const HomePage = observer((props: IProps) => {
     };
 
     const onCreateRoom = () => {
-        // props.socket.emit(MessageType.CREATE_ROOM, { name: "username" });
-        WebUtils.MakeGetRequest("http://localhost:3001/createRoom").then(
-            (res) => {
-                runInAction(() => {
-                    onEnterRoom(res.id);
-                });
-            }
-        );
+        BackendGateway.CreateRoom().then((res) => {
+            onEnterRoom(res);
+        });
     };
 
     return (

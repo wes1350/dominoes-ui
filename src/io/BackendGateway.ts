@@ -13,4 +13,8 @@ export class BackendGateway {
                 console.error(err);
             });
     }
+
+    public static CreateRoom(): Promise<string> {
+        return WebUtils.MakeGetRequest("http://localhost:3001/createRoom");
+    }
 }
