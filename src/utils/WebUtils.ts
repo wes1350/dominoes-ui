@@ -1,26 +1,34 @@
 export class WebUtils {
-    public static MakeGetRequest(url: string): Promise<any> {
+    public static GET(url: string): Promise<any> {
+        return WebUtils.Request("GET", url);
+    }
+
+    public static POST(url: string, body: any): Promise<any> {
+        return WebUtils.Request("POST", url, body, {
+            "Content-Type": "application/json"
+        });
+    }
+
+    private static Request(
+        method: "GET" | "POST",
+        url: string,
+        body?: any,
+        headers?: any
+    ): Promise<any> {
         return fetch(url, {
-            method: "GET",
-            // cache: "no-store",
+            method,
+            body: JSON.stringify(body),
             mode: "cors",
-            credentials: "include"
+            credentials: "include",
+            headers
         })
             .then((res) => {
                 console.log(res);
-                // console.log(res.json());
                 return res.json();
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err.message);
                 return { error: err.message };
             });
     }
-
-    // public static MakeGetRequest(url: string): Promise<any> {
-    //     return fetch(url).catch((err) => {
-    //         console.log(err);
-    //         return { error: err.message };
-    //     });
-    // }
 }

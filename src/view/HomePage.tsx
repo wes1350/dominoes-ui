@@ -35,7 +35,6 @@ export const HomePage = observer((props: IProps) => {
     const history = useHistory();
 
     const onEnterRoom = (roomId: string) => {
-        console.log("entering room");
         history.push(`/room/${roomId}`);
     };
 

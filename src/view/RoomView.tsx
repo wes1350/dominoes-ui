@@ -8,7 +8,8 @@ import {
     GameStartMessage,
     NewRoundMessage
 } from "interfaces/Messages";
-import { runInAction, when } from "mobx";
+import { BackendGateway } from "io/BackendGateway";
+import { action, runInAction, when } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { SnapshotIn } from "mobx-state-tree";
 import { Board } from "model/BoardModel";
@@ -21,6 +22,7 @@ import { useParams } from "react-router-dom";
 import { generateId } from "utils/utils";
 import { GameStartPage } from "./GameStartPage";
 import { GameView } from "./GameView";
+import { NameDialog } from "./NameDialog";
 
 interface IProps {
     socket: any;
@@ -34,8 +36,21 @@ export const RoomView = observer((props: IProps) => {
     const { roomId } = useParams<RoomParams>();
 
     const localStore = useLocalObservable(() => ({
+        name: "",
         gameState: null
     }));
+
+    React.useEffect(() => {
+        if (!localStore.name) {
+            BackendGateway.GetName().then((name) => {
+                if (name) {
+                    runInAction(() => {
+                        localStore.name = name;
+                    });
+                }
+            });
+        }
+    }, []);
 
     React.useEffect(() => {
         if (props.socket) {
@@ -199,12 +214,30 @@ export const RoomView = observer((props: IProps) => {
         props.socket.emit(type, value);
     };
 
-    return localStore.gameState ? (
-        <GameView
-            gameState={localStore.gameState}
-            respond={respondToQuery}
-        ></GameView>
-    ) : (
-        <GameStartPage roomId={roomId} socket={props.socket} />
+    const onSubmitName = (name: string) => {
+        if (name) {
+            BackendGateway.SetName(name).then(
+                action(() => {
+                    localStore.name = name;
+                })
+            );
+        }
+    };
+
+    return (
+        <div className="room-view">
+            {localStore.name ? (
+                localStore.gameState ? (
+                    <GameView
+                        gameState={localStore.gameState}
+                        respond={respondToQuery}
+                    ></GameView>
+                ) : (
+                    <GameStartPage roomId={roomId} socket={props.socket} />
+                )
+            ) : (
+                <NameDialog onSubmitName={onSubmitName} />
+            )}
+        </div>
     );
 });

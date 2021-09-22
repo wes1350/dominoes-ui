@@ -19,8 +19,8 @@ export const App = observer(() => {
     }, []);
 
     return (
-        <Router>
-            <div className="App">
+        <div className="App">
+            <Router>
                 <Switch>
                     <Route path="/room/:roomId">
                         <RoomView socket={localStore.socket} />
@@ -35,7 +35,7 @@ export const App = observer(() => {
                         <HomePage socket={localStore.socket} />
                     </Route>
                 </Switch>
-            </div>
-        </Router>
+            </Router>
+        </div>
     );
 });
