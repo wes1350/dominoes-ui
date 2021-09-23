@@ -3,9 +3,10 @@
 
 .rooms {
     position: absolute;
-    top: 50%;
+    top: 30%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
+    height: 50%;
 }
 
 .rooms-title {
@@ -14,16 +15,18 @@
     text-align: center;
 }
 
+.rooms-table-container {
+    overflow: scroll;
+    height: 100%;
+}
+
 .rooms-table {
     display: grid;
     grid-template-columns: 100px 100px 100px;
     grid-auto-rows: 1fr;
-    /* row-gap: 10px; */
     border: 2px solid black;
     border-radius: 10px;
     padding: 10px;
-    overflow: scroll;
-    /* align-items: center; */
 }
 
 .room-details-row-header-item {
