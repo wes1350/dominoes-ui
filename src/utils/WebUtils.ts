@@ -23,7 +23,6 @@ export class WebUtils {
             headers
         })
             .then((res) => {
-                console.log(res);
                 return res.json();
             })
             .catch((err) => {
