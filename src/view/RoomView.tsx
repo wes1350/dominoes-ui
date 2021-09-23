@@ -1,3 +1,4 @@
+import { PlayerNameContext } from "context/PlayerNameContext";
 import { Direction } from "enums/Direction";
 import { GameEventType } from "enums/GameEventType";
 import { MessageType } from "enums/MessageType";
@@ -8,8 +9,7 @@ import {
     GameStartMessage,
     NewRoundMessage
 } from "interfaces/Messages";
-import { BackendGateway } from "io/BackendGateway";
-import { action, runInAction, when } from "mobx";
+import { runInAction, when } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { SnapshotIn } from "mobx-state-tree";
 import { Board } from "model/BoardModel";
@@ -17,7 +17,7 @@ import { Domino, IDomino } from "model/DominoModel";
 import { GameConfig } from "model/GameConfigModel";
 import { GameState, IGameState } from "model/GameStateModel";
 import { Player } from "model/PlayerModel";
-import React from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { generateId } from "utils/utils";
 import { GameStartPage } from "./GameStartPage";
@@ -33,24 +33,15 @@ type RoomParams = {
 };
 
 export const RoomView = observer((props: IProps) => {
+    const playerNameContext = useContext(PlayerNameContext);
+    const playerName = playerNameContext.name;
+    const onSubmitName = playerNameContext.setName;
+
     const { roomId } = useParams<RoomParams>();
 
     const localStore = useLocalObservable(() => ({
-        name: "",
         gameState: null
     }));
-
-    React.useEffect(() => {
-        if (!localStore.name) {
-            BackendGateway.GetName().then((name) => {
-                if (name) {
-                    runInAction(() => {
-                        localStore.name = name;
-                    });
-                }
-            });
-        }
-    }, []);
 
     React.useEffect(() => {
         if (props.socket) {
@@ -214,19 +205,9 @@ export const RoomView = observer((props: IProps) => {
         props.socket.emit(type, value);
     };
 
-    const onSubmitName = (name: string) => {
-        if (name) {
-            BackendGateway.SetName(name).then(
-                action(() => {
-                    localStore.name = name;
-                })
-            );
-        }
-    };
-
     return (
         <div className="room-view">
-            {localStore.name ? (
+            {playerName ? (
                 localStore.gameState ? (
                     <GameView
                         gameState={localStore.gameState}
