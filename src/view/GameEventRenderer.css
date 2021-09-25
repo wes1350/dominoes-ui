@@ -7,6 +7,7 @@
     background-color: #777;
     color: white;
     padding: 20px;
+    z-index: 100;
 }
 
 .game-event-me {
