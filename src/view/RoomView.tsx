@@ -21,7 +21,7 @@ import { Player } from "model/PlayerModel";
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { generateId } from "utils/utils";
-import { GameStartPage } from "./GameStartPage";
+import { RoomLobbyView } from "./RoomLobbyView";
 import { GameView } from "./GameView";
 
 interface IProps {}
@@ -40,15 +40,28 @@ export const RoomView = observer((props: IProps) => {
     const { roomId } = useParams<RoomParams>();
 
     const localStore = useLocalObservable(() => ({
-        gameState: null
+        gameState: null,
+        roomDetails: []
     }));
 
     React.useEffect(() => {
         if (socket && playerName) {
+            setUpSocketForRoomLobby();
             socket.emit(MessageType.JOIN_ROOM, roomId);
             setUpSocketForGameStart();
         }
     }, [socketContext, playerDataContext]);
+
+    const setUpSocketForRoomLobby = () => {
+        socket.on(
+            MessageType.ROOM_DETAILS,
+            (roomDetails: { name: string }[]) => {
+                runInAction(() => {
+                    localStore.roomDetails = roomDetails;
+                });
+            }
+        );
+    };
 
     const setUpSocketForGameStart = () => {
         // Might need to add some sort of socket.offAll() in case of reconnects
@@ -213,7 +226,10 @@ export const RoomView = observer((props: IProps) => {
                         respond={respondToQuery}
                     ></GameView>
                 ) : (
-                    <GameStartPage roomId={roomId} socket={socket} />
+                    <RoomLobbyView
+                        roomId={roomId}
+                        roomDetails={localStore.roomDetails}
+                    />
                 )
             ) : (
                 <div>This should never be seen</div>

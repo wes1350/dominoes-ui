@@ -1,21 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { GameConfigDescription } from "interfaces/GameConfigDescription";
 import { MessageType } from "enums/MessageType";
-import "./GameStartPage.css";
+import "./RoomLobbyView.css";
 import { useHistory } from "react-router-dom";
+import { SocketContext } from "context/SocketContext";
 
 interface IProps {
     roomId: string;
-    socket: any;
+    roomDetails: { name: string }[];
 }
 
-export const GameStartPage = observer((props: IProps) => {
+export const RoomLobbyView = observer((props: IProps) => {
     const localStore = useLocalObservable(() => ({
         handSize: "7",
         check5Doubles: "Yes",
         winThreshold: "150"
     }));
+
+    const socket = useContext(SocketContext)?.socket;
 
     const onSubmit = (e: any) => {
         e.preventDefault();
@@ -25,7 +28,7 @@ export const GameStartPage = observer((props: IProps) => {
             Check_5_Doubles: localStore.check5Doubles === "Yes"
         } as GameConfigDescription;
         console.log(config);
-        props.socket?.emit(MessageType.GAME_START, props.roomId, config);
+        socket.emit(MessageType.GAME_START, props.roomId, config);
     };
 
     const onChangeHandSize = (e: any) => {
@@ -42,16 +45,32 @@ export const GameStartPage = observer((props: IProps) => {
     const history = useHistory();
 
     const onLeaveRoom = () => {
-        props.socket.emit(MessageType.LEAVE_ROOM, props.roomId, {
+        socket.emit(MessageType.LEAVE_ROOM, props.roomId, {
             name: "username"
         });
         history.push("/");
     };
 
+    if (!socket) {
+        return null;
+    }
+
     return (
         <div className="game-start-page">
             <div className="leave-room-button-container">
                 <button onClick={onLeaveRoom}>Leave Room</button>
+            </div>
+            <div className="players-in-lobby-container">
+                <div className="players-in-lobby-container-label">
+                    Players in room:
+                </div>
+                <>
+                    {props.roomDetails.map((playerDetails) => (
+                        <div className="players-in-lobby-item">
+                            {playerDetails.name}
+                        </div>
+                    ))}
+                </>
             </div>
             <div className={"game-start-form"}>
                 <form onSubmit={onSubmit}>
