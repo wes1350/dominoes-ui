@@ -1,4 +1,5 @@
-import { PlayerNameContext } from "context/PlayerNameContext";
+import { PlayerDataContext } from "context/PlayerDataContext";
+import { SocketContext } from "context/SocketContext";
 import { Direction } from "enums/Direction";
 import { GameEventType } from "enums/GameEventType";
 import { MessageType } from "enums/MessageType";
@@ -22,20 +23,19 @@ import { useParams } from "react-router-dom";
 import { generateId } from "utils/utils";
 import { GameStartPage } from "./GameStartPage";
 import { GameView } from "./GameView";
-import { NameDialog } from "./NameDialog";
 
-interface IProps {
-    socket: any;
-}
+interface IProps {}
 
 type RoomParams = {
     roomId: string;
 };
 
 export const RoomView = observer((props: IProps) => {
-    const playerNameContext = useContext(PlayerNameContext);
-    const playerName = playerNameContext.name;
-    const onSubmitName = playerNameContext.setName;
+    const playerDataContext = useContext(PlayerDataContext);
+    const playerName = playerDataContext.name;
+
+    const socketContext = useContext(SocketContext);
+    const socket = socketContext?.socket;
 
     const { roomId } = useParams<RoomParams>();
 
@@ -44,28 +44,23 @@ export const RoomView = observer((props: IProps) => {
     }));
 
     React.useEffect(() => {
-        if (props.socket) {
-            props.socket.emit(MessageType.JOIN_ROOM, roomId, {
-                name: "username"
-            });
+        if (socket && playerName) {
+            socket.emit(MessageType.JOIN_ROOM, roomId);
             setUpSocketForGameStart();
         }
-    }, [props.socket]);
+    }, [socketContext, playerDataContext]);
 
     const setUpSocketForGameStart = () => {
         // Might need to add some sort of socket.offAll() in case of reconnects
-        props.socket.on(
-            MessageType.GAME_START,
-            (gameDetails: GameStartMessage) => {
-                console.log("starting game");
-                runInAction(() => {
-                    localStore.gameState = initializeGameState(gameDetails);
-                });
-                setUpSocketForGameplay(props.socket, localStore.gameState);
+        socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
+            console.log("starting game");
+            runInAction(() => {
+                localStore.gameState = initializeGameState(gameDetails);
+            });
+            setUpSocketForGameplay(socket, localStore.gameState);
 
-                props.socket.off(MessageType.GAME_START);
-            }
-        );
+            socket.off(MessageType.GAME_START);
+        });
     };
 
     const initializeGameState = (gameDetails: GameStartMessage) => {
@@ -202,8 +197,12 @@ export const RoomView = observer((props: IProps) => {
     };
 
     const respondToQuery = (type: QueryType, value: any) => {
-        props.socket.emit(type, value);
+        socket.emit(type, value);
     };
+
+    if (!socket) {
+        return null;
+    }
 
     return (
         <div className="room-view">
@@ -214,10 +213,11 @@ export const RoomView = observer((props: IProps) => {
                         respond={respondToQuery}
                     ></GameView>
                 ) : (
-                    <GameStartPage roomId={roomId} socket={props.socket} />
+                    <GameStartPage roomId={roomId} socket={socket} />
                 )
             ) : (
-                <NameDialog onSubmitName={onSubmitName} />
+                <div>This should never be seen</div>
+                // <NameDialog onSubmitName={onSubmitName} />
             )}
         </div>
     );

@@ -13,6 +13,22 @@ export const NameDialog = observer((props: IProps) => {
     const localStore = useLocalObservable(() => ({
         nameValue: ""
     }));
+    // {
+    //     /* <PlayerNameContext.Provider
+    //             value={{
+    //                 name: localStore.playerName,
+    //                 setName: (name: string) => {
+    //                     if (name) {
+    //                         BackendGateway.SetName(name).then(
+    //                             action(() => {
+    //                                 localStore.playerName = name;
+    //                             })
+    //                         );
+    //                     }
+    //                 }
+    //             }}
+    //         > */
+    // }
 
     return (
         <div className="username-dialog">

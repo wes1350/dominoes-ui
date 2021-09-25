@@ -21,14 +21,14 @@ interface IProps {
 }
 
 export const BoardDominoView = observer((props: IProps) => {
-    const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    const [, drop] = useDrop(() => ({
         accept: DragItemTypes.DOMINO,
         drop: (item: { index: number }, monitor) => {
             props.onDropDomino(item);
         },
         collect: (monitor) => ({
-            isOver: !!monitor.isOver(),
-            canDrop: true
+            // isOver: !!monitor.isOver(),
+            // canDrop: true
             // isDragging: (monitor as any).internalMonitor.isDragging()
         })
     }));

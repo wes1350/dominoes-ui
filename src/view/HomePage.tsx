@@ -1,22 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavBar } from "./NavBar";
 import { useHistory } from "react-router-dom";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { runInAction } from "mobx";
 import "./HomePage.css";
 import { BackendGateway } from "io/BackendGateway";
+import { SocketContext } from "context/SocketContext";
 
-interface IProps {
-    socket: any;
-}
+interface IProps {}
+
 export const HomePage = observer((props: IProps) => {
+    const socketContext = useContext(SocketContext);
+    const socket = socketContext?.socket;
+
     const ROOM_REFRESH_INTERVAL = 3000;
     const localStore = useLocalObservable(() => ({
         rooms: []
     }));
 
     React.useEffect(() => {
-        if (props.socket) {
+        if (socket) {
             const getRooms = () => {
                 BackendGateway.GetCurrentRooms().then((rooms) => {
                     if (rooms) {
@@ -30,7 +33,7 @@ export const HomePage = observer((props: IProps) => {
             getRooms();
             setInterval(getRooms, ROOM_REFRESH_INTERVAL);
         }
-    }, [props.socket]);
+    }, [socket]);
 
     const history = useHistory();
 
