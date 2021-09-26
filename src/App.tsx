@@ -6,7 +6,6 @@ import { RoomView } from "view/RoomView";
 import { HomePage } from "view/HomePage";
 import { BoardViewTest } from "test/BoardViewTest";
 import { observer } from "mobx-react-lite";
-import { PlayerNameView } from "view/PlayerNameView";
 import { PlayerDataContextProvider } from "context/PlayerDataContext";
 import { SocketContextProvider } from "context/SocketContext";
 
@@ -15,7 +14,6 @@ export const App = observer(() => {
         <div className="App">
             <PlayerDataContextProvider>
                 <SocketContextProvider>
-                    <PlayerNameView />
                     <Router>
                         <Switch>
                             <Route path="/room/:roomId">

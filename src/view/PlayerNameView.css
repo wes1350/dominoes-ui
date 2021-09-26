@@ -1,0 +1,8 @@
+.player-name-view {
+    position: fixed;
+    top: 0%;
+    right: 0%;
+    width: 15%;
+    height: 5%;
+    margin: 20px;
+}

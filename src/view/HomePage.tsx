@@ -6,6 +6,7 @@ import { runInAction } from "mobx";
 import "./HomePage.css";
 import { BackendGateway } from "io/BackendGateway";
 import { SocketContext } from "context/SocketContext";
+import { PlayerNameView } from "./PlayerNameView";
 
 interface IProps {}
 
@@ -50,6 +51,7 @@ export const HomePage = observer((props: IProps) => {
     return (
         <div className="home-page">
             <NavBar></NavBar>
+            <PlayerNameView />
             <div className="create-room-button-container">
                 <button onClick={onCreateRoom}>Create room</button>
             </div>

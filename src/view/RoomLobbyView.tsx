@@ -6,6 +6,7 @@ import "./RoomLobbyView.css";
 import { useHistory } from "react-router-dom";
 import { SocketContext } from "context/SocketContext";
 import { action } from "mobx";
+import { PlayerNameView } from "./PlayerNameView";
 
 interface IProps {
     roomId: string;
@@ -58,7 +59,8 @@ export const RoomLobbyView = observer((props: IProps) => {
     }
 
     return (
-        <div className="game-start-page">
+        <div className="room-lobby">
+            <PlayerNameView />
             <div className="leave-room-button-container">
                 <button onClick={onLeaveRoom}>Leave Room</button>
             </div>

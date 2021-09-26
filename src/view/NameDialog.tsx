@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./NameDialog.css";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { action } from "mobx";
+import { PlayerDataContext } from "context/PlayerDataContext";
+import { BackendGateway } from "io/BackendGateway";
 
 interface IProps {
-    onSubmitName: (name: string) => void;
+    onSubmit: () => void;
 }
 
 export const NameDialog = observer((props: IProps) => {
@@ -13,22 +15,19 @@ export const NameDialog = observer((props: IProps) => {
     const localStore = useLocalObservable(() => ({
         nameValue: ""
     }));
-    // {
-    //     /* <PlayerNameContext.Provider
-    //             value={{
-    //                 name: localStore.playerName,
-    //                 setName: (name: string) => {
-    //                     if (name) {
-    //                         BackendGateway.SetName(name).then(
-    //                             action(() => {
-    //                                 localStore.playerName = name;
-    //                             })
-    //                         );
-    //                     }
-    //                 }
-    //             }}
-    //         > */
-    // }
+
+    const nameContext = useContext(PlayerDataContext);
+
+    const onSubmitName = (e: any) => {
+        if (localStore.nameValue) {
+            BackendGateway.SetName(localStore.nameValue).then(
+                action(() => {
+                    nameContext.setName(localStore.nameValue);
+                })
+            );
+        }
+        props.onSubmit();
+    };
 
     return (
         <div className="username-dialog">
@@ -47,7 +46,7 @@ export const NameDialog = observer((props: IProps) => {
                 <button
                     type="button"
                     onClick={() => {
-                        props.onSubmitName(localStore.nameValue);
+                        onSubmitName(localStore.nameValue);
                     }}
                 >
                     Save
