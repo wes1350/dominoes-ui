@@ -5,6 +5,7 @@ import { MessageType } from "enums/MessageType";
 import "./RoomLobbyView.css";
 import { useHistory } from "react-router-dom";
 import { SocketContext } from "context/SocketContext";
+import { action } from "mobx";
 
 interface IProps {
     roomId: string;
@@ -33,16 +34,17 @@ export const RoomLobbyView = observer((props: IProps) => {
         socket.emit(MessageType.GAME_START, props.roomId, config);
     };
 
-    const onChangeHandSize = (e: any) => {
+    const onChangeHandSize = action((e: any) => {
         localStore.handSize = e.currentTarget.value;
-    };
+    });
 
-    const onChangeWinThreshold = (e: any) => {
+    const onChangeWinThreshold = action((e: any) => {
         localStore.winThreshold = e.target.value;
-    };
-    const onChange5DoublesSetting = (e: any) => {
+    });
+
+    const onChange5DoublesSetting = action((e: any) => {
         localStore.check5Doubles = e.currentTarget.checked;
-    };
+    });
 
     const onLeaveRoom = () => {
         socket.emit(MessageType.LEAVE_ROOM, props.roomId, {
@@ -94,6 +96,7 @@ export const RoomLobbyView = observer((props: IProps) => {
                                 value={localStore.winThreshold}
                                 onChange={onChangeWinThreshold}
                             >
+                                <option value="5">5</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                                 <option value="150">150</option>

@@ -16,7 +16,7 @@ import { SnapshotIn } from "mobx-state-tree";
 import { Board } from "model/BoardModel";
 import { Domino, IDomino } from "model/DominoModel";
 import { GameConfig } from "model/GameConfigModel";
-import { GameState, IGameState } from "model/GameStateModel";
+import { GameState } from "model/GameStateModel";
 import { Player } from "model/PlayerModel";
 import React, { useContext } from "react";
 import {
@@ -59,36 +59,36 @@ export const RoomView = observer((props: IProps) => {
 
     React.useEffect(() => {
         if (socket && playerName) {
-            setUpSocketForRoomLobby();
-            joinRoom();
-            setUpSocketForGameStart();
+            initializeLobby();
         }
     }, [socketContext, playerDataContext]);
 
     const match = useRouteMatch();
 
-    const setUpSocketForRoomLobby = () => {
-        socket.on(
-            MessageType.ROOM_DETAILS,
-            (roomDetails: { name: string }[]) => {
-                runInAction(() => {
-                    localStore.roomDetails = roomDetails;
-                });
-            }
-        );
+    const initializeLobby = () => {
+        joinRoom();
+        setUpSocketForLobby();
     };
 
-    const setUpSocketForGameStart = () => {
+    const roomDetailsListener = (roomDetails: { name: string }[]) => {
+        runInAction(() => {
+            localStore.roomDetails = roomDetails;
+        });
+    };
+
+    const setUpSocketForLobby = () => {
+        socket.on(MessageType.ROOM_DETAILS, roomDetailsListener);
+
         // Might need to add some sort of socket.offAll() in case of reconnects
-        socket.on(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
-            console.log("starting game");
+        socket.once(MessageType.GAME_START, (gameDetails: GameStartMessage) => {
+            console.log("starting game, details:", JSON.stringify(gameDetails));
             runInAction(() => {
                 localStore.gameState = initializeGameState(gameDetails);
             });
-            setUpSocketForGameplay(socket, localStore.gameState);
+            addGameplayListeners();
             history.push(`/room/${roomId}/game`);
 
-            socket.off(MessageType.GAME_START);
+            socket.off(MessageType.ROOM_DETAILS, roomDetailsListener);
         });
     };
 
@@ -116,121 +116,158 @@ export const RoomView = observer((props: IProps) => {
         return newGameState;
     };
 
-    const setUpSocketForGameplay = (socket: any, gameState: IGameState) => {
-        socket.on(MessageType.GAME_LOG, (logDetails: GameLogMessage) => {
-            console.log(logDetails);
-            gameState.AddLog(logDetails.message);
-        });
-        socket.on(
-            MessageType.TURN,
-            (turnDescription: {
-                seat: number;
-                domino: SnapshotIn<IDomino>;
-                direction: Direction;
-                coordinate: Coordinate;
-            }) => {
-                const domino = turnDescription.domino
-                    ? Domino.create(turnDescription.domino)
-                    : null;
+    const gameLogListener = (logDetails: GameLogMessage) => {
+        console.log(logDetails);
+        localStore.gameState.AddLog(logDetails.message);
+    };
 
-                gameState.ProcessTurn(
-                    domino,
-                    turnDescription.direction,
-                    turnDescription.coordinate
-                );
-                gameState.Me.SetPlayableDominoes(null);
+    const turnListener = (turnDescription: {
+        seat: number;
+        domino: SnapshotIn<IDomino>;
+        direction: Direction;
+        coordinate: Coordinate;
+    }) => {
+        const domino = turnDescription.domino
+            ? Domino.create(turnDescription.domino)
+            : null;
 
-                if (!domino) {
-                    gameState.AddEvent({
-                        Id: Math.floor(Math.random() * 10000000),
-                        Type: GameEventType.PASS,
-                        Duration: 1000,
-                        Seat: turnDescription.seat
-                    });
-                }
-            }
+        localStore.gameState.ProcessTurn(
+            domino,
+            turnDescription.direction,
+            turnDescription.coordinate
         );
-        socket.on(
-            MessageType.SCORE,
-            (payload: { seat: number; score: number }) => {
-                gameState.AddEvent({
-                    Id: Math.floor(Math.random() * 10000000),
-                    Type: GameEventType.SCORE,
-                    Duration: 1000,
-                    Seat: payload.seat,
-                    Score: payload.score
-                });
+        localStore.gameState.Me.SetPlayableDominoes(null);
 
-                gameState.ProcessScore(payload.seat, payload.score);
-            }
-        );
-        socket.on(
-            MessageType.HAND,
-            (payload: { Face1: number; Face2: number }[]) => {
-                when(
-                    () => gameState.Events.length === 0,
-                    () => {
-                        gameState.Me.SetHand(payload as IDomino[]);
-                    }
-                );
-            }
-        );
-        socket.on(MessageType.PLAYABLE_DOMINOES, (payload: string) => {
-            gameState.Me.SetPlayableDominoes(JSON.parse("[" + payload + "]"));
-        });
-        socket.on(MessageType.DOMINO_PLAYED, (payload: { seat: number }) => {
-            const player = gameState.PlayerAtSeat(payload.seat);
-            if (!player.IsMe) {
-                player.RemoveDomino();
-            }
-        });
-        socket.on(MessageType.CLEAR_BOARD, () => {
-            when(
-                () => gameState.Events.length === 0,
-                () => {
-                    gameState.ClearBoard();
-                }
-            );
-        });
-        socket.on(MessageType.PULL, (payload: { seat: number }) => {
-            const player = gameState.PlayerAtSeat(payload.seat);
-            if (!player.IsMe) {
-                player.AddDomino(Domino.create({ Face1: -1, Face2: -1 }));
-            }
-        });
-        socket.on(MessageType.NEW_ROUND, (payload: NewRoundMessage) => {
-            when(
-                () => gameState.Events.length === 0,
-                () => {
-                    gameState.SetCurrentPlayerIndex(payload.currentPlayer);
-                    gameState.InitializeOpponentHands();
-                }
-            );
-        });
-
-        socket.on(QueryType.MOVE, (message: string) => {
-            gameState.SetQueryType(QueryType.MOVE);
-        });
-
-        socket.on(MessageType.GAME_OVER, (winner: string) => {
-            setTimeout(() => {
-                gameState.Finish(winner);
-            }, 1500);
-        });
-
-        socket.on(MessageType.GAME_BLOCKED, () => {
-            gameState.AddEvent({
-                Id: generateId(),
-                Type: GameEventType.BLOCKED,
-                Duration: 2000
+        if (!domino) {
+            localStore.gameState.AddEvent({
+                Id: Math.floor(Math.random() * 10000000),
+                Type: GameEventType.PASS,
+                Duration: 1000,
+                Seat: turnDescription.seat
             });
+        }
+    };
+
+    const scoreListener = (payload: { seat: number; score: number }) => {
+        localStore.gameState.AddEvent({
+            Id: Math.floor(Math.random() * 10000000),
+            Type: GameEventType.SCORE,
+            Duration: 1000,
+            Seat: payload.seat,
+            Score: payload.score
         });
+
+        localStore.gameState.ProcessScore(payload.seat, payload.score);
+    };
+
+    const handListener = (payload: { Face1: number; Face2: number }[]) => {
+        when(
+            () => localStore.gameState.Events.length === 0,
+            () => {
+                localStore.gameState.Me.SetHand(payload as IDomino[]);
+            }
+        );
+    };
+
+    const playableDominoesListener = (payload: string) => {
+        localStore.gameState.Me.SetPlayableDominoes(
+            JSON.parse("[" + payload + "]")
+        );
+    };
+
+    const dominoPlayedListener = (payload: { seat: number }) => {
+        const player = localStore.gameState.PlayerAtSeat(payload.seat);
+        if (!player.IsMe) {
+            player.RemoveDomino();
+        }
+    };
+
+    const clearBoardListener = () => {
+        when(
+            () => localStore.gameState.Events.length === 0,
+            () => {
+                localStore.gameState.ClearBoard();
+            }
+        );
+    };
+
+    const pullListener = (payload: { seat: number }) => {
+        const player = localStore.gameState.PlayerAtSeat(payload.seat);
+        if (!player.IsMe) {
+            player.AddDomino(Domino.create({ Face1: -1, Face2: -1 }));
+        }
+    };
+
+    const newRoundListener = (payload: NewRoundMessage) => {
+        when(
+            () => localStore.gameState.Events.length === 0,
+            () => {
+                localStore.gameState.SetCurrentPlayerIndex(
+                    payload.currentPlayer
+                );
+                localStore.gameState.InitializeOpponentHands();
+            }
+        );
+    };
+
+    const moveListener = (message: string) => {
+        localStore.gameState.SetQueryType(QueryType.MOVE);
+    };
+
+    const gameOverListener = (winner: string) => {
+        setTimeout(() => {
+            localStore.gameState.Finish(winner);
+        }, 1000);
+    };
+
+    const gameBlockedListener = () => {
+        localStore.gameState.AddEvent({
+            Id: generateId(),
+            Type: GameEventType.BLOCKED,
+            Duration: 2000
+        });
+    };
+
+    const addGameplayListeners = () => {
+        socket.on(MessageType.GAME_LOG, gameLogListener);
+        socket.on(MessageType.TURN, turnListener);
+        socket.on(MessageType.SCORE, scoreListener);
+        socket.on(MessageType.HAND, handListener);
+        socket.on(MessageType.PLAYABLE_DOMINOES, playableDominoesListener);
+        socket.on(MessageType.DOMINO_PLAYED, dominoPlayedListener);
+        socket.on(MessageType.CLEAR_BOARD, clearBoardListener);
+        socket.on(MessageType.PULL, pullListener);
+        socket.on(MessageType.NEW_ROUND, newRoundListener);
+        socket.on(QueryType.MOVE, moveListener);
+        socket.on(MessageType.GAME_OVER, gameOverListener);
+        socket.on(MessageType.GAME_BLOCKED, gameBlockedListener);
+
+        when(
+            () => localStore.gameState === null,
+            () => {
+                socket.off(MessageType.GAME_LOG, gameLogListener);
+                socket.off(MessageType.TURN, turnListener);
+                socket.off(MessageType.SCORE, scoreListener);
+                socket.off(MessageType.HAND, handListener);
+                socket.off(
+                    MessageType.PLAYABLE_DOMINOES,
+                    playableDominoesListener
+                );
+                socket.off(MessageType.DOMINO_PLAYED, dominoPlayedListener);
+                socket.off(MessageType.CLEAR_BOARD, clearBoardListener);
+                socket.off(MessageType.PULL, pullListener);
+                socket.off(MessageType.NEW_ROUND, newRoundListener);
+                socket.off(QueryType.MOVE, moveListener);
+                socket.off(MessageType.GAME_OVER, gameOverListener);
+                socket.off(MessageType.GAME_BLOCKED, gameBlockedListener);
+            }
+        );
     };
 
     const onReenterLobby = action(() => {
         localStore.gameState = null;
         localStore.roomDetails = null;
-        joinRoom();
+        initializeLobby();
     });
 
     const respondToQuery = (type: QueryType, value: any) => {
