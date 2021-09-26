@@ -10,7 +10,7 @@ import {
     GameStartMessage,
     NewRoundMessage
 } from "interfaces/Messages";
-import { runInAction, when } from "mobx";
+import { action, runInAction, when } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { SnapshotIn } from "mobx-state-tree";
 import { Board } from "model/BoardModel";
@@ -19,7 +19,14 @@ import { GameConfig } from "model/GameConfigModel";
 import { GameState, IGameState } from "model/GameStateModel";
 import { Player } from "model/PlayerModel";
 import React, { useContext } from "react";
-import { useParams } from "react-router-dom";
+import {
+    Redirect,
+    Route,
+    Switch,
+    useHistory,
+    useParams,
+    useRouteMatch
+} from "react-router-dom";
 import { generateId } from "utils/utils";
 import { RoomLobbyView } from "./RoomLobbyView";
 import { GameView } from "./GameView";
@@ -41,16 +48,24 @@ export const RoomView = observer((props: IProps) => {
 
     const localStore = useLocalObservable(() => ({
         gameState: null,
-        roomDetails: []
+        roomDetails: null
     }));
+
+    const history = useHistory();
+
+    const joinRoom = () => {
+        socket.emit(MessageType.JOIN_ROOM, roomId);
+    };
 
     React.useEffect(() => {
         if (socket && playerName) {
             setUpSocketForRoomLobby();
-            socket.emit(MessageType.JOIN_ROOM, roomId);
+            joinRoom();
             setUpSocketForGameStart();
         }
     }, [socketContext, playerDataContext]);
+
+    const match = useRouteMatch();
 
     const setUpSocketForRoomLobby = () => {
         socket.on(
@@ -71,6 +86,7 @@ export const RoomView = observer((props: IProps) => {
                 localStore.gameState = initializeGameState(gameDetails);
             });
             setUpSocketForGameplay(socket, localStore.gameState);
+            history.push(`/room/${roomId}/game`);
 
             socket.off(MessageType.GAME_START);
         });
@@ -196,8 +212,10 @@ export const RoomView = observer((props: IProps) => {
             gameState.SetQueryType(QueryType.MOVE);
         });
 
-        socket.on(MessageType.GAME_OVER, (winner: number) => {
-            gameState.Finish();
+        socket.on(MessageType.GAME_OVER, (winner: string) => {
+            setTimeout(() => {
+                gameState.Finish(winner);
+            }, 1500);
         });
 
         socket.on(MessageType.GAME_BLOCKED, () => {
@@ -209,6 +227,12 @@ export const RoomView = observer((props: IProps) => {
         });
     };
 
+    const onReenterLobby = action(() => {
+        localStore.gameState = null;
+        localStore.roomDetails = null;
+        joinRoom();
+    });
+
     const respondToQuery = (type: QueryType, value: any) => {
         socket.emit(type, value);
     };
@@ -217,24 +241,29 @@ export const RoomView = observer((props: IProps) => {
         return null;
     }
 
+    const lobbyURL = `${match.url}/lobby`;
+    const gameURL = `${match.url}/game`;
+
     return (
         <div className="room-view">
-            {playerName ? (
-                localStore.gameState ? (
-                    <GameView
-                        gameState={localStore.gameState}
-                        respond={respondToQuery}
-                    ></GameView>
-                ) : (
+            <Switch>
+                <Route path={lobbyURL}>
                     <RoomLobbyView
                         roomId={roomId}
                         roomDetails={localStore.roomDetails}
                     />
-                )
-            ) : (
-                <div>This should never be seen</div>
-                // <NameDialog onSubmitName={onSubmitName} />
-            )}
+                </Route>
+                {localStore.gameState && (
+                    <Route path={gameURL}>
+                        <GameView
+                            gameState={localStore.gameState}
+                            respond={respondToQuery}
+                            onEnterLobby={onReenterLobby}
+                        ></GameView>
+                    </Route>
+                )}
+                <Redirect from="*" to={lobbyURL} />
+            </Switch>
         </div>
     );
 });

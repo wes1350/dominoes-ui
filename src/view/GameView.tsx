@@ -12,10 +12,12 @@ import { Direction } from "enums/Direction";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { action, runInAction } from "mobx";
 import { GameEventRenderer } from "./GameEventRenderer";
+import { GameOverDialog } from "./GameOverDialog";
 
 interface IProps {
     gameState: IGameState;
     respond: (type: QueryType, value: any) => void;
+    onEnterLobby: () => void;
 }
 
 export const GameView = observer((props: IProps) => {
@@ -110,6 +112,12 @@ export const GameView = observer((props: IProps) => {
                         props.gameState.ClearEvent();
                     })}
                 />
+                {props.gameState.GameOver && (
+                    <GameOverDialog
+                        winner={props.gameState.Winner}
+                        onEnterLobby={props.onEnterLobby}
+                    />
+                )}
             </div>
         </DndProvider>
     );

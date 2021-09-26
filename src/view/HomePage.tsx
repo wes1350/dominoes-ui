@@ -38,7 +38,7 @@ export const HomePage = observer((props: IProps) => {
     const history = useHistory();
 
     const onEnterRoom = (roomId: string) => {
-        history.push(`/room/${roomId}`);
+        history.push(`/room/${roomId}/lobby`);
     };
 
     const onCreateRoom = () => {

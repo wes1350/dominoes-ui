@@ -3,6 +3,5 @@ export enum GameEventType {
     PASS = "PASS",
     DOMINO = "DOMINO",
     BLOCKED = "BLOCKED",
-    WINNER = "WINNER",
     NEW_ROUND = "NEW_ROUND"
 }

@@ -20,8 +20,9 @@ export const GameStateController = (model: IGameStateModel) => {
             gameState.Started = true;
         },
 
-        Finish() {
+        Finish(winner: string) {
             gameState.GameOver = true;
+            gameState.Winner = winner;
         },
 
         ProcessTurn(

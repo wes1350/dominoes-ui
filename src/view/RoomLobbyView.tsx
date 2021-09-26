@@ -18,6 +18,8 @@ export const RoomLobbyView = observer((props: IProps) => {
         winThreshold: "150"
     }));
 
+    const history = useHistory();
+
     const socket = useContext(SocketContext)?.socket;
 
     const onSubmit = (e: any) => {
@@ -42,8 +44,6 @@ export const RoomLobbyView = observer((props: IProps) => {
         localStore.check5Doubles = e.currentTarget.checked;
     };
 
-    const history = useHistory();
-
     const onLeaveRoom = () => {
         socket.emit(MessageType.LEAVE_ROOM, props.roomId, {
             name: "username"
@@ -65,8 +65,8 @@ export const RoomLobbyView = observer((props: IProps) => {
                     Players in room:
                 </div>
                 <>
-                    {props.roomDetails.map((playerDetails) => (
-                        <div className="players-in-lobby-item">
+                    {props.roomDetails?.map((playerDetails, i) => (
+                        <div key={i} className="players-in-lobby-item">
                             {playerDetails.name}
                         </div>
                     ))}

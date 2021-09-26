@@ -11,6 +11,7 @@ export const GameStateModel = types.model({
     Config: types.late(() => GameConfig),
     Started: false,
     GameOver: false,
+    Winner: types.maybeNull(types.string),
     CurrentPlayerIndex: types.maybeNull(types.integer),
     Players: types.array(types.late(() => Player)),
     Logs: types.array(types.string),
