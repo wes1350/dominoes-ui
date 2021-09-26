@@ -1,0 +1,12 @@
+.username-dialog {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    top: 8%;
+    right: 5%;
+    background-color: #eee;
+    width: 20%;
+    height: 15%;
+}

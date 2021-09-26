@@ -1,0 +1,11 @@
+.board {
+    display: grid;
+    box-sizing: border-box;
+    position: absolute;
+    overflow: scroll;
+    border-radius: 10px;
+
+    height: 100%;
+    width: 100%;
+    background-color: #ddd;
+}
