@@ -6,7 +6,9 @@
     position: fixed;
     top: 8%;
     right: 5%;
-    background-color: #eee;
+    background-color: gainsboro;
+    border: 1px solid black;
+    border-radius: 5px;
     width: 20%;
     height: 15%;
 }

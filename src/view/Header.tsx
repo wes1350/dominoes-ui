@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import "./Header.css";
 import { NavLink } from "react-router-dom";
-import { useLocalObservable } from "mobx-react-lite";
+import { observer, useLocalObservable } from "mobx-react-lite";
 import { action } from "mobx";
 import { PlayerDataContext } from "context/PlayerDataContext";
 import { NameDialog } from "./NameDialog";
 
-export const Header = () => {
+export const Header = observer(() => {
     const nameContext = useContext(PlayerDataContext);
 
     const localStore = useLocalObservable(() => ({
@@ -57,4 +57,4 @@ export const Header = () => {
             </div>
         </header>
     );
-};
+});
