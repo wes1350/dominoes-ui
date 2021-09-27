@@ -43,14 +43,14 @@ export const GameView = observer((props: IProps) => {
                 <div
                     className={"board-container"}
                     style={{
-                        top: localStore.windowHeight * 0.125,
+                        top: localStore.windowHeight * 0.125 + 40, // 40 is from header height
                         left: localStore.windowWidth * 0.15
                     }}
                 >
                     <BoardView
                         board={props.gameState.Board}
                         width={localStore.windowWidth * 0.7}
-                        height={localStore.windowHeight * 0.7}
+                        height={localStore.windowHeight * 0.7 - 40} // 40 is from header height
                         onDropDomino={(
                             item: { index: number },
                             direction: Direction

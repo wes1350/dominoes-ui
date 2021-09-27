@@ -52,7 +52,7 @@
 }
 
 .opponent-1 {
-    top: 0%;
+    top: calc(0% + var(--site-header-height));
     left: 50%;
     transform: translateX(-50%);
     width: var(--opponent-player-view-large-side-horizontal);
@@ -115,6 +115,5 @@
 }
 
 .current {
-    background-color: #b3dde3;
-    border: 5px solid #444;
+    border: 5px solid tomato;
 }

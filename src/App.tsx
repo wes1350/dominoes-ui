@@ -8,6 +8,7 @@ import { BoardViewTest } from "test/BoardViewTest";
 import { observer } from "mobx-react-lite";
 import { PlayerDataContextProvider } from "context/PlayerDataContext";
 import { SocketContextProvider } from "context/SocketContext";
+import { Header } from "view/Header";
 
 export const App = observer(() => {
     return (
@@ -15,20 +16,23 @@ export const App = observer(() => {
             <PlayerDataContextProvider>
                 <SocketContextProvider>
                     <Router>
-                        <Switch>
-                            <Route path="/room/:roomId">
-                                <RoomView />
-                            </Route>
-                            <Route path="/about">
-                                <AboutPage />
-                            </Route>
-                            <Route path="/test">
-                                <BoardViewTest />
-                            </Route>
-                            <Route path="/">
-                                <HomePage />
-                            </Route>
-                        </Switch>
+                        <div className="site-container">
+                            <Header></Header>
+                            <Switch>
+                                <Route path="/room/:roomId">
+                                    <RoomView />
+                                </Route>
+                                <Route path="/about">
+                                    <AboutPage />
+                                </Route>
+                                <Route path="/test">
+                                    <BoardViewTest />
+                                </Route>
+                                <Route path="/">
+                                    <HomePage />
+                                </Route>
+                            </Switch>
+                        </div>
                     </Router>
                 </SocketContextProvider>
             </PlayerDataContextProvider>
