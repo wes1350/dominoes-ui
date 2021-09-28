@@ -278,8 +278,8 @@ export const BoardView = observer((props: IProps) => {
                             fullyTranslatedBoundingBoxes[i] =
                                 translateBoundingBox(
                                     box,
-                                    -1 * closeBoundingBoxNorthLimit,
-                                    0
+                                    0,
+                                    -1 * closeBoundingBoxNorthLimit
                                 );
                         });
                     }
@@ -294,7 +294,7 @@ export const BoardView = observer((props: IProps) => {
                                 );
                         });
                     }
-                    if (closeBoundingBoxSouthLimit > gridHeightInSquares) {
+                    if (closeBoundingBoxEastLimit > gridWidthInSquares) {
                         fullyTranslatedBoundingBoxes.forEach((box, i) => {
                             fullyTranslatedBoundingBoxes[i] =
                                 translateBoundingBox(

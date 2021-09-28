@@ -59,6 +59,26 @@ export const BoardViewTest = observer((props: IProps) => {
         { Face1: 4, Face2: 4, X: 0, Y: -4, Direction: Direction.EAST }
     ];
 
+    // const addedDominoesSpec = [
+    //     { Face1: 6, Face2: 6, X: 0, Y: 0, Direction: Direction.SOUTH },
+    //     { Face1: 6, Face2: 0, X: -1, Y: 0, Direction: Direction.WEST },
+    //     { Face1: 0, Face2: 2, X: -2, Y: 0, Direction: Direction.WEST },
+    //     { Face1: 2, Face2: 2, X: -3, Y: 0, Direction: Direction.SOUTH },
+    //     { Face1: 2, Face2: 1, X: -4, Y: 0, Direction: Direction.WEST },
+    //     { Face1: 6, Face2: 1, X: 1, Y: 0, Direction: Direction.EAST },
+    //     { Face1: 3, Face2: 1, X: 2, Y: 0, Direction: Direction.WEST },
+    //     { Face1: 3, Face2: 2, X: 3, Y: 0, Direction: Direction.EAST },
+    //     { Face1: 6, Face2: 2, X: 4, Y: 0, Direction: Direction.WEST },
+    //     { Face1: 6, Face2: 4, X: 0, Y: 1, Direction: Direction.NORTH },
+    //     { Face1: 4, Face2: 2, X: 0, Y: 2, Direction: Direction.NORTH },
+    //     { Face1: 6, Face2: 3, X: 0, Y: -1, Direction: Direction.SOUTH },
+    //     { Face1: 5, Face2: 3, X: 0, Y: -2, Direction: Direction.NORTH },
+    //     { Face1: 5, Face2: 1, X: 0, Y: -3, Direction: Direction.SOUTH },
+    //     { Face1: 4, Face2: 1, X: 0, Y: -4, Direction: Direction.NORTH },
+    //     { Face1: 5, Face2: 4, X: 0, Y: -5, Direction: Direction.NORTH },
+    //     { Face1: 5, Face2: 5, X: 0, Y: -6, Direction: Direction.EAST }
+    // ];
+
     addedDominoesSpec.forEach((desc) => {
         board.AddDomino(
             Domino.create({ Face1: desc.Face1, Face2: desc.Face2 }),
