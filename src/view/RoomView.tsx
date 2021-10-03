@@ -30,6 +30,8 @@ import {
 import { generateId } from "utils/utils";
 import { RoomLobbyView } from "./RoomLobbyView";
 import { GameView } from "./GameView";
+import { PossiblePlaysMessage } from "interfaces/PossiblePlaysMessage";
+import _ from "lodash";
 
 interface IProps {}
 
@@ -169,9 +171,9 @@ export const RoomView = observer((props: IProps) => {
         );
     };
 
-    const playableDominoesListener = (payload: string) => {
+    const playableDominoesListener = (payload: PossiblePlaysMessage) => {
         localStore.gameState.Me.SetPlayableDominoes(
-            JSON.parse("[" + payload + "]")
+            _.uniq(payload.plays.map((play) => play.domino))
         );
     };
 
@@ -233,7 +235,7 @@ export const RoomView = observer((props: IProps) => {
         socket.on(MessageType.TURN, turnListener);
         socket.on(MessageType.SCORE, scoreListener);
         socket.on(MessageType.HAND, handListener);
-        socket.on(MessageType.PLAYABLE_DOMINOES, playableDominoesListener);
+        socket.on(MessageType.POSSIBLE_PLAYS, playableDominoesListener);
         socket.on(MessageType.DOMINO_PLAYED, dominoPlayedListener);
         socket.on(MessageType.CLEAR_BOARD, clearBoardListener);
         socket.on(MessageType.PULL, pullListener);
@@ -250,7 +252,7 @@ export const RoomView = observer((props: IProps) => {
                 socket.off(MessageType.SCORE, scoreListener);
                 socket.off(MessageType.HAND, handListener);
                 socket.off(
-                    MessageType.PLAYABLE_DOMINOES,
+                    MessageType.POSSIBLE_PLAYS,
                     playableDominoesListener
                 );
                 socket.off(MessageType.DOMINO_PLAYED, dominoPlayedListener);
